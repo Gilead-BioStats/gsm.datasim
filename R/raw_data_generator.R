@@ -41,40 +41,54 @@
 #' }
 #'
 #' @export
-raw_data_generator <- function(ParticipantCount=NULL,
-                               SiteCount=NULL,
-                               StudyID=NULL,
-                               SnapshotCount=NULL,
-                               template_path = "~/gsm.datasim/data-raw/template.csv",
-                               workflow_path = "workflow/1_mappings") {
-
-  wf_mapping <- gsm::MakeWorkflowList(
-    strPath = workflow_path
-  )
+raw_data_generator <- function(
+    ParticipantCount = NULL,
+    SiteCount = NULL,
+    StudyID = NULL,
+    SnapshotCount = NULL,
+    template_path = "~/gsm.datasim/data-raw/template.csv",
+    workflow_path = "workflow/1_mappings"
+) {
+  # Load workflow mappings and combine specifications
+  wf_mapping <- gsm::MakeWorkflowList(strPath = workflow_path)
   combined_specs <- CombineSpecs(wf_mapping)
 
+  # Initialize the list to store raw data
+  raw_data_list <- list()
+
+  # Check if any of the key parameters are NULL
   if (any(is.null(c(ParticipantCount, SiteCount, StudyID, SnapshotCount)))) {
-    template <- read.csv(template_path)
-    lRaw <- list()
-    for (i in rownames(template)) {
+    # Read the template CSV file
+    template <- read.csv(template_path, stringsAsFactors = FALSE)
+
+    # Generate raw data for each study configuration in the template
+    raw_data_list <- lapply(seq_len(nrow(template)), function(i) {
       curr_vars <- template[i, ]
-      lRaw[[curr_vars$StudyID]] <- generate_snapshot(curr_vars$SnapshotCount,
-                                                     curr_vars$ParticipantCount,
-                                                     curr_vars$SiteCount,
-                                                     curr_vars$StudyID,
-                                                     combined_specs)
-    }
+      generate_snapshot(
+        SnapshotCount = curr_vars$SnapshotCount,
+        ParticipantCount = curr_vars$ParticipantCount,
+        SiteCount = curr_vars$SiteCount,
+        StudyID = curr_vars$StudyID,
+        combined_specs = combined_specs
+      )
+    })
+
+    # Assign study IDs as names to the list elements
+    names(raw_data_list) <- template$StudyID
 
   } else {
-    lRaw[[StudyID]] <- generate_snapshot(SnapshotCount,
-                                         ParticipantCount,
-                                         SiteCount,
-                                         StudyID,
-                                         combined_specs)
+    # Generate raw data for the single study configuration provided
+    raw_data_list[[StudyID]] <- generate_snapshot(
+      SnapshotCount = SnapshotCount,
+      ParticipantCount = ParticipantCount,
+      SiteCount = SiteCount,
+      StudyID = StudyID,
+      combined_specs = combined_specs
+    )
   }
 
-  saveRDS(lRaw, "data-raw/raw_data.RDS")
-  return(lRaw)
+  # Save the raw data list to an RDS file
+  saveRDS(raw_data_list, file = file.path("data-raw", "raw_data.RDS"))
+
+  return(raw_data_list)
 }
-
-

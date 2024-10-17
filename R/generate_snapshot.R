@@ -2,7 +2,7 @@
 #'
 #' This function generates a list of study data snapshots based on the provided specifications,
 #' including participant count, site count, study ID, and the number of snapshots to be generated.
-#' The data is simulated over a series of 12 months, with key variables such as subject enrollment,
+#' The data is simulated over a series of months, with key variables such as subject enrollment,
 #' adverse events, and time on study being populated according to the study's specifications.
 #'
 #' @param SnapshotCount An integer specifying the number of snapshots to generate.
@@ -10,7 +10,7 @@
 #' @param SiteCount An integer specifying the number of sites for the study.
 #' @param StudyID A string specifying the study identifier.
 #' @param combined_specs A list of specifications for the raw data variables, where each element contains
-#' variable metadata for different data types (e.g., "Raw_AE", "Raw_ENROLL").
+#' variable-generating functions for different data types (e.g., "Raw_AE", "Raw_ENROLL").
 #'
 #' @return A list of data snapshots, where each element contains simulated data for a particular snapshot
 #' period (typically a month), with variables populated according to the provided specifications.
@@ -24,10 +24,13 @@
 #'   specified in `combined_specs`.
 #' }
 #'
-#' @importFrom dplyr bind_rows case_when
+#' @importFrom dplyr case_when
 #'
 #' @examples
 #' \dontrun{
+#' # Define variable-generating functions
+#' some_function <- function(...) { ... }
+#'
 #' # Generate 5 snapshots of study data
 #' snapshots <- generate_snapshot(
 #'   SnapshotCount = 5,
@@ -43,78 +46,58 @@
 #'
 #' @export
 generate_snapshot <- function(SnapshotCount, ParticipantCount, SiteCount, StudyID, combined_specs) {
-  lSnapshots <- list()
+  # Generate start and end dates for snapshots
+  start_dates <- seq(as.Date("2012-01-01"), length = SnapshotCount, by = "months")
+  end_dates <- seq(as.Date("2012-02-01"), length = SnapshotCount, by = "months") - 1
 
-  startDates <- seq(as.Date("2012-01-01"), length = SnapshotCount, by = "months")
-  endDates <- seq(as.Date("2012-02-01"), length = SnapshotCount, by = "months") - 1
+  # Generate snapshots using lapply
+  snapshots <- lapply(seq_len(SnapshotCount), function(snapshot_idx) {
+    # Simulate the number of adverse events and screened participants
+    ae_num <- sample(seq(ParticipantCount, ParticipantCount * 2), 1)
+    screened_res <- screened(ParticipantCount)  # Assume 'screened' is defined elsewhere
 
-  for (snapshot_number in 1:SnapshotCount)  {
-    lData <- list()
+    # Initialize list to store data types
+    data_list <- list()
 
-    ## Simulate data for 12 months
-    ae_num <- sample(seq(from = ParticipantCount,
-                         to = ParticipantCount * 2),1)
-    screened_res <- screened(ParticipantCount)
+    # Loop over each raw data type specified in combined_specs
+    for (data_type in sort(names(combined_specs), decreasing = TRUE)) {
+      specs <- combined_specs[[data_type]]
+      # Determine the number of records 'n' based on data_type
+      n <- dplyr::case_when(
+        data_type == "Raw_AE" ~ ae_num,
+        data_type == "Raw_ENROLL" ~ screened_res,
+        TRUE ~ ParticipantCount
+      )
+      # Generate data for each variable in specs
+      variable_data <- lapply(names(specs), function(var_name) {
+        #browser()
+        generator_func <- var_name
 
-    for (raw_data_name in sort(names(combined_specs), decreasing = TRUE)) {
-      raw_data_meta <- combined_specs[[raw_data_name]]
-      new_chunk <- list()
-      for (var in names(raw_data_meta)) {
-        res <- NULL
-
-        n <- dplyr::case_when(
-          raw_data_name == "Raw_AE" ~ ae_num,
-          raw_data_name == "Raw_ENROLL" ~ screened_res,
-          .default = ParticipantCount
+        # Determine arguments based on variable name
+        args <- switch(var_name,
+                       subjid = if (data_type != "Raw_SUBJ") list(n, data_list$Raw_SUBJ) else list(n),
+                       studyid = list(StudyID),
+                       num_plan_site = list(SiteCount),
+                       num_plan_subj = list(ParticipantCount),
+                       enrollyn = if (data_type != "Raw_SUBJ") list(n, FALSE) else list(n),
+                       enrolldt = list(n, start_dates[snapshot_idx], end_dates[snapshot_idx]),
+                       timeonstudy = list(n, start_dates[snapshot_idx], end_dates[snapshot_idx]),
+                       list(n)  # Default case
         )
 
+        # Generate data using the generator function
+        do.call(generator_func, args)
+      })
+      names(variable_data) <- names(specs)
 
-        #if (var == "invid") browser()
-        if (var == "subjid" & raw_data_name != "Raw_SUBJ") {
-          res <- do.call(var, list(n, lData$Raw_SUBJ))
-        }
-
-        if (var == "studyid") {
-          res <- do.call(var, list(StudyID))
-        }
-
-        if (var == "num_plan_site") {
-          res <- do.call(var, list(SiteCount))
-        }
-
-        if (var == "num_plan_subj") {
-          res <- do.call(var, list(n))
-        }
-
-        if (var == "enrollyn" & raw_data_name != "Raw_SUBJ") {
-          res <- do.call(var, list(n, FALSE))
-        }
-
-        if (var == "enrolldt") {
-          res <- do.call(var, list(n,
-                                   startDates[snapshot_number],
-                                   endDates[snapshot_number]))
-        }
-
-        if (var == "timeonstudy") {
-          res <- do.call(var, list(n,
-                                   startDates[snapshot_number],
-                                   endDates[snapshot_number]))
-        }
-
-        if (is.null(res)) {
-          res <- do.call(var, list(n))
-
-        }
-
-        new_chunk[[var]] <- res
-      }
-      lData[[raw_data_name]] <- dplyr::bind_rows(lData[[raw_data_name]], new_chunk)
+      # Combine variables into a data frame
+      data_list[[data_type]] <- as.data.frame(variable_data)
     }
 
-    ind <- as.character(endDates[[snapshot_number]])
-    lSnapshots[[ind]] <- lData
+    data_list
+  })
 
-  }
-  return(lSnapshots)
+  # Assign snapshot end dates as names
+  names(snapshots) <- as.character(end_dates)
+  return(snapshots)
 }
