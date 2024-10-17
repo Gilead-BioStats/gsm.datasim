@@ -1,0 +1,7 @@
+StudyID,ParticipantCount,SiteCount,SnapshotCount,KRI,DeepDive,ADO
+"S0001",1000,40,10,"All",TRUE,FALSE
+"S0002",300,20,20,"AE, PD, Labs",TRUE,FALSE
+"S0003",300,20,20,"All",FALSE,FALSE
+"S0004",300,20,4,"All",TRUE,TRUE
+"S0005",100,10,20,"No Country Report", FALSE,NA
+"S0006",25,10,10,"All",TRUE,FALSE
