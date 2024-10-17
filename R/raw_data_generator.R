@@ -29,7 +29,7 @@
 #'   \item The generated data is saved as an RDS file and returned as a list.
 #' }
 #'
-#' @importFrom gsm MakeWorkflowList
+#' @importFrom gsm MakeWorkflowList CombineSpecs
 #'
 #' @examples
 #' \dontrun{
@@ -51,7 +51,7 @@ raw_data_generator <- function(
 ) {
   # Load workflow mappings and combine specifications
   wf_mapping <- gsm::MakeWorkflowList(strPath = workflow_path)
-  combined_specs <- CombineSpecs(wf_mapping)
+  combined_specs <- gsm::CombineSpecs(wf_mapping)
 
   # Initialize the list to store raw data
   raw_data_list <- list()
