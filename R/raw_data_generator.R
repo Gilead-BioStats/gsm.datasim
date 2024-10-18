@@ -47,7 +47,8 @@ raw_data_generator <- function(
     StudyID = NULL,
     SnapshotCount = NULL,
     template_path = "~/gsm.datasim/data-raw/template.csv",
-    workflow_path = "workflow/1_mappings"
+    workflow_path = "workflow/1_mappings",
+    generate_reports = FALSE
 ) {
   # Load workflow mappings and combine specifications
   wf_mapping <- gsm::MakeWorkflowList(strPath = workflow_path)
@@ -85,6 +86,12 @@ raw_data_generator <- function(
       StudyID = StudyID,
       combined_specs = combined_specs
     )
+  }
+
+  if (generate_reports) {
+    raw_data_list <- lapply(raw_data_list, function(study_data) {
+      create_snapshot_reports(study_data)
+    })
   }
 
   # Save the raw data list to an RDS file
