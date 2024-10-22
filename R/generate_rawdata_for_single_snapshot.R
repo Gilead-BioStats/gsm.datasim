@@ -54,6 +54,12 @@ generate_rawdata_for_single_snapshot <- function(SnapshotCount,
   start_dates <- seq(as.Date("2012-01-01"), length = SnapshotCount, by = "months")
   end_dates <- seq(as.Date("2012-02-01"), length = SnapshotCount, by = "months") - 1
 
+  # Specify the desired first few elements in order
+  desired_order <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL")
+
+  # Rearrange the elements
+  combined_specs <- combined_specs[c(desired_order, setdiff(names(combined_specs), desired_order))]
+
   current_subjects_count <- 0
 
   current_subjects_count_gen <- function(current_subjects_count,
@@ -84,7 +90,7 @@ generate_rawdata_for_single_snapshot <- function(SnapshotCount,
     data_list <- list()
 
     # Loop over each raw data type specified in combined_specs
-    for (data_type in sort(names(combined_specs), decreasing = TRUE)) {
+    for (data_type in names(combined_specs)) {
       specs <- combined_specs[[data_type]]
       # Determine the number of records 'n' based on data_type
       n <- dplyr::case_when(
@@ -110,7 +116,7 @@ generate_rawdata_for_single_snapshot <- function(SnapshotCount,
         )
 
         # Generate data using the generator function
-        do.call(generator_func, args)
+        do.call(generator_func, list(args, var_name = data_list$var_name))
       })
       names(variable_data) <- names(specs)
 
