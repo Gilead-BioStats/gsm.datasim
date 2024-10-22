@@ -45,7 +45,7 @@
 #' }
 #'
 #' @export
-generate_rawdata_for_single_snapshot <- function(SnapshotCount,
+generate_rawdata_for_single_study <- function(SnapshotCount,
                                                  ParticipantCount,
                                                  SiteCount,
                                                  StudyID,
