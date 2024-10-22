@@ -1,14 +1,32 @@
-subjid <- function(min, max, subjects = NULL, ...) {
-
-  # Function body for subjid
-  if (is.null(subjects)) {
-    result <- paste0("S", min:max)
+subjid <- function(n, isGenerated = FALSE, ...) {
+  args <- list(...)
+  if ("subjid" %in% names(args)) {
+    already_generated <- args$subjid
   } else {
-    result <- sample(subjects$subjid, max, replace = TRUE)
+    already_generated <- c()
   }
-  return(result)
-}
 
+  if (isGenerated) {
+    return(sample(already_generated, n, replace = TRUE))
+  }
+
+  # Generate all possible 3-digit numbers as strings with leading zeros
+  possible_numbers <- sprintf("%03d", 0:99999)
+
+  # Create all possible strings starting with "0X" and ending with the 3-digit numbers
+  possible_strings <- paste0("S", possible_numbers)
+
+  # Exclude the old strings to avoid duplication
+  new_strings_available <- setdiff(possible_strings, already_generated)
+
+  # Check if there are enough unique strings to generate
+  if (length(new_strings_available) < n) {
+    stop("Not enough unique strings available to generate ", n, " new strings.")
+  }
+
+  # Randomly sample 'n' unique strings from the available strings
+  return(sample(new_strings_available, n, replace = TRUE))
+}
 
 aeser <- function(n, ...) {
   # Function body for aeser
@@ -19,20 +37,60 @@ studyid <- function(n, stid, ...) {
   # Function body for studyid
   if (n == 1) {
     unlist(stid)
-  } else {
-
+      } else {
     sample(stid, n, replace = TRUE)
   }
 
 }
 
-invid <- function(n, ...) {
+siteid <- function(n, isGenerated = FALSE, ...) {
+  # Function body for invid
+  args <- list(...)
+  if ("siteid" %in% names(args)) {
+    already_generated <- args$siteid
+  } else {
+    already_generated <- c()
+  }
+
+  if (isGenerated) {
+    return(sample(already_generated, n, replace = TRUE))
+  }
+
+
+  # Generate all possible 3-digit numbers as strings with leading zeros
+  possible_numbers <- sprintf("%03d", 0:9999)
+
+  # Create all possible strings starting with "0X" and ending with the 3-digit numbers
+  possible_strings <- paste0("Site", possible_numbers)
+
+  # Exclude the old strings to avoid duplication
+  new_strings_available <- setdiff(possible_strings, already_generated)
+
+  # Check if there are enough unique strings to generate
+  if (length(new_strings_available) < n) {
+    stop("Not enough unique strings available to generate ", n, " new strings.")
+  }
+
+  # Randomly sample 'n' unique strings from the available strings
+  sample(new_strings_available, n, replace = TRUE)
+
+}
+
+subject_site_synq <- function(n, data, ...) {
+  data$Raw_SITE[sample(nrow(data$Raw_SITE), n), c("siteid", "invid", "Country")]
+}
+
+invid <- function(n, isGenerated=FALSE, ...) {
   # Function body for invid
   args <- list(...)
   if ("invid" %in% names(args)) {
     already_generated <- args$invid
   } else {
     already_generated <- c()
+  }
+
+  if (isGenerated) {
+    return(sample(already_generated, n, replace = TRUE))
   }
 
   # Generate all possible 3-digit numbers as strings with leading zeros
@@ -45,12 +103,12 @@ invid <- function(n, ...) {
   new_strings_available <- setdiff(possible_strings, already_generated)
 
   # Check if there are enough unique strings to generate
-  if (length(new_strings_available) < (n - length(already_generated))) {
+  if (length(new_strings_available) < n) {
     stop("Not enough unique strings available to generate ", n, " new strings.")
   }
 
   # Randomly sample 'n' unique strings from the available strings
-  sample(new_strings_available, n - length(already_generated), replace = TRUE)
+  sample(new_strings_available, n, replace = TRUE)
 }
 
 country <- function(n, ...) {
@@ -63,9 +121,9 @@ subjectid <- function(n, ...) {
   paste0("S", 1:n)
 }
 
-enrollyn <- function(n, isSiteDataset = TRUE, ...) {
+enrollyn <- function(n, isSubjDataset = TRUE, ...) {
   # Function body for enrollyn
-  if (isSiteDataset) {
+  if (isSubjDataset) {
     return("Y")
   } else {
     return("N")
@@ -112,9 +170,10 @@ screened <- function(n, ...) {
   sample(lower_bound:n, size = 1)
 }
 
-subject_nsv <- function(n, ...) {
+subject_nsv <- function(n, subjid, ...) {
   # Function body for subject_nsv
-  paste0("S", 1:n, "-XXXX")
+  browser()
+  paste0(subjid, "-XXXX")
 }
 
 enrolldt <- function(n, startDate, endDate, ...) {
@@ -229,9 +288,9 @@ Country_State_City <- function(n, ...) {
   cities <- City(n)
   states <- State(n, cities = cities)
   countries <- Country(n, cities = cities)
-  return(list(cities = cities,
-              states = states,
-              countries = countries))
+  return(list(City = cities,
+              State = states,
+              Country = countries))
 }
 
 
