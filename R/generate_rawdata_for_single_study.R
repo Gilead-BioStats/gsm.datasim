@@ -72,7 +72,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
 
   # Generate snapshots using lapply
   snapshots <- lapply(seq_len(SnapshotCount), function(snapshot_idx) {
-    current_subjects_count <- current_subjects_count_gen(current_subjects_count,
+    current_subjects_count <<- current_subjects_count_gen(current_subjects_count,
                                                          ParticipantCount,
                                                          SnapshotCount,
                                                          snapshot_idx)
