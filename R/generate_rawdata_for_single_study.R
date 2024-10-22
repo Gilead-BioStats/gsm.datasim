@@ -45,7 +45,7 @@
 #' }
 #'
 #' @export
-generate_rawdata_for_single_snapshot <- function(SnapshotCount,
+generate_rawdata_for_single_study <- function(SnapshotCount,
                                                  ParticipantCount,
                                                  SiteCount,
                                                  StudyID,
@@ -54,11 +54,31 @@ generate_rawdata_for_single_snapshot <- function(SnapshotCount,
   start_dates <- seq(as.Date("2012-01-01"), length = SnapshotCount, by = "months")
   end_dates <- seq(as.Date("2012-02-01"), length = SnapshotCount, by = "months") - 1
 
+  current_subjects_count <- 0
+
+  current_subjects_count_gen <- function(current_subjects_count,
+                                         ParticipantCount,
+                                         SnapshotCount,
+                                         snapshot_idx) {
+    start <- current_subjects_count + 1
+    iteration <- ParticipantCount %/% SnapshotCount
+    end <- snapshot_idx * iteration
+    result <- sample(start:end, size = 1)
+
+    if (snapshot_idx == SnapshotCount) result <- ParticipantCount
+
+    return(result)
+  }
+
   # Generate snapshots using lapply
   snapshots <- lapply(seq_len(SnapshotCount), function(snapshot_idx) {
+    current_subjects_count <<- current_subjects_count_gen(current_subjects_count,
+                                                         ParticipantCount,
+                                                         SnapshotCount,
+                                                         snapshot_idx)
     # Simulate the number of adverse events and screened participants
-    ae_num <- sample(seq(ParticipantCount, ParticipantCount * 2), 1)
-    screened_res <- screened(ParticipantCount)  # Assume 'screened' is defined elsewhere
+    ae_num <- sample(seq(current_subjects_count, current_subjects_count * 2), 1)
+    screened_res <- screened(current_subjects_count)  # Assume 'screened' is defined elsewhere
 
     # Initialize list to store data types
     data_list <- list()
@@ -70,7 +90,7 @@ generate_rawdata_for_single_snapshot <- function(SnapshotCount,
       n <- dplyr::case_when(
         data_type == "Raw_AE" ~ ae_num,
         data_type == "Raw_ENROLL" ~ screened_res,
-        TRUE ~ ParticipantCount
+        TRUE ~ current_subjects_count
       )
       # Generate data for each variable in specs
       variable_data <- lapply(names(specs), function(var_name) {
