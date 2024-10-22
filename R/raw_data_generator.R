@@ -32,7 +32,7 @@
 #'   \item The generated data is saved as an RDS file and returned as a list.
 #' }
 #'
-#' @importFrom gsm MakeWorkflowList
+#' @importFrom gsm MakeWorkflowList CombineSpecs
 #'
 #' @examples
 #' \dontrun{
@@ -81,7 +81,7 @@ raw_data_generator <- function(
     # Generate raw data for each study configuration in the template
     raw_data_list <- lapply(seq_len(nrow(template)), function(i) {
       curr_vars <- template[i, ]
-      generate_snapshot(
+      generate_rawdata_for_single_snapshot(
         SnapshotCount = curr_vars$SnapshotCount,
         ParticipantCount = curr_vars$ParticipantCount,
         SiteCount = curr_vars$SiteCount,
@@ -95,7 +95,7 @@ raw_data_generator <- function(
 
   } else {
     # Generate raw data for the single study configuration provided
-    raw_data_list[[StudyID]] <- generate_snapshot(
+    raw_data_list[[StudyID]] <- generate_rawdata_for_single_snapshot(
       SnapshotCount = SnapshotCount,
       ParticipantCount = ParticipantCount,
       SiteCount = SiteCount,

@@ -45,7 +45,11 @@
 #' }
 #'
 #' @export
-generate_snapshot <- function(SnapshotCount, ParticipantCount, SiteCount, StudyID, combined_specs) {
+generate_rawdata_for_single_snapshot <- function(SnapshotCount,
+                                                 ParticipantCount,
+                                                 SiteCount,
+                                                 StudyID,
+                                                 combined_specs) {
   # Generate start and end dates for snapshots
   start_dates <- seq(as.Date("2012-01-01"), length = SnapshotCount, by = "months")
   end_dates <- seq(as.Date("2012-02-01"), length = SnapshotCount, by = "months") - 1
