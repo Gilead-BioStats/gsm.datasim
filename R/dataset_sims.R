@@ -3,7 +3,7 @@ add_new_var_data <- function(dataset, vars, args, ...) {
 
 
   variable_data <- lapply(names(vars), function(var_name) {
-   #browser()
+    # browser()
     generator_func <- var_name
 
     if (!(var_name %in% names(args))) {
@@ -20,16 +20,24 @@ add_new_var_data <- function(dataset, vars, args, ...) {
     # Generate data using the generator function
     do.call(generator_func, curr_args)
   })
-  browser()
-
-  split_vars <- list(
-    "Country_State_City" = c("Country", "State", "City")
-  )
 
   names(variable_data) <- names(vars)
-  # if ("split_vars" %in% internal_args) {
-  #   internal_args$split_vars
-  # }
+
+  if ("split_vars" %in% internal_args) {
+    for (split_var_name in names(internal_args$split_vars)) {
+      # Step 1: Find the index of the sublist in the main list
+      sublist_index <- which(names(variable_data) == split_var_name)
+
+      # Step 2: Extract the elements of the sublist
+      sublist_elements <- variable_data[[sublist_index]]
+
+      # Step 3: Remove the sublist from the main list
+      variable_data[[sublist_index]] <- NULL
+
+      # Step 4: Insert the sublist elements into the main list at the original position
+      variable_data <- append(variable_data, sublist_elements, after = sublist_index - 1)
+    }
+  }
   variable_data <- as.data.frame(variable_data)
 
 
@@ -60,10 +68,12 @@ Raw_STUDY <- function(data, spec, ...) {
   return(res)
 }
 
-#data$Raw_STUDY <- Raw_STUDY(data, spec, StudyID = StudyID, SiteCount = SiteCount, ParticipantCount = ParticipantCount)
+data$Raw_STUDY <- Raw_STUDY(data, spec,
+                            StudyID = StudyID,
+                            SiteCount = SiteCount,
+                            ParticipantCount = ParticipantCount)
 
 Raw_SITE <- function(data, spec, ...) {
-  browser()
 
   inps <- list(...)
   curr_spec <- spec$Raw_SITE

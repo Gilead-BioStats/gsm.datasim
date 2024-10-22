@@ -17,7 +17,12 @@ aeser <- function(n, ...) {
 
 studyid <- function(stid, ...) {
   # Function body for studyid
-  unlist(stid)
+  # if (n == 1) {
+  #   unlist(stid)
+  # } else {
+    sample(stid, n, replace = TRUE)
+ # }
+
 }
 
 invid <- function(n, ...) {
