@@ -64,7 +64,11 @@ raw_data_generator <- function(
 ) {
   # Load workflow mappings and combine specifications
   wf_mapping <- gsm::MakeWorkflowList(strPath = workflow_path, strNames = kris, strPackage = package)
-  combined_specs <- CombineSpecs(wf_mapping)
+  wf_req <-  gsm::MakeWorkflowList(strPath =  "workflow/1_mappings", strNames = c("SUBJ", "STUDY", "SITE"), strPackage = "gsm")
+  wf_all <- c(wf_mapping, wf_req)
+  combined_specs <- CombineSpecs(wf_all)
+
+  #check to see if Raw_Site Raw_Study and Raw_Subj are in the spec
 
   # Initialize the list to store raw data
   raw_data_list <- list()
