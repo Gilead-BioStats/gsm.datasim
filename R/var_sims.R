@@ -15,13 +15,14 @@ aeser <- function(n, ...) {
   sample(c("Y", "N"), n, replace = TRUE)
 }
 
-studyid <- function(stid, ...) {
+studyid <- function(n, stid, ...) {
   # Function body for studyid
-  # if (n == 1) {
-  #   unlist(stid)
-  # } else {
+  if (n == 1) {
+    unlist(stid)
+  } else {
+
     sample(stid, n, replace = TRUE)
- # }
+  }
 
 }
 

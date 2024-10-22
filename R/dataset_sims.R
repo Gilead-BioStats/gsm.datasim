@@ -3,8 +3,8 @@ add_new_var_data <- function(dataset, vars, args, ...) {
 
 
   variable_data <- lapply(names(vars), function(var_name) {
-    # browser()
     generator_func <- var_name
+    browser()
 
     if (!(var_name %in% names(args))) {
       curr_args <- args$default
@@ -58,7 +58,7 @@ Raw_STUDY <- function(data, spec, ...) {
   }
 
   args <- list(
-               studyid = list(inps$StudyID),
+               studyid = list(1, inps$StudyID),
                num_plan_site = list(inps$SiteCount),
                num_plan_subj = list(inps$ParticipantCount),
                default = list(1)
@@ -68,10 +68,7 @@ Raw_STUDY <- function(data, spec, ...) {
   return(res)
 }
 
-data$Raw_STUDY <- Raw_STUDY(data, spec,
-                            StudyID = StudyID,
-                            SiteCount = SiteCount,
-                            ParticipantCount = ParticipantCount)
+
 
 Raw_SITE <- function(data, spec, ...) {
 
@@ -103,9 +100,9 @@ Raw_SITE <- function(data, spec, ...) {
 }
 
 # data$Raw_SITE
-aaa <- Raw_SITE(data, spec, n_sites = 10,
-                split_vars = list("Country_State_City" = c("Country", "State", "City"))
-                )
+# aaa <- Raw_SITE(data, spec, n_sites = 10,
+#                 split_vars = list("Country_State_City" = c("Country", "State", "City"))
+#                 )
 
 
 Raw_SUBJ <- function() {
@@ -120,12 +117,13 @@ Raw_AE <- function() {
   # Function body for Raw_AE
 }
 
-Raw_LB <- function() {
-  # Function body for Raw_LB
-}
 
 Raw_PD <- function() {
   # Function body for Raw_PD
+}
+
+Raw_LB <- function() {
+  # Function body for Raw_LB
 }
 
 Raw_SDRGCOMP <- function() {
