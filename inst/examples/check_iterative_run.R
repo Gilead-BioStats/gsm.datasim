@@ -18,7 +18,7 @@ start_dates <- seq(as.Date("2012-01-01"), length = SnapshotCount, by = "months")
 end_dates <- seq(as.Date("2012-02-01"), length = SnapshotCount, by = "months") - 1
 
 startDate <- start_dates[1]
-endDate <-end_dates[1]
+endDate <- end_dates[1]
 
 data$Raw_STUDY <- Raw_STUDY(data, spec,
               StudyID = StudyID,
@@ -27,9 +27,10 @@ data$Raw_STUDY <- Raw_STUDY(data, spec,
 
 data$Raw_SITE  <- Raw_SITE(data, spec, n_sites = n_sites, split_vars = list("Country_State_City"))
 
-# data$Raw_SUBJ  <- Raw_SUBJ(data, spec, n_subj = n_subj, startDate = startDate,
-#                            endDate = endDate, split_vars = list("subject_site_synq",
-#                                                                 "subjid_subject_nsv"))
+data$Raw_SUBJ  <- Raw_SUBJ(data, spec, n_subj = n_subj, startDate = startDate,
+                           endDate = endDate, split_vars = list("subject_site_synq",
+                                                                "subjid_subject_nsv",
+                                                                "enrolldt_timeonstudy"))
 
 
 

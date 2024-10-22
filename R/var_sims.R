@@ -28,6 +28,16 @@ subjid <- function(n, isGenerated = FALSE, ...) {
   return(sample(new_strings_available, n, replace = TRUE))
 }
 
+subjid_subject_nsv <- function(n, ...) {
+  subjid_dat <- subjid(n, ...)
+  subject_nsv_dat <- subject_nsv(n, subjid_dat, ...)
+  return(list(
+    subjid = subjid_dat,
+    subject_nsv = subject_nsv_dat
+  ))
+
+}
+
 aeser <- function(n, ...) {
   # Function body for aeser
   sample(c("Y", "N"), n, replace = TRUE)
@@ -77,7 +87,9 @@ siteid <- function(n, isGenerated = FALSE, ...) {
 }
 
 subject_site_synq <- function(n, data, ...) {
-  data$Raw_SITE[sample(nrow(data$Raw_SITE), n), c("siteid", "invid", "Country")]
+  data$Raw_SITE[sample(nrow(data$Raw_SITE), n, replace = TRUE),
+                c("siteid", "invid", "Country")]
+
 }
 
 invid <- function(n, isGenerated=FALSE, ...) {
@@ -172,23 +184,27 @@ screened <- function(n, ...) {
 
 subject_nsv <- function(n, subjid, ...) {
   # Function body for subject_nsv
-  browser()
   paste0(subjid, "-XXXX")
 }
 
 enrolldt <- function(n, startDate, endDate, ...) {
-  sample(seq(
-    as.Date(startDate), as.Date(endDate), by = "day"
-  ), n, replace = TRUE)
+  sample(seq(as.Date(startDate), as.Date(endDate), by = "day"), n, replace = TRUE)
 }
 
-timeonstudy <- function(n, startDate, endDate, ...) {
+timeonstudy <- function(n, enrolldt, endDate, ...) {
   # Function body for timeonstudy
-  enrolldt <- sample(seq(
-    as.Date(startDate), as.Date(endDate), by = "day"
-  ), n, replace = TRUE)
   as.numeric(as.Date(endDate) - as.Date(enrolldt))
 }
+
+enrolldt_timeonstudy <- function(n, startDate, endDate, ...) {
+  enrolldt_dat <- enrolldt(n, startDate, endDate, ...)
+  timeonstudy_dat <- timeonstudy(n, enrolldt_dat, endDate, ...)
+  return(list(
+    enrolldt = enrolldt_dat,
+    timeonstudy = timeonstudy_dat
+  ))
+}
+
 
 n_changes <- function(n, ...) {
   # Function body for n_changes

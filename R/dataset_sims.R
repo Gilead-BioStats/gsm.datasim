@@ -102,6 +102,7 @@ Raw_SITE <- function(data, spec, ...) {
     curr_spec$siteid <- list(required = TRUE)
   }
 
+
   # Function body for Raw_SITE
   args <- list(
     studyid = list(n, data$Raw_STUDY$studyid[[1]]),
@@ -129,11 +130,15 @@ Raw_SUBJ <- function(data, spec, startDate, endDate, ...) {
     dataset <- NULL
     previous_row_num <- 0
   }
-
+  browser()
   n <- inps$n_subj - previous_row_num
 
   if (!("siteid" %in% names(curr_spec))) {
     curr_spec$siteid <- list(required = TRUE)
+  }
+
+  if (!("enrolldt" %in% names(curr_spec))) {
+    curr_spec$enrolldt <- list(required = TRUE)
   }
 
   if (all(c("siteid", "invid", "country") %in% names(curr_spec))) {
@@ -149,17 +154,25 @@ Raw_SUBJ <- function(data, spec, startDate, endDate, ...) {
     curr_spec$subjid <- NULL
     curr_spec$subject_nsv <- NULL
   }
+  browser()
 
+  if (all(c("enrolldt", "timeonstudy") %in% names(curr_spec))) {
+    curr_spec$enrolldt_timeonstudy <- list(required = TRUE)
+    curr_spec$enrolldt <- NULL
+    curr_spec$timeonstudy <- NULL
+  }
 
-  # Function body for Raw_SITE
   args <- list(
     studyid = list(n, data$Raw_STUDY$studyid[[1]]),
     subject_site_synq = list(n, data),
-    timeonstudy = list(n, startDate, endDate),
+    enrolldt_timeonstudy = list(n, startDate, endDate),
     default = list(n)
   )
 
   res <- add_new_var_data(dataset, curr_spec, args, ...)
+
+  # Recalculate for all data
+  res$timeonstudy <- timeonstudy(n, res$enrolldt, endDate)
 
   return(res)
 }
