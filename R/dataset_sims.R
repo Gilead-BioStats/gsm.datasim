@@ -130,7 +130,7 @@ Raw_SUBJ <- function(data, spec, startDate, endDate, ...) {
     dataset <- NULL
     previous_row_num <- 0
   }
-  browser()
+  #browser()
   n <- inps$n_subj - previous_row_num
 
   if (!("siteid" %in% names(curr_spec))) {
@@ -154,7 +154,7 @@ Raw_SUBJ <- function(data, spec, startDate, endDate, ...) {
     curr_spec$subjid <- NULL
     curr_spec$subject_nsv <- NULL
   }
-  browser()
+  #browser()
 
   if (all(c("enrolldt", "timeonstudy") %in% names(curr_spec))) {
     curr_spec$enrolldt_timeonstudy <- list(required = TRUE)

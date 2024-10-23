@@ -178,7 +178,7 @@ compyn <- function(n, ...) {
 }
 
 screened <- function(n, ...) {
-  lower_bound <- n %/% 3
+  lower_bound <- n %/% 3 + 1
   sample(lower_bound:n, size = 1)
 }
 

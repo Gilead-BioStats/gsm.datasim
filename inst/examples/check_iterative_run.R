@@ -1,5 +1,8 @@
 devtools::load_all()
-# a<- raw_data_generator()
+ a<- raw_data_generator(ParticipantCount = 100,
+                        SiteCount = 10,
+                        StudyID = "Study01",
+                        SnapshotCount = 5)
 
 data <- list()
 StudyID <- 'S0001'
@@ -14,8 +17,8 @@ n_sites <- 20
 n_subj <- 100
 SnapshotCount <- 5
 
-start_dates <- seq(as.Date("2012-01-01"), length = SnapshotCount, by = "months")
-end_dates <- seq(as.Date("2012-02-01"), length = SnapshotCount, by = "months") - 1
+start_dates <- seq(as.Date("2012-01-01"), length.out = SnapshotCount, by = "months")
+end_dates <- seq(as.Date("2012-02-01"), length.out = SnapshotCount, by = "months") - 1
 
 startDate <- start_dates[1]
 endDate <- end_dates[1]

@@ -45,20 +45,14 @@
 #' }
 #'
 #' @export
-generate_rawdata_for_single_snapshot <- function(SnapshotCount,
+generate_rawdata_for_single_study <- function(SnapshotCount,
                                                  ParticipantCount,
                                                  SiteCount,
                                                  StudyID,
                                                  combined_specs) {
   # Generate start and end dates for snapshots
-  start_dates <- seq(as.Date("2012-01-01"), length = SnapshotCount, by = "months")
-  end_dates <- seq(as.Date("2012-02-01"), length = SnapshotCount, by = "months") - 1
-
-  # Specify the desired first few elements in order
-  desired_order <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL")
-
-  # Rearrange the elements
-  combined_specs <- combined_specs[c(desired_order, setdiff(names(combined_specs), desired_order))]
+  start_dates <- seq(as.Date("2012-01-01"), length.out = SnapshotCount, by = "months")
+  end_dates <- seq(as.Date("2012-02-01"), length.out = SnapshotCount, by = "months") - 1
 
   current_subjects_count <- 0
 
@@ -90,7 +84,7 @@ generate_rawdata_for_single_snapshot <- function(SnapshotCount,
     data_list <- list()
 
     # Loop over each raw data type specified in combined_specs
-    for (data_type in names(combined_specs)) {
+    for (data_type in sort(names(combined_specs), decreasing = TRUE)) {
       specs <- combined_specs[[data_type]]
       # Determine the number of records 'n' based on data_type
       n <- dplyr::case_when(
@@ -105,18 +99,19 @@ generate_rawdata_for_single_snapshot <- function(SnapshotCount,
 
         # Determine arguments based on variable name
         args <- switch(var_name,
-                       subjid = if (data_type != "Raw_SUBJ") list(n, data_list$Raw_SUBJ) else list(n),
-                       studyid = list(StudyID),
+                       subjid = if (data_type != "Raw_SUBJ") list(n, subjid = data_list$Raw_SUBJ$subjid) else list(n),
+                       studyid = list(n, StudyID),
                        num_plan_site = list(SiteCount),
                        num_plan_subj = list(ParticipantCount),
                        enrollyn = if (data_type != "Raw_SUBJ") list(n, FALSE) else list(n),
                        enrolldt = list(n, start_dates[snapshot_idx], end_dates[snapshot_idx]),
                        timeonstudy = list(n, start_dates[snapshot_idx], end_dates[snapshot_idx]),
+                       subject_nsv = list(n, data_list$Raw_SUBJ$subjid),
                        list(n)  # Default case
         )
 
         # Generate data using the generator function
-        do.call(generator_func, list(args, var_name = data_list$var_name))
+        do.call(generator_func, args)
       })
       names(variable_data) <- names(specs)
 

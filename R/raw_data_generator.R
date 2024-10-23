@@ -17,6 +17,9 @@
 #' `"~/gsm.datasim/data-raw/template.csv"`.
 #' @param workflow_path A string specifying the path to the workflow mappings. Default is
 #' `"workflow/1_mappings"`.
+#' @param kris A string or array of strings specifying the KRIs that will be used to
+#' determine the spec. Default is `NULL`.
+#' @param package A string specifying the package in which the workflows used in `MakeWorkflowList()` are located. Default is "gsm".
 #'
 #' @return A list of raw data generated for each study snapshot, saved as an RDS file in `"data-raw/raw_data.RDS"`.
 #'
@@ -36,6 +39,14 @@
 #' # Generate raw data using specified parameters
 #' data <- raw_data_generator(ParticipantCount = 100, SiteCount = 10, StudyID = "Study01", SnapshotCount = 5)
 #'
+#' # Generate raw data using specified parameters and KRIs
+#' data <- raw_data_generator(ParticipantCount = 100,
+#'                            SiteCount = 10,
+#'                            StudyID = "Study01",
+#'                            SnapshotCount = 5,
+#'                            workflow_path = "workflow/2_metrics",
+#'                            kris = c("kri0001", "kri0002", "kri0003"))
+#'
 #' # Generate raw data using a template file
 #' data <- raw_data_generator()
 #' }
@@ -48,11 +59,17 @@ raw_data_generator <- function(
     SnapshotCount = NULL,
     template_path = "~/gsm.datasim/data-raw/template.csv",
     workflow_path = "workflow/1_mappings",
-    generate_reports = FALSE
+    generate_reports = FALSE,
+    kris = NULL,
+    package = "gsm"
 ) {
   # Load workflow mappings and combine specifications
-  wf_mapping <- gsm::MakeWorkflowList(strPath = workflow_path)
-  combined_specs <- gsm::CombineSpecs(wf_mapping)
+  wf_mapping <- gsm::MakeWorkflowList(strPath = workflow_path, strNames = kris, strPackage = package)
+  wf_req <-  gsm::MakeWorkflowList(strPath =  "workflow/1_mappings", strNames = c("SUBJ", "STUDY", "SITE"), strPackage = "gsm")
+  wf_all <- c(wf_mapping, wf_req)
+  combined_specs <- CombineSpecs(wf_all)
+
+  #check to see if Raw_Site Raw_Study and Raw_Subj are in the spec
 
   # Initialize the list to store raw data
   raw_data_list <- list()
@@ -65,7 +82,7 @@ raw_data_generator <- function(
     # Generate raw data for each study configuration in the template
     raw_data_list <- lapply(seq_len(nrow(template)), function(i) {
       curr_vars <- template[i, ]
-      generate_rawdata_for_single_snapshot(
+      generate_rawdata_for_single_study(
         SnapshotCount = curr_vars$SnapshotCount,
         ParticipantCount = curr_vars$ParticipantCount,
         SiteCount = curr_vars$SiteCount,
@@ -79,7 +96,7 @@ raw_data_generator <- function(
 
   } else {
     # Generate raw data for the single study configuration provided
-    raw_data_list[[StudyID]] <- generate_rawdata_for_single_snapshot(
+    raw_data_list[[StudyID]] <- generate_rawdata_for_single_study(
       SnapshotCount = SnapshotCount,
       ParticipantCount = ParticipantCount,
       SiteCount = SiteCount,
