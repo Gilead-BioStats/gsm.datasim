@@ -77,8 +77,14 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                                                          SnapshotCount,
                                                          snapshot_idx)
     # Simulate the number of adverse events and screened participants
-    ae_num <- sample(seq(current_subjects_count, current_subjects_count * 2), 1)
-    screened_res <- screened(current_subjects_count)  # Assume 'screened' is defined elsewhere
+    ae_num <- sample(seq(current_subjects_count * 2, current_subjects_count * 3), 1)
+    pd_num <- sample(seq(current_subjects_count * 2, current_subjects_count * 3), 1)
+    query_num <- sample(seq(current_subjects_count * 20, current_subjects_count * 40), 1)
+    dataent_num <- sample(seq(current_subjects_count * 150, current_subjects_count * 200), 1)
+    datachg_num <- dataent_num * 7
+    studcomp_num <- sample(seq(current_subjects_count %/% 12, current_subjects_count  %/% 8), 1)
+    sdrgcomp_num <- sample(seq(current_subjects_count %/% 2.5, current_subjects_count  %/% 1.5), 1)
+    screened_res <- screened(current_subjects_count)
 
     # Initialize list to store data types
     data_list <- list()
@@ -88,8 +94,16 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
       specs <- combined_specs[[data_type]]
       # Determine the number of records 'n' based on data_type
       n <- dplyr::case_when(
-        data_type == "Raw_AE" ~ ae_num,
-        data_type == "Raw_ENROLL" ~ screened_res,
+        data_type %in% c("Raw_AE", "Mapped_AE") ~ ae_num,
+        data_type %in% c("Raw_ENROLL", "Mapped_ENROLL") ~ screened_res,
+        data_type == "Raw_STUDY" ~ 1,
+        data_type %in% c("Raw_PD", "Mapped_PD") ~ pd_num,
+        data_type %in% c("Raw_QUERY", "Mapped_QUERY") ~ query_num,
+        data_type %in% c("Raw_DATAENT", "Mapped_DATAENT") ~ dataent_num,
+        data_type == "Raw_SITE" ~ SiteCount,
+        data_type %in% c("Raw_DATACHG", "Mapped_DATACHG") ~ datachg_num,
+        data_type %in% c("Raw_STUDCOMP", "Mapped_STUDCOMP") ~ studcomp_num,
+        data_type %in% c("Raw_SDRGCOMP", "Mapped_SDGRCOMP") ~ sdrgcomp_num,
         TRUE ~ current_subjects_count
       )
       # Generate data for each variable in specs
