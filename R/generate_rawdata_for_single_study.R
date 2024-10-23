@@ -45,7 +45,7 @@
 #' }
 #'
 #' @export
-generate_rawdata_for_single_snapshot <- function(SnapshotCount,
+generate_rawdata_for_single_study <- function(SnapshotCount,
                                                  ParticipantCount,
                                                  SiteCount,
                                                  StudyID,
@@ -57,8 +57,8 @@ generate_rawdata_for_single_snapshot <- function(SnapshotCount,
                                                                    "Raw_AE",
                                                                    "Raw_PD")) {
   # Generate start and end dates for snapshots
-  start_dates <- seq(as.Date("2012-01-01"), length = SnapshotCount, by = "months")
-  end_dates <- seq(as.Date("2012-02-01"), length = SnapshotCount, by = "months") - 1
+  start_dates <- seq(as.Date("2012-01-01"), length.out = SnapshotCount, by = "months")
+  end_dates <- seq(as.Date("2012-02-01"), length.out = SnapshotCount, by = "months") - 1
 
   # Specify the desired first few elements in order
   desired_order <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL")
@@ -66,6 +66,7 @@ generate_rawdata_for_single_snapshot <- function(SnapshotCount,
   # Rearrange the elements
   combined_specs <- combined_specs[c(desired_order, setdiff(names(combined_specs), desired_order))]
   combined_specs <- combined_specs[desired_specs]
+
 
 
   subject_count <- count_gen(ParticipantCount, SnapshotCount)

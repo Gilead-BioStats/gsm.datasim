@@ -120,7 +120,6 @@ Raw_SITE <- function(data, spec, ...) {
 Raw_SUBJ <- function(data, spec, startDate, endDate, ...) {
 
   inps <- list(...)
-  #browser()
 
   curr_spec <- spec$Raw_SUBJ
 
