@@ -90,6 +90,7 @@ Raw_SITE <- function(data, spec, ...) {
 
   n <- inps$n_sites - previous_row_num
 
+
   if (all(c("Country", "State", "City") %in% names(curr_spec))) {
     curr_spec$Country_State_City <- list(required = TRUE)
     curr_spec$Country <- NULL
@@ -130,7 +131,7 @@ Raw_SUBJ <- function(data, spec, startDate, endDate, ...) {
     dataset <- NULL
     previous_row_num <- 0
   }
-  browser()
+
   n <- inps$n_subj - previous_row_num
 
   if (!("siteid" %in% names(curr_spec))) {
@@ -154,18 +155,19 @@ Raw_SUBJ <- function(data, spec, startDate, endDate, ...) {
     curr_spec$subjid <- NULL
     curr_spec$subject_nsv <- NULL
   }
-  browser()
 
-  if (all(c("enrolldt", "timeonstudy") %in% names(curr_spec))) {
-    curr_spec$enrolldt_timeonstudy <- list(required = TRUE)
+  if (all(c("enrollyn", "enrolldt", "timeonstudy") %in% names(curr_spec))) {
+    curr_spec$enrollyn_enrolldt_timeonstudy <- list(required = TRUE)
     curr_spec$enrolldt <- NULL
     curr_spec$timeonstudy <- NULL
+    curr_spec$enrollyn <- NULL
+
   }
 
   args <- list(
     studyid = list(n, data$Raw_STUDY$studyid[[1]]),
     subject_site_synq = list(n, data),
-    enrolldt_timeonstudy = list(n, startDate, endDate),
+    enrollyn_enrolldt_timeonstudy = list(n, startDate, endDate),
     default = list(n)
   )
 
@@ -177,17 +179,92 @@ Raw_SUBJ <- function(data, spec, startDate, endDate, ...) {
   return(res)
 }
 
-Raw_ENROLL <- function() {
-  # Function body for Raw_ENROLL
+Raw_ENROLL <- function(data, spec, ...) {
+  inps <- list(...)
+
+  curr_spec <- spec$Raw_ENROLL
+
+  if ("Raw_ENROLL" %in% names(data)) {
+    dataset <- data$Raw_ENROLL
+    previous_row_num <- nrow(dataset)
+  } else {
+    dataset <- NULL
+    previous_row_num <- 0
+  }
+
+  n <- inps$n_enroll - previous_row_num
+
+  if (all(c("invid", "country", "subjid", "subjectid", "enrollyn") %in% names(curr_spec))) {
+    curr_spec$subject_to_enrollment <- list(required = TRUE)
+    curr_spec$invid <- NULL
+    curr_spec$country <- NULL
+    curr_spec$subjid <- NULL
+    curr_spec$subjectid <- NULL
+    curr_spec$enrollyn <- NULL
+  }
+
+  args <- list(
+    studyid = list(n, data$Raw_STUDY$studyid[[1]]),
+    subject_to_enrollment = list(n, data),
+    default = list(n)
+  )
+
+  res <- add_new_var_data(dataset, curr_spec, args, ...)
+
+  return(res)
 }
 
-Raw_AE <- function() {
-  # Function body for Raw_AE
+
+
+Raw_AE <- function(data, spec, ...) {
+  inps <- list(...)
+
+  curr_spec <- spec$Raw_AE
+
+  if ("Raw_AE" %in% names(data)) {
+    dataset <- data$Raw_AE
+    previous_row_num <- nrow(dataset)
+  } else {
+    dataset <- NULL
+    previous_row_num <- 0
+  }
+
+  n <- inps$n - previous_row_num
+
+  args <- list(
+    subjid = list(n, data$Raw_SUBJ$subjid),
+    default = list(n)
+  )
+
+  res <- add_new_var_data(dataset, curr_spec, args, ...)
+
+  return(res)
 }
 
 
-Raw_PD <- function() {
-  # Function body for Raw_PD
+Raw_PD <- function(data, spec, ...) {
+  inps <- list(...)
+
+  curr_spec <- spec$Raw_PD
+
+  if ("Raw_PD" %in% names(data)) {
+    dataset <- data$Raw_PD
+    previous_row_num <- nrow(dataset)
+  } else {
+    dataset <- NULL
+    previous_row_num <- 0
+  }
+
+  n <- inps$n - previous_row_num
+
+  args <- list(
+    subjid = list(n, data$Raw_SUBJ$subjid),
+    default = list(n)
+  )
+
+  res <- add_new_var_data(dataset, curr_spec, args, ...)
+
+  return(res)
 }
 
 Raw_LB <- function() {

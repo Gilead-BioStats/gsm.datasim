@@ -1,4 +1,4 @@
-subjid <- function(n, isGenerated = FALSE, ...) {
+subjid <- function(n, external_subjid = NULL, ...) {
   args <- list(...)
   if ("subjid" %in% names(args)) {
     already_generated <- args$subjid
@@ -6,8 +6,8 @@ subjid <- function(n, isGenerated = FALSE, ...) {
     already_generated <- c()
   }
 
-  if (isGenerated) {
-    return(sample(already_generated, n, replace = TRUE))
+  if (!is.null(external_subjid)) {
+    return(sample(external_subjid, n, replace = TRUE))
   }
 
   # Generate all possible 3-digit numbers as strings with leading zeros
@@ -25,7 +25,7 @@ subjid <- function(n, isGenerated = FALSE, ...) {
   }
 
   # Randomly sample 'n' unique strings from the available strings
-  return(sample(new_strings_available, n, replace = TRUE))
+  return(sample(new_strings_available, n))
 }
 
 subjid_subject_nsv <- function(n, ...) {
@@ -82,7 +82,7 @@ siteid <- function(n, isGenerated = FALSE, ...) {
   }
 
   # Randomly sample 'n' unique strings from the available strings
-  sample(new_strings_available, n, replace = TRUE)
+  sample(new_strings_available, n)
 
 }
 
@@ -120,7 +120,7 @@ invid <- function(n, isGenerated=FALSE, ...) {
   }
 
   # Randomly sample 'n' unique strings from the available strings
-  sample(new_strings_available, n, replace = TRUE)
+  sample(new_strings_available, n)
 }
 
 country <- function(n, ...) {
@@ -133,13 +133,17 @@ subjectid <- function(n, ...) {
   paste0("S", 1:n)
 }
 
-enrollyn <- function(n, isSubjDataset = TRUE, ...) {
+enrollyn <- function(n, ...) {
   # Function body for enrollyn
-  if (isSubjDataset) {
-    return("Y")
-  } else {
-    return("N")
-  }
+  # if (isSubjDataset) {
+  #   return("Y")
+  # } else {
+  #   return("N")
+  # }
+  sample(c("Y", "N"),
+         prob = c(0.75, 0.25),
+         n,
+         replace = TRUE)
 
 }
 
@@ -187,8 +191,10 @@ subject_nsv <- function(n, subjid, ...) {
   paste0(subjid, "-XXXX")
 }
 
-enrolldt <- function(n, startDate, endDate, ...) {
-  sample(seq(as.Date(startDate), as.Date(endDate), by = "day"), n, replace = TRUE)
+enrolldt <- function(n, startDate, endDate, enrollyn_dat, ...) {
+  full_sample <- sample(seq(as.Date(startDate), as.Date(endDate), by = "day"), n, replace = TRUE)
+  full_sample[enrollyn_dat == "N"] <- NA
+  return(full_sample)
 }
 
 timeonstudy <- function(n, enrolldt, endDate, ...) {
@@ -196,10 +202,12 @@ timeonstudy <- function(n, enrolldt, endDate, ...) {
   as.numeric(as.Date(endDate) - as.Date(enrolldt))
 }
 
-enrolldt_timeonstudy <- function(n, startDate, endDate, ...) {
-  enrolldt_dat <- enrolldt(n, startDate, endDate, ...)
+enrollyn_enrolldt_timeonstudy <- function(n, startDate, endDate, ...) {
+  enrollyn_dat <- enrollyn(n, ...)
+  enrolldt_dat <- enrolldt(n, startDate, endDate, enrollyn_dat, ...)
   timeonstudy_dat <- timeonstudy(n, enrolldt_dat, endDate, ...)
   return(list(
+    enrollyn = enrollyn_dat,
     enrolldt = enrolldt_dat,
     timeonstudy = timeonstudy_dat
   ))
@@ -339,3 +347,11 @@ num_plan_subj <- function(num_pl_subj, ...) {
   # Function body for num_plan_subj
   unlist(num_pl_subj)
 }
+
+subject_to_enrollment <- function(n, data, ...) {
+  data$Raw_SUBJ[sample(nrow(data$Raw_SUBJ), n),
+                c("subjid", "invid", "Country", "enrollyn")] %>%
+    dplyr::mutate(subjectid = paste0("XX-", subjid))
+
+}
+
