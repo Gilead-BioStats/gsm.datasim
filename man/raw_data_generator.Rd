@@ -11,10 +11,7 @@ raw_data_generator(
   SnapshotCount = NULL,
   template_path = "~/gsm.datasim/data-raw/template.csv",
   workflow_path = "workflow/1_mappings",
-<<<<<<< HEAD
-=======
   generate_reports = FALSE,
->>>>>>> dev
   kris = NULL,
   package = "gsm"
 )

@@ -9,7 +9,9 @@ generate_rawdata_for_single_study(
   ParticipantCount,
   SiteCount,
   StudyID,
-  combined_specs
+  combined_specs,
+  desired_specs = c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL", "Raw_AE",
+    "Raw_PD")
 )
 }
 \arguments{

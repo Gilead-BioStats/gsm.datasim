@@ -13,7 +13,7 @@ Given inputs regarding the synthetic Study's desired ID, Participant Count, Site
 - I/E criteria
 - Study metadata
 
-By Default, the package contructs data that would create all KRIs that are available in the [`{gsm}`](https://github.com/Gilead-BioStats/gsm) package.
+By Default, the package constructs data that would create all KRIs that are available in the [`{gsm}`](https://github.com/Gilead-BioStats/gsm) package.
 
 ## Installation
 You can install the development version of `{gsm.datasim}` from GitHub with:
@@ -35,6 +35,7 @@ pak::pak("Gilead-BioStats/gsm.datasim@dev")
                             workflow_path = "workflow/2_metrics",
                             kris = c("kri0001", "kri0002", "kri0003"))
 
- # Generate raw data using a template file
- data <- raw_data_generator()
+ # Generate raw data using a template file (currently it runs on a smaller template but not always on a larger one),
+ # this is our current goto sim process:
+ data <- raw_data_generator(template_path = "~/gsm.datasim/data-raw/small_template.csv")
 ```
