@@ -1,5 +1,5 @@
 
-create_snapsot_reports <- function(study_data) {
+create_snapshot_reports <- function(study_data) {
   previous_snapshot <- NULL
   for (snapshot_names in names(study_data)) {
     snapshot_raw_data <- study_data[[snapshot_names]]

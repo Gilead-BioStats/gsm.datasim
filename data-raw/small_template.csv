@@ -1,0 +1,4 @@
+StudyID,ParticipantCount,SiteCount,SnapshotCount,KRI,DeepDive,ADO
+"S0001",1000,40,10,"All",TRUE,FALSE
+"S0004",300,20,4,"All",TRUE,TRUE
+"S0006",25,10,10,"All",TRUE,FALSE

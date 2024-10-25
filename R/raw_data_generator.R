@@ -64,10 +64,7 @@ raw_data_generator <- function(
     package = "gsm"
 ) {
   # Load workflow mappings and combine specifications
-  wf_mapping <- gsm::MakeWorkflowList(strPath = workflow_path, strNames = kris, strPackage = package)
-  wf_req <-  gsm::MakeWorkflowList(strPath =  "workflow/1_mappings", strNames = c("SUBJ", "STUDY", "SITE"), strPackage = "gsm")
-  wf_all <- c(wf_mapping, wf_req)
-  combined_specs <- CombineSpecs(wf_all)
+  combined_specs <- load_specs(workflow_path, kris, package)
 
   #check to see if Raw_Site Raw_Study and Raw_Subj are in the spec
 
@@ -110,6 +107,9 @@ raw_data_generator <- function(
       create_snapshot_reports(study_data)
     })
   }
+
+  raw_data_list <- rename_raw_data_vars_per_spec(raw_data_list, combined_specs)
+
 
   # Save the raw data list to an RDS file
   saveRDS(raw_data_list, file = file.path("data-raw", "raw_data.RDS"))
