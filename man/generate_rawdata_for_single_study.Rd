@@ -25,6 +25,9 @@ generate_rawdata_for_single_study(
 
 \item{combined_specs}{A list of specifications for the raw data variables, where each element contains
 variable-generating functions for different data types (e.g., "Raw_AE", "Raw_ENROLL").}
+
+\item{desired_specs}{A list of specifications of the data types that should be included. Default values include:
+'Raw_STUDY', 'Raw_SITE', 'Raw_SUBJ', 'Raw_ENROLL', 'Raw_AE', 'Raw_PD'.}
 }
 \value{
 A list of data snapshots, where each element contains simulated data for a particular snapshot

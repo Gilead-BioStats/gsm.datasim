@@ -11,6 +11,8 @@
 #' @param StudyID A string specifying the study identifier.
 #' @param combined_specs A list of specifications for the raw data variables, where each element contains
 #' variable-generating functions for different data types (e.g., "Raw_AE", "Raw_ENROLL").
+#' @param desired_specs A list of specifications of the data types that should be included. Default values include:
+#' 'Raw_STUDY', 'Raw_SITE', 'Raw_SUBJ', 'Raw_ENROLL', 'Raw_AE', 'Raw_PD'.
 #'
 #' @return A list of data snapshots, where each element contains simulated data for a particular snapshot
 #' period (typically a month), with variables populated according to the provided specifications.
