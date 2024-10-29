@@ -17,6 +17,7 @@
 #' `"~/gsm.datasim/data-raw/template.csv"`.
 #' @param workflow_path A string specifying the path to the workflow mappings. Default is
 #' `"workflow/1_mappings"`.
+#' @param generate_reports A boolean, specifying whether or not to produce reports upon execution. Default is FALSE.
 #' @param kris A string or array of strings specifying the KRIs that will be used to
 #' determine the spec. Default is `NULL`.
 #' @param package A string specifying the package in which the workflows used in `MakeWorkflowList()` are located. Default is "gsm".
@@ -33,6 +34,7 @@
 #' }
 #'
 #' @importFrom gsm MakeWorkflowList CombineSpecs
+#' @importFrom utils read.csv
 #'
 #' @examples
 #' \dontrun{
