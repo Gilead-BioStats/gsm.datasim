@@ -35,6 +35,8 @@ the function will use values from the template file.}
 \item{workflow_path}{A string specifying the path to the workflow mappings. Default is
 \code{"workflow/1_mappings"}.}
 
+\item{generate_reports}{A boolean, specifying whether or not to produce reports upon execution. Default is FALSE.}
+
 \item{kris}{A string or array of strings specifying the KRIs that will be used to
 determine the spec. Default is \code{NULL}.}
 
