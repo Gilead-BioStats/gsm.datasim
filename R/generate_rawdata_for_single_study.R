@@ -76,8 +76,6 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
     combined_specs <- combined_specs[desired_specs]
   }
 
-
-
   subject_count <- count_gen(ParticipantCount, SnapshotCount)
   site_count <- count_gen(SiteCount, SnapshotCount)
   enrollment_count <- enrollment_count_gen(subject_count)
@@ -87,6 +85,10 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
   sdrgcomp_count <- subject_count %/% 2
   studcomp_count <- subject_count %/% 10
 
+  print(subject_count)
+  print(site_count)
+  print(enrollment_count)
+  print("--------------")
 
   snapshots <- list()
 
@@ -139,21 +141,24 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                      list(data, previous_data, combined_specs, n = n)  # Default case
       )
 
+
       variable_data <- do.call(generator_func, args)
       #if(data_type == "Raw_LB") browser()
       # Combine variables into a data frame
       data[[data_type]] <- as.data.frame(variable_data)
     }
 
-    to_subj <- data$Raw_ENROLL %>%
-      dplyr::select(subjid, enrollyn)
+    if ( nrow(data$Raw_ENROLL) > 0) {
+      to_subj <- data$Raw_ENROLL %>%
+        dplyr::select(subjid, enrollyn)
 
-    data$Raw_SUBJ <- data$Raw_SUBJ %>%
-      dplyr::rows_upsert(to_subj, by = "subjid") %>%
-      dplyr::mutate(
-        enrolldt = dplyr::if_else(enrollyn == "N", as.Date(NA), enrolldt),
-        timeonstudy = dplyr::if_else(enrollyn == "N", NA, timeonstudy)
-      )
+      data$Raw_SUBJ <- data$Raw_SUBJ %>%
+        dplyr::rows_upsert(to_subj, by = "subjid") %>%
+        dplyr::mutate(
+          enrolldt = dplyr::if_else(enrollyn == "N", as.Date(NA), enrolldt),
+          timeonstudy = dplyr::if_else(enrollyn == "N", NA, timeonstudy)
+        )
+    }
     snapshots[[snapshot_idx]] <- data
   }
 

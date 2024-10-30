@@ -95,6 +95,7 @@ Raw_SITE <- function(data, previous_data, spec, ...) {
   }
 
   n <- inps$n_sites - previous_row_num
+  if (n == 0) return(dataset)
 
 
   if (all(c("Country", "State", "City") %in% names(curr_spec))) {
@@ -138,6 +139,7 @@ Raw_SUBJ <- function(data, previous_data, spec, startDate, endDate, ...) {
   }
 
   n <- inps$n_subj - previous_row_num
+  if (n == 0) return(dataset)
 
   if (!("siteid" %in% names(curr_spec))) {
     curr_spec$siteid <- list(required = TRUE)
@@ -198,6 +200,7 @@ Raw_ENROLL <- function(data, previous_data, spec, ...) {
   }
 
   n <- inps$n_enroll - previous_row_num
+  if (n == 0) return(dataset)
 
   if (all(c("invid", "country", "subjid", "subjectid", "enrollyn") %in% names(curr_spec))) {
     curr_spec$subject_to_enrollment <- list(required = TRUE)
@@ -235,6 +238,7 @@ Raw_AE <- function(data, previous_data, spec, ...) {
   }
 
   n <- inps$n - previous_row_num
+  if (n == 0) return(dataset)
 
   args <- list(
     subjid = list(n, data$Raw_SUBJ$subjid),
@@ -261,6 +265,7 @@ Raw_PD <- function(data, previous_data, spec, ...) {
   }
 
   n <- inps$n - previous_row_num
+  if (n == 0) return(dataset)
 
   args <- list(
     subjid = list(n, data$Raw_SUBJ$subjid),
@@ -283,6 +288,7 @@ Raw_SV <- function(data, previous_data, spec, startDate, ...) {
   }
 
   n <- inps$n - previous_row_num
+  if (n == 0) return(dataset)
 
   possible_visits <- data.frame(
     foldername = c("Screening", "Unscheduled", "Unscheduled", "Unscheduled", "Unscheduled",
@@ -362,7 +368,9 @@ Raw_LB <- function(data, previous_data, spec, ...) {
     previous_row_num <- 0
   }
 
+
   n <- inps$n - previous_row_num
+  if (n == 0) return(dataset)
 
   tests <- data.frame(
     battrnam = c("CHEMISTRY PANEL", "CHEMISTRY PANEL", "CHEMISTRY PANEL", "CHEMISTRY PANEL",
@@ -411,8 +419,7 @@ Raw_LB <- function(data, previous_data, spec, ...) {
     curr_spec$visnam <- NULL
   }
 
-
-  subjs <- subjid(n, data$Raw_SUBJ$subjid, replace = FALSE)
+  subjs <- subjid(n, external_subjid = data$Raw_SUBJ$subjid, replace = FALSE)
   subj_visits <- data$Raw_SV %>%
     dplyr::filter(subjid %in% subjs) %>%
     dplyr::select(subjid, instancename)
@@ -444,6 +451,7 @@ Raw_SDRGCOMP <- function(data, previous_data, spec, ...) {
   }
 
   n <- inps$n - previous_row_num
+  if (n == 0) return(dataset)
 
   args <- list(
     subjid = list(n, data$Raw_SUBJ$subjid, replace = FALSE),
@@ -471,6 +479,7 @@ Raw_STUDCOMP <- function(data, previous_data, spec, ...) {
   }
 
   n <- inps$n - previous_row_num
+  if (n == 0) return(dataset)
 
   args <- list(
     subjid = list(n, data$Raw_SUBJ$subjid, replace = FALSE),
@@ -498,6 +507,7 @@ Raw_DATACHG <- function(data, previous_data, spec, ...) {
   }
 
   n <- inps$n - previous_row_num
+  if (n == 0) return(dataset)
 
   if (!("visnam" %in% names(curr_spec))) {
     curr_spec$visnam <- list(required = TRUE)
@@ -559,6 +569,7 @@ Raw_DATAENT <- function(data, previous_data, spec, ...) {
   }
 
   n <- inps$n - previous_row_num
+  if (n == 0) return(dataset)
 
   if (!("visnam" %in% names(curr_spec))) {
     curr_spec$visnam <- list(required = TRUE)
@@ -614,6 +625,7 @@ Raw_QUERY <- function(data, previous_data, spec, ...) {
   }
 
   n <- inps$n - previous_row_num
+  if (n == 0) return(dataset)
 
   # Function body for Raw_QUERY
   if (!("visnam" %in% names(curr_spec))) {

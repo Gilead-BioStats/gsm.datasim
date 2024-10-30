@@ -7,7 +7,7 @@ subjid <- function(n, external_subjid = NULL, replace = TRUE, ...) {
   }
 
   if (!is.null(external_subjid)) {
-    sample(external_subjid, n, replace = replace)
+    return(sample(external_subjid, n, replace = replace))
   }
 
   # Generate all possible 3-digit numbers as strings with leading zeros

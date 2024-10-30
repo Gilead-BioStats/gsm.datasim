@@ -1,23 +1,28 @@
 count_gen <- function(max_n, SnapshotCount) {
-  iteration <- max_n %/% SnapshotCount
-
+  iteration <- max_n / SnapshotCount
   counts <- c()
   for (i in seq(SnapshotCount)) {
     if (i > 1) {
-      start <- counts[i - 1] + 1
+      start <- counts[i - 1]
     } else {
       start <- 1
     }
-
     end <- i * iteration
 
-
     if (i < SnapshotCount) {
-      counts <- c(counts, sample(start:end, size = 1))
+      if ((start < end) & ((floor(end) - start) > 1)) {
+        new_element <- sample(start:floor(end), size = 1)
+      } else {
+        new_element <- start
+      }
     } else {
-      counts <- c(counts, max_n)
+      new_element <- max_n
 
     }
+    print(paste0("s ", start, 'e ', end, 'res ', new_element))
+
+
+    counts <- c(counts, new_element)
   }
 
   return(counts)
@@ -134,8 +139,12 @@ generate_form_df <- function(n) {
 
 enrollment_count_gen <- function(subject_count) {
   screened <- function(n, previous_screened) {
-    lower_bound <- max(n %/% 3, previous_screened) + 1
-    sample(lower_bound:n, size = 1)
+    lower_bound <- max(n %/% 3, previous_screened)
+    if (lower_bound != n) {
+      return(sample(lower_bound:n, size = 1))
+    } else {
+      return(n)
+    }
   }
 
   previous_screened <- 0
@@ -146,6 +155,7 @@ enrollment_count_gen <- function(subject_count) {
     } else {
       previous_screened <- subject_count[i - 1]
     }
+
     enrollment_count <- c(enrollment_count, screened(subject_count[i], previous_screened))
   }
 

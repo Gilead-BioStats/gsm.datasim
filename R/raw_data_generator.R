@@ -88,7 +88,6 @@ raw_data_generator <- function(
         StudyID = curr_vars$StudyID,
         combined_specs = combined_specs
       )
-      browser()
     })
 
     # Assign study IDs as names to the list elements
