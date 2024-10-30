@@ -1,4 +1,4 @@
-subjid <- function(n, external_subjid = NULL, ...) {
+subjid <- function(n, external_subjid = NULL, replace = TRUE, ...) {
   args <- list(...)
   if ("subjid" %in% names(args)) {
     already_generated <- args$subjid
@@ -7,7 +7,7 @@ subjid <- function(n, external_subjid = NULL, ...) {
   }
 
   if (!is.null(external_subjid)) {
-    return(sample(external_subjid, n, replace = TRUE))
+    sample(external_subjid, n, replace = replace)
   }
 
   # Generate all possible 3-digit numbers as strings with leading zeros
@@ -26,6 +26,64 @@ subjid <- function(n, external_subjid = NULL, ...) {
 
   # Randomly sample 'n' unique strings from the available strings
   return(sample(new_strings_available, n))
+}
+
+
+subjid_repeated <- function(n, subjs, ...) {
+  return(list(
+    subjid = repeat_rows(n, subjs)
+  ))
+
+}
+
+subj_visit_repeated <- function(n, data, ...) {
+  res <- repeat_rows(n, data)
+  return(list(
+    subjid = res$subjid,
+    visnam = res$instancename
+  ))
+}
+
+subject_nsv_visit_repeated <- function(n, data, ...) {
+  res <- repeat_rows(n, data)
+  return(list(
+    subject_nsv = res$subject_nsv,
+    visnam = res$instancename
+  ))
+}
+
+form <- function(n, subject_nsv_visits, forms, ...) {
+  rep(forms$form, nrow(subject_nsv_visits))
+
+}
+
+field <- function(n, subject_nsv_visits, forms, ...) {
+  rep(forms$field, nrow(subject_nsv_visits))
+
+}
+
+battrnam <- function(n, subj_visits, tests, ...) {
+  rep(tests$battrnam, nrow(subj_visits))
+
+}
+
+
+lbtstnam <- function(n, subj_visits, tests, ...) {
+  rep(tests$lbtstnam, nrow(subj_visits))
+
+}
+
+
+visit_dt <- function(n, subjs, start_date, possible_visits, ...) {
+  rep(generate_consecutive_random_dates(nrow(possible_visits), start_date, 30), length(subjs))
+}
+
+foldername <- function(n, subjs, possible_visits, ...) {
+  rep(possible_visits$foldername, length(subjs))
+}
+
+instancename <- function(n, subjs, possible_visits, ...) {
+  rep(possible_visits$instancename, length(subjs))
 }
 
 subjid_subject_nsv <- function(n, ...) {
@@ -168,9 +226,12 @@ sdrgyn <- function(n, ...) {
          replace = TRUE)
 }
 
-phase <- function(n, ...) {
+phase <- function(n, external_phase = NULL, replace = TRUE, ...) {
+  if (!is.null(external_phase)) {
+    return(sample(external_phase, n, replace = replace))
+  }
   # Function body for phase
-  "Blinded Study Drug Completion"
+  return("Blinded Study Drug Completion")
 }
 
 compyn <- function(n, ...) {
@@ -186,9 +247,12 @@ screened <- function(n, ...) {
   sample(lower_bound:n, size = 1)
 }
 
-subject_nsv <- function(n, subjid, ...) {
+subject_nsv <- function(n, subjid, subject_nsv=NULL, replace = TRUE, ...) {
   # Function body for subject_nsv
-  paste0(subjid, "-XXXX")
+  if (!is.null(subject_nsv)) {
+    return(sample(subject_nsv, n, replace = replace))
+  }
+  return(paste0(subjid, "-XXXX"))
 }
 
 enrolldt <- function(n, startDate, endDate, enrollyn_dat, ...) {
@@ -212,6 +276,7 @@ enrollyn_enrolldt_timeonstudy <- function(n, startDate, endDate, ...) {
     timeonstudy = timeonstudy_dat
   ))
 }
+
 
 
 n_changes <- function(n, ...) {
@@ -348,8 +413,14 @@ num_plan_subj <- function(num_pl_subj, ...) {
   unlist(num_pl_subj)
 }
 
-subject_to_enrollment <- function(n, data, ...) {
-  data$Raw_SUBJ[sample(nrow(data$Raw_SUBJ), n),
+subject_to_enrollment <- function(n, data, previous_data, ...) {
+  if (length(previous_data) != 0) {
+    data_pool <- data$Raw_SUBJ[!(data$Raw_SUBJ$subjid %in% previous_data$Raw_ENROLL$subjid), ]
+  } else {
+    data_pool <- data$Raw_SUBJ
+  }
+
+  data_pool[sample(nrow(data_pool), n, replace = FALSE),
                 c("subjid", "invid", "Country", "enrollyn")] %>%
     dplyr::mutate(subjectid = paste0("XX-", subjid))
 

@@ -52,30 +52,40 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                                                  SiteCount,
                                                  StudyID,
                                                  combined_specs,
-                                                 desired_specs = c("Raw_STUDY",
-                                                                   "Raw_SITE",
-                                                                   "Raw_SUBJ",
-                                                                   "Raw_ENROLL",
-                                                                   "Raw_AE",
-                                                                   "Raw_PD")) {
+                                                 desired_specs = NULL) {
   # Generate start and end dates for snapshots
   start_dates <- seq(as.Date("2012-01-01"), length.out = SnapshotCount, by = "months")
   end_dates <- seq(as.Date("2012-02-01"), length.out = SnapshotCount, by = "months") - 1
 
   # Specify the desired first few elements in order
-  desired_order <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL")
+  desired_order <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL", "Raw_SV")
+
+  if (!("Raw_SV" %in% names(combined_specs))) {
+    combined_specs$Raw_SV <- list(
+      subjid = list(required = TRUE),
+      foldername = list(required = TRUE),
+      instancename = list(required = TRUE),
+      visit_dt = list(required = TRUE)
+    )
+  }
 
   # Rearrange the elements
   combined_specs <- combined_specs[c(desired_order, setdiff(names(combined_specs), desired_order))]
-  combined_specs <- combined_specs[desired_specs]
+
+  if (!is.null(desired_specs)) {
+    combined_specs <- combined_specs[desired_specs]
+  }
 
 
 
   subject_count <- count_gen(ParticipantCount, SnapshotCount)
   site_count <- count_gen(SiteCount, SnapshotCount)
-  enrollment_count <- lapply(subject_count, screened)
+  enrollment_count <- enrollment_count_gen(subject_count)
+
   ae_count <- subject_count * 3
   pd_count <- subject_count * 3
+  sdrgcomp_count <- subject_count %/% 2
+  studcomp_count <- subject_count %/% 10
 
 
   snapshots <- list()
@@ -83,16 +93,18 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
   # Generate snapshots using lapply
   for (snapshot_idx in seq_len(SnapshotCount)) {
     # Initialize list to store data types
-
     data <- list()
 
     if (snapshot_idx == 1) {
-      data$Raw_STUDY <- as.data.frame(Raw_STUDY(data, combined_specs,
+      previous_data <- list()
+      data$Raw_STUDY <- as.data.frame(Raw_STUDY(data, previous_data, combined_specs,
                                                 StudyID = StudyID,
                                                 SiteCount = SiteCount,
                                                 ParticipantCount = ParticipantCount))
     } else {
       data$Raw_STUDY <- snapshots[[1]]$Raw_STUDY
+      previous_data <- snapshots[[snapshot_idx - 1]]
+
     }
 
     # Loop over each raw data type specified in combined_specs
@@ -106,22 +118,29 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
         data_type == "Raw_SITE" ~ site_count[snapshot_idx],
         data_type == "Raw_PD" ~ pd_count[snapshot_idx],
         data_type == "Raw_SUBJ" ~ subject_count[snapshot_idx],
+        data_type == "Raw_SDRGCOMP" ~ sdrgcomp_count[snapshot_idx],
+        data_type == "Raw_STUDCOMP" ~ studcomp_count[snapshot_idx],
         TRUE ~ subject_count[snapshot_idx]
       )
       generator_func <- data_type
       # Determine arguments based on variable name
       args <- switch(data_type,
-                     Raw_SITE = list(data, combined_specs, n_sites = n, split_vars = list("Country_State_City")),
-                     Raw_SUBJ = list(data, combined_specs, n_subj = n, startDate = start_dates[snapshot_idx],
+                     Raw_SITE = list(data, previous_data, combined_specs, n_sites = n, split_vars = list("Country_State_City")),
+                     Raw_SUBJ = list(data, previous_data, combined_specs, n_subj = n, startDate = start_dates[snapshot_idx],
                                      endDate = end_dates[snapshot_idx], split_vars = list("subject_site_synq",
                                                                           "subjid_subject_nsv",
                                                                           "enrollyn_enrolldt_timeonstudy")),
-                     Raw_ENROLL = list(data, combined_specs, n_enroll = n, split_vars = list("subject_to_enrollment")),
-                     list(data, combined_specs, n = n)  # Default case
+                     Raw_ENROLL = list(data, previous_data, combined_specs, n_enroll = n, split_vars = list("subject_to_enrollment")),
+                     Raw_SV = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated")),
+                     Raw_LB = list(data, previous_data, combined_specs, n = n, split_vars = list("subj_visit_repeated")),
+                     Raw_DATACHG = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
+                     Raw_DATAENT = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
+                     Raw_QUERY = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
+                     list(data, previous_data, combined_specs, n = n)  # Default case
       )
 
       variable_data <- do.call(generator_func, args)
-
+      #if(data_type == "Raw_LB") browser()
       # Combine variables into a data frame
       data[[data_type]] <- as.data.frame(variable_data)
     }
@@ -135,7 +154,6 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
         enrolldt = dplyr::if_else(enrollyn == "N", as.Date(NA), enrolldt),
         timeonstudy = dplyr::if_else(enrollyn == "N", NA, timeonstudy)
       )
-
     snapshots[[snapshot_idx]] <- data
   }
 
