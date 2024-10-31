@@ -173,7 +173,8 @@ Raw_SUBJ <- function(data, previous_data, spec, startDate, endDate, ...) {
 
   args <- list(
     studyid = list(n, data$Raw_STUDY$studyid[[1]]),
-    subject_site_synq = list(n, data),
+    subjid_subject_nsv = list(n, previous_data$Raw_SUBJ$subjid),
+    subject_site_synq = list(n, data$Raw_SITE),
     enrollyn_enrolldt_timeonstudy = list(n, startDate, endDate),
     default = list(n)
   )
@@ -213,7 +214,7 @@ Raw_ENROLL <- function(data, previous_data, spec, ...) {
 
   args <- list(
     studyid = list(n, data$Raw_STUDY$studyid[[1]]),
-    subject_to_enrollment = list(n, data, previous_data),
+    subject_to_enrollment = list(n, data, previous_data$Raw_ENROLL$subjid),
     default = list(n)
   )
 
@@ -241,7 +242,7 @@ Raw_AE <- function(data, previous_data, spec, ...) {
   if (n == 0) return(dataset)
 
   args <- list(
-    subjid = list(n, data$Raw_SUBJ$subjid),
+    subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
     default = list(n)
   )
 
@@ -268,7 +269,7 @@ Raw_PD <- function(data, previous_data, spec, ...) {
   if (n == 0) return(dataset)
 
   args <- list(
-    subjid = list(n, data$Raw_SUBJ$subjid),
+    subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
     default = list(n)
   )
 
@@ -338,8 +339,7 @@ Raw_SV <- function(data, previous_data, spec, startDate, ...) {
   }
 
 
-  subjs <- subjid(n, data$Raw_SUBJ$subjid, replace = FALSE)
-
+  subjs <- subjid(n, external_subjid = data$Raw_SUBJ$subjid, replace = FALSE)
   args <- list(
     subjid_repeated = list(nrow(possible_visits), subjs),
     visit_dt = list(n, subjs, startDate, possible_visits),
@@ -355,7 +355,6 @@ Raw_SV <- function(data, previous_data, spec, startDate, ...) {
 Raw_LB <- function(data, previous_data, spec, ...) {
   # Function body for Raw_LB
   inps <- list(...)
- # browser()
 
   curr_spec <- spec$Raw_LB
 
@@ -640,9 +639,9 @@ Raw_QUERY <- function(data, previous_data, spec, ...) {
     curr_spec$visnam <- NULL
   }
 
-
   subject_nsvs <- subject_nsv(n, data$Raw_SUBJ$subjid,
                               subject_nsv = data$Raw_SUBJ$subject_nsv, replace = FALSE)
+
   subject_nsv_visits <- data$Raw_SV %>%
     dplyr::left_join((data$Raw_SUBJ %>% dplyr::select(subjid, subject_nsv)), by =  dplyr::join_by(subjid)) %>%
     dplyr::filter(subject_nsv %in% subject_nsvs) %>%

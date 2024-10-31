@@ -59,7 +59,6 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
 
   # Specify the desired first few elements in order
   desired_order <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL", "Raw_SV")
-
   if (!("Raw_SV" %in% names(combined_specs))) {
     combined_specs$Raw_SV <- list(
       subjid = list(required = TRUE),
@@ -68,6 +67,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
       visit_dt = list(required = TRUE)
     )
   }
+  desired_order <- desired_order[desired_order %in% names(combined_specs)]
 
   # Rearrange the elements
   combined_specs <- combined_specs[c(desired_order, setdiff(names(combined_specs), desired_order))]
@@ -85,16 +85,17 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
   sdrgcomp_count <- subject_count %/% 2
   studcomp_count <- subject_count %/% 10
 
-  print(subject_count)
-  print(site_count)
-  print(enrollment_count)
-  print("--------------")
+  # print(subject_count)
+  # print(site_count)
+  # print(enrollment_count)
+  # print("--------------")
 
   snapshots <- list()
 
   # Generate snapshots using lapply
   for (snapshot_idx in seq_len(SnapshotCount)) {
     # Initialize list to store data types
+    logger::log_info(glue::glue(" -- Adding snapshot {snapshot_idx}..."))
     data <- list()
 
     if (snapshot_idx == 1) {
@@ -112,6 +113,8 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
     # Loop over each raw data type specified in combined_specs
     for (data_type in names(combined_specs)) {
       if (data_type == "Raw_STUDY") next
+
+      logger::log_info(glue::glue(" ---- Adding dataset {data_type}..."))
 
       # Determine the number of records 'n' based on data_type
       n <- dplyr::case_when(
@@ -143,12 +146,14 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
 
 
       variable_data <- do.call(generator_func, args)
-      #if(data_type == "Raw_LB") browser()
       # Combine variables into a data frame
       data[[data_type]] <- as.data.frame(variable_data)
+      logger::log_info(glue::glue(" ---- Dataset {data_type} added successfully"))
+
     }
 
-    if ( nrow(data$Raw_ENROLL) > 0) {
+    if (nrow(data$Raw_ENROLL) > 0) {
+
       to_subj <- data$Raw_ENROLL %>%
         dplyr::select(subjid, enrollyn)
 
@@ -160,6 +165,8 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
         )
     }
     snapshots[[snapshot_idx]] <- data
+    logger::log_info(glue::glue(" -- Snapshot {snapshot_idx} added successfully"))
+
   }
 
   # Assign snapshot end dates as names

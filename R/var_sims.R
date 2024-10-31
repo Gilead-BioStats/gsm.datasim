@@ -1,10 +1,5 @@
-subjid <- function(n, external_subjid = NULL, replace = TRUE, ...) {
+subjid <- function(n, external_subjid = NULL, replace = TRUE, previous_subjid=NULL, ...) {
   args <- list(...)
-  if ("subjid" %in% names(args)) {
-    already_generated <- args$subjid
-  } else {
-    already_generated <- c()
-  }
 
   if (!is.null(external_subjid)) {
     return(sample(external_subjid, n, replace = replace))
@@ -17,15 +12,16 @@ subjid <- function(n, external_subjid = NULL, replace = TRUE, ...) {
   possible_strings <- paste0("S", possible_numbers)
 
   # Exclude the old strings to avoid duplication
-  new_strings_available <- setdiff(possible_strings, already_generated)
+  new_strings_available <- setdiff(possible_strings, previous_subjid)
 
   # Check if there are enough unique strings to generate
   if (length(new_strings_available) < n) {
     stop("Not enough unique strings available to generate ", n, " new strings.")
   }
+  res <- sample(new_strings_available, n, replace = FALSE)
 
   # Randomly sample 'n' unique strings from the available strings
-  return(sample(new_strings_available, n))
+  return(res)
 }
 
 
@@ -86,8 +82,8 @@ instancename <- function(n, subjs, possible_visits, ...) {
   rep(possible_visits$instancename, length(subjs))
 }
 
-subjid_subject_nsv <- function(n, ...) {
-  subjid_dat <- subjid(n, ...)
+subjid_subject_nsv <- function(n, dataset,...) {
+  subjid_dat <- subjid(n, previous_subjid = dataset, ...)
   subject_nsv_dat <- subject_nsv(n, subjid_dat, ...)
   return(list(
     subjid = subjid_dat,
@@ -144,8 +140,8 @@ siteid <- function(n, isGenerated = FALSE, ...) {
 
 }
 
-subject_site_synq <- function(n, data, ...) {
-  data$Raw_SITE[sample(nrow(data$Raw_SITE), n, replace = TRUE),
+subject_site_synq <- function(n, Raw_SITE_data, ...) {
+  Raw_SITE_data[sample(nrow(Raw_SITE_data), n, replace = TRUE),
                 c("siteid", "invid", "Country")]
 
 }
@@ -372,8 +368,6 @@ Country <- function(n, ...) {
 }
 
 Country_State_City <- function(n, ...) {
-  #browser()
-
   cities <- City(n)
   states <- State(n, cities = cities)
   countries <- Country(n, cities = cities)
@@ -415,14 +409,17 @@ num_plan_subj <- function(num_pl_subj, ...) {
 
 subject_to_enrollment <- function(n, data, previous_data, ...) {
   if (length(previous_data) != 0) {
-    data_pool <- data$Raw_SUBJ[!(data$Raw_SUBJ$subjid %in% previous_data$Raw_ENROLL$subjid), ]
+    data_pool <- data$Raw_SUBJ[!(data$Raw_SUBJ$subjid %in% previous_data), ]
   } else {
     data_pool <- data$Raw_SUBJ
   }
 
-  data_pool[sample(nrow(data_pool), n, replace = FALSE),
+
+  sample_subset <- sample(min(nrow(data_pool), n), n, replace = FALSE)
+  res <- data_pool[sample_subset,
                 c("subjid", "invid", "Country", "enrollyn")] %>%
     dplyr::mutate(subjectid = paste0("XX-", subjid))
 
+  return(res)
 }
 

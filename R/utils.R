@@ -19,8 +19,6 @@ count_gen <- function(max_n, SnapshotCount) {
       new_element <- max_n
 
     }
-    print(paste0("s ", start, 'e ', end, 'res ', new_element))
-
 
     counts <- c(counts, new_element)
   }
@@ -28,8 +26,8 @@ count_gen <- function(max_n, SnapshotCount) {
   return(counts)
 }
 
-load_specs <- function(workflow_path, kris, package) {
-  wf_mapping <- gsm::MakeWorkflowList(strPath = workflow_path, strNames = kris, strPackage = package)
+load_specs <- function(workflow_path, mappings, package) {
+  wf_mapping <- gsm::MakeWorkflowList(strPath = workflow_path, strNames = mappings, strPackage = package)
   wf_req <-  gsm::MakeWorkflowList(strPath =  "workflow/1_mappings", strNames = c("SUBJ", "STUDY", "SITE"), strPackage = "gsm")
   wf_all <- modifyList(wf_mapping, wf_req)
   combined_specs <- gsm::CombineSpecs(wf_all)

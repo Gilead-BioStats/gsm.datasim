@@ -41,13 +41,6 @@
 #' # Generate raw data using specified parameters
 #' data <- raw_data_generator(ParticipantCount = 100, SiteCount = 10, StudyID = "Study01", SnapshotCount = 5)
 #'
-#' # Generate raw data using specified parameters and KRIs
-#' data <- raw_data_generator(ParticipantCount = 100,
-#'                            SiteCount = 10,
-#'                            StudyID = "Study01",
-#'                            SnapshotCount = 5,
-#'                            workflow_path = "workflow/2_metrics",
-#'                            kris = c("kri0001", "kri0002", "kri0003"))
 #'
 #' # Generate raw data using a template file
 #' data <- raw_data_generator()
@@ -62,11 +55,11 @@ raw_data_generator <- function(
     template_path = "~/gsm.datasim/data-raw/template.csv",
     workflow_path = "workflow/1_mappings",
     generate_reports = FALSE,
-    kris = NULL,
+    mappings = NULL,
     package = "gsm"
 ) {
   # Load workflow mappings and combine specifications
-  combined_specs <- load_specs(workflow_path, kris, package)
+  combined_specs <- load_specs(workflow_path, mappings, package)
 
   #check to see if Raw_Site Raw_Study and Raw_Subj are in the spec
 
@@ -80,14 +73,22 @@ raw_data_generator <- function(
 
     # Generate raw data for each study configuration in the template
     raw_data_list <- lapply(seq_len(nrow(template)), function(i) {
+
       curr_vars <- template[i, ]
-      generate_rawdata_for_single_study(
+      logger::log_info(glue::glue("Adding {curr_vars$StudyID}..."))
+      tictoc::tic()
+      res <- generate_rawdata_for_single_study(
         SnapshotCount = curr_vars$SnapshotCount,
         ParticipantCount = curr_vars$ParticipantCount,
         SiteCount = curr_vars$SiteCount,
         StudyID = curr_vars$StudyID,
         combined_specs = combined_specs
       )
+
+      logger::log_info(glue::glue("Added {curr_vars$StudyID} successfully"))
+      tictoc::toc()
+
+      res
     })
 
     # Assign study IDs as names to the list elements
@@ -112,9 +113,15 @@ raw_data_generator <- function(
 
   raw_data_list <- rename_raw_data_vars_per_spec(raw_data_list, combined_specs)
 
-
+  logger::log_info(glue::glue("Saving dataset to the {file.path('data-raw', 'raw_data.RDS')} ..."))
+  logger::log_info(glue::glue("Please wait, proces may take around 5 minutes due to the filesize ..."))
+  tictoc::tic()
   # Save the raw data list to an RDS file
   saveRDS(raw_data_list, file = file.path("data-raw", "raw_data.RDS"))
+
+  tictoc::toc()
+  logger::log_info(glue::glue("Dataset saved successfully!"))
+
 
   return(raw_data_list)
 }

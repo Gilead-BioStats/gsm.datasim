@@ -27,13 +27,13 @@ pak::pak("Gilead-BioStats/gsm.datasim@dev")
  # Generate raw data using specified parameters
  data <- raw_data_generator(ParticipantCount = 100, SiteCount = 10, StudyID = "Study01", SnapshotCount = 5)
 
- # Generate raw data using specified parameters and KRIs
+ # Generate raw data using specified parameters and Mappings
  data <- raw_data_generator(ParticipantCount = 100,
                             SiteCount = 10,
                             StudyID = "Study01",
                             SnapshotCount = 5,
-                            workflow_path = "workflow/2_metrics",
-                            kris = c("kri0001", "kri0002", "kri0003"))
+                            workflow_path = "workflow/1_mappings",
+                            mappings = c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL",)
 
  # Generate raw data using a template file (currently it runs on a smaller template but not always on a larger one),
  # this is our current goto sim process:
