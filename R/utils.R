@@ -159,3 +159,64 @@ enrollment_count_gen <- function(subject_count) {
 
   return(enrollment_count)
 }
+
+
+save_data_on_disk <- function(data, base_path = NULL) {
+  logger::log_info(glue::glue("Saving datasets ..."))
+  logger::log_info(glue::glue("Please wait, proces may take around 15 minutes due to the number of files and file sizes ..."))
+
+  # Calculate the total number of dataframes to process
+  total_dfs <- sum(
+    sapply(data,
+           function(study_data) {
+             sum(
+               sapply(study_data,
+                      function(snapshot_data) {
+                        length(snapshot_data)
+                        })
+             )
+           })
+  )
+
+  # Initialize the progress bar
+  pb <- txtProgressBar(min = 0, max = total_dfs, style = 3)
+  counter <- 0  # Initialize a counter
+
+  tictoc::tic()
+  for (study_name in names(data)) {
+    study_data <- data[[study_name]]
+
+    for (snapshot_name in names(study_data)) {
+      snapshot_data <- study_data[[snapshot_name]]
+
+      # Create the folder structure using the names
+      if (is.null(base_path)) {
+        base_path <- "data-raw"
+      }
+
+      dir_path <- file.path(base_path, "simulated_data", study_name, snapshot_name)
+
+      dir.create(dir_path, recursive = TRUE, showWarnings = FALSE)
+
+      for (df_name in names(snapshot_data)) {
+        df_value <- snapshot_data[[df_name]]
+        # Define the file path for the Parquet file
+        file_path <- file.path(dir_path, paste0(df_name, ".parquet"))
+
+        # Save the dataframe to a Parquet file
+        arrow::write_parquet(df_value, file_path)
+
+        counter <- counter + 1
+        setTxtProgressBar(pb, counter)
+
+      }
+    }
+  }
+
+  close(pb)
+
+  logger::log_info(glue::glue("Saved all data successfully"))
+  tictoc::toc()
+
+}
+

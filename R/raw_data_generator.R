@@ -113,13 +113,10 @@ raw_data_generator <- function(
 
   raw_data_list <- rename_raw_data_vars_per_spec(raw_data_list, combined_specs)
 
-  logger::log_info(glue::glue("Saving dataset to the {file.path('data-raw', 'raw_data.RDS')} ..."))
-  logger::log_info(glue::glue("Please wait, proces may take around 5 minutes due to the filesize ..."))
-  tictoc::tic()
-  # Save the raw data list to an RDS file
-  saveRDS(raw_data_list, file = file.path("data-raw", "raw_data.RDS"))
 
-  tictoc::toc()
+  # Save the raw data list to an RDS file
+  save_data_on_disk(raw_data_list)
+
   logger::log_info(glue::glue("Dataset saved successfully!"))
 
 
