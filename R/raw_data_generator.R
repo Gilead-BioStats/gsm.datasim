@@ -21,6 +21,7 @@
 #' @param kris A string or array of strings specifying the KRIs that will be used to
 #' determine the spec. Default is `NULL`.
 #' @param package A string specifying the package in which the workflows used in `MakeWorkflowList()` are located. Default is "gsm".
+#' @param save A boolean, specifying whether or not this should be saved out as an RDS
 #'
 #' @return A list of raw data generated for each study snapshot, saved as an RDS file in `"data-raw/raw_data.RDS"`.
 #'
@@ -56,7 +57,8 @@ raw_data_generator <- function(
     workflow_path = "workflow/1_mappings",
     generate_reports = FALSE,
     mappings = NULL,
-    package = "gsm"
+    package = "gsm",
+    save = FALSE
 ) {
   # Load workflow mappings and combine specifications
   combined_specs <- load_specs(workflow_path, mappings, package)
@@ -115,10 +117,11 @@ raw_data_generator <- function(
 
 
   # Save the raw data list to an RDS file
-  save_data_on_disk(raw_data_list)
+  if(save) {
+    save_data_on_disk(raw_data_list)
 
-  logger::log_info(glue::glue("Dataset saved successfully!"))
-
+    logger::log_info(glue::glue("Dataset saved successfully!"))
+  }
 
   return(raw_data_list)
 }
