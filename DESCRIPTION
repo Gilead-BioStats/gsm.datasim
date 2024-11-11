@@ -11,7 +11,8 @@ Imports:
   clindata,
   purrr,
   utils,
-  magrittr
+  magrittr,
+  tictoc
 Remotes:
     gsm=Gilead-BioStats/gsm,
     clindata=Gilead-BioStats/clindata

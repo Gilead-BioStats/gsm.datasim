@@ -36,6 +36,7 @@
 #'
 #' @importFrom gsm MakeWorkflowList CombineSpecs
 #' @importFrom utils read.csv
+#' @importFrom tictoc tic toc
 #'
 #' @examples
 #' \dontrun{
