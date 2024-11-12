@@ -1,4 +1,4 @@
-#remotes::install_github("Gilead-BioStats/gsm@main") - need gsm v2.1.1
+remotes::install_github("Gilead-BioStats/gsm@main") # need gsm v2.1.1
 library(gsm)
 devtools::load_all()
 
