@@ -17,7 +17,7 @@ combination_var_splitter <- function(variable_data, split_vars) {
 }
 
 
-add_new_var_data <- function(dataset, vars, args, ...) {
+add_new_var_data <- function(dataset, vars, args, orig_curr_spec, ...) {
   internal_args <- list(...)
 
   variable_data <- lapply(names(vars), function(var_name) {
@@ -37,13 +37,16 @@ add_new_var_data <- function(dataset, vars, args, ...) {
     do.call(generator_func, curr_args)
   })
 
-  names(variable_data) <- names(vars)
 
+  names(variable_data) <- names(vars)
   if ("split_vars" %in% names(internal_args)) {
     variable_data <- combination_var_splitter(variable_data, internal_args$split_vars)
   }
 
-  variable_data <- as.data.frame(variable_data)
+  variable_data <- variable_data %>%
+    as.data.frame() %>%
+    rename_raw_data_vars_per_spec(orig_curr_spec)
+
 
   if (!is.null(dataset)) {
     return(dplyr::bind_rows(dataset, variable_data))
@@ -74,7 +77,7 @@ Raw_STUDY <- function(data, previous_data, spec, ...) {
                default = list(1)
   )
 
-  res <- add_new_var_data(dataset, curr_spec, args, ...)
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_STUDY, ...)
   return(res)
 }
 
@@ -113,11 +116,12 @@ Raw_SITE <- function(data, previous_data, spec, ...) {
 
   # Function body for Raw_SITE
   args <- list(
-    studyid = list(n, data$Raw_STUDY$studyid[[1]]),
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     default = list(n)
   )
 
-  res <- add_new_var_data(dataset, curr_spec, args, ...)
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_SITE, ...)
+
 
   return(res)
 }
@@ -172,14 +176,14 @@ Raw_SUBJ <- function(data, previous_data, spec, startDate, endDate, ...) {
   }
 
   args <- list(
-    studyid = list(n, data$Raw_STUDY$studyid[[1]]),
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     subjid_subject_nsv = list(n, previous_data$Raw_SUBJ$subjid),
     subject_site_synq = list(n, data$Raw_SITE),
     enrollyn_enrolldt_timeonstudy = list(n, startDate, endDate),
     default = list(n)
   )
 
-  res <- add_new_var_data(dataset, curr_spec, args, ...)
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_SUBJ, ...)
 
   # Recalculate for all data
   res$timeonstudy <- timeonstudy(n, res$enrolldt, endDate)
@@ -213,12 +217,12 @@ Raw_ENROLL <- function(data, previous_data, spec, ...) {
   }
 
   args <- list(
-    studyid = list(n, data$Raw_STUDY$studyid[[1]]),
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     subject_to_enrollment = list(n, data, previous_data$Raw_ENROLL$subjid),
     default = list(n)
   )
 
-  res <- add_new_var_data(dataset, curr_spec, args, ...)
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_ENROLL, ...)
 
   return(res)
 }
@@ -246,7 +250,7 @@ Raw_AE <- function(data, previous_data, spec, ...) {
     default = list(n)
   )
 
-  res <- add_new_var_data(dataset, curr_spec, args, ...)
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_AE, ...)
 
   return(res)
 }
@@ -273,7 +277,7 @@ Raw_PD <- function(data, previous_data, spec, ...) {
     default = list(n)
   )
 
-  res <- add_new_var_data(dataset, curr_spec, args, ...)
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_PD, ...)
 
   return(res)
 }
@@ -346,7 +350,7 @@ Raw_SV <- function(data, previous_data, spec, startDate, ...) {
     default = list(n, subjs, possible_visits)
   )
 
-  res <- add_new_var_data(dataset, curr_spec, args, ...)
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_SV, ...)
 
   return(res)
 }
@@ -430,7 +434,7 @@ Raw_LB <- function(data, previous_data, spec, ...) {
     default = list(all_n, subj_visits, tests)
   )
 
-  res <- add_new_var_data(dataset, curr_spec, args, ...)
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_LB, ...)
 
   return(res)
 }
@@ -458,7 +462,7 @@ Raw_SDRGCOMP <- function(data, previous_data, spec, ...) {
     default = list(n)
   )
 
-  res <- add_new_var_data(dataset, curr_spec, args, ...)
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_SDRGCOMP, ...)
 
   return(res)
 }
@@ -485,7 +489,7 @@ Raw_STUDCOMP <- function(data, previous_data, spec, ...) {
     default = list(n)
   )
 
-  res <- add_new_var_data(dataset, curr_spec, args, ...)
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_STUDCOMP, ...)
 
   return(res)
 }
@@ -544,7 +548,7 @@ Raw_DATACHG <- function(data, previous_data, spec, ...) {
   )
 
 
-  res <- add_new_var_data(dataset, curr_spec, args, ...)
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_DATACHG, ...)
 
   return(res)
 }
@@ -605,7 +609,7 @@ Raw_DATAENT <- function(data, previous_data, spec, ...) {
   )
 
 
-  res <- add_new_var_data(dataset, curr_spec, args, ...)
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_DATAENT, ...)
 
   return(res)
 }
@@ -654,7 +658,7 @@ Raw_QUERY <- function(data, previous_data, spec, ...) {
     default = list(all_n)
   )
 
-  res <- add_new_var_data(dataset, curr_spec, args, ...)
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_QUERY, ...)
 
   return(res)
 

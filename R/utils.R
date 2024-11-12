@@ -35,26 +35,19 @@ load_specs <- function(workflow_path, mappings, package) {
   return(combined_specs)
 }
 
-rename_raw_data_vars_per_spec <- function(raw_data_list, combined_specs) {
-  lapply(raw_data_list, function(study) {
-    lapply(study, function(snapshot) {
-      for (spec_name in names(snapshot)) {
-        spec <- combined_specs[[spec_name]]
-        for (i in seq_along(spec)) {
-          variabale <- spec[[i]]
+rename_raw_data_vars_per_spec <- function(variable_data, spec) {
+  for (var_name in names(spec)) {
+    variabale <- spec[[var_name]]
 
-          # Check if "source_col" exists in the sublist
-          if ("source_col" %in% names(variabale)) {
-            # Retrieve the new name from "source_col"
-            new_name <- variabale[["source_col"]]
-            # Rename the variable in the appropriate dataset in the snapshot
-            names(snapshot[[spec_name]])[i] <- new_name
-          }
-        }
-      }
-      snapshot
-    })
-  })
+    # Check if "source_col" exists in the sublist
+    if ("source_col" %in% names(variabale)) {
+      # Retrieve the new name from "source_col"
+      new_name <- variabale[["source_col"]]
+      # Rename the variable in the appropriate dataset in the snapshot
+      variable_data <- variable_data %>% dplyr::rename(!!new_name := var_name)
+    }
+  }
+  return(variable_data)
 }
 
 generate_unique_combinations_code <- function(data, vars, run_code=FALSE) {

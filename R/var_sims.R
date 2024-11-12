@@ -142,7 +142,8 @@ siteid <- function(n, isGenerated = FALSE, ...) {
 
 subject_site_synq <- function(n, Raw_SITE_data, ...) {
   Raw_SITE_data[sample(nrow(Raw_SITE_data), n, replace = TRUE),
-                c("siteid", "invid", "Country")]
+                c("siteid", "pi_number", "country")] %>%
+    dplyr::rename("invid" =  "pi_number")
 
 }
 
@@ -276,6 +277,7 @@ enrollyn_enrolldt_timeonstudy <- function(n, startDate, endDate, ...) {
 
 
 n_changes <- function(n, ...) {
+
   # Function body for n_changes
   sample(0:6,
          prob = c(0.74, 0.22, 0.03, 0.005, 0.003, 0.0019, 0.0001),
@@ -414,10 +416,9 @@ subject_to_enrollment <- function(n, data, previous_data, ...) {
     data_pool <- data$Raw_SUBJ
   }
 
-
   sample_subset <- sample(min(nrow(data_pool), n), n, replace = FALSE)
   res <- data_pool[sample_subset,
-                c("subjid", "invid", "Country", "enrollyn")] %>%
+                c("subjid", "invid", "country", "enrollyn")] %>%
     dplyr::mutate(subjectid = paste0("XX-", subjid))
 
   return(res)

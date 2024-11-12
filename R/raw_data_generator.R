@@ -99,6 +99,7 @@ raw_data_generator <- function(
 
   } else {
     # Generate raw data for the single study configuration provided
+
     raw_data_list[[StudyID]] <- generate_rawdata_for_single_study(
       SnapshotCount = SnapshotCount,
       ParticipantCount = ParticipantCount,
@@ -113,9 +114,6 @@ raw_data_generator <- function(
       create_snapshot_reports(study_data)
     })
   }
-
-  raw_data_list <- rename_raw_data_vars_per_spec(raw_data_list, combined_specs)
-
 
   # Save the raw data list to an RDS file
   if(save) {
