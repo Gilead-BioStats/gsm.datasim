@@ -15,7 +15,7 @@ Given inputs regarding the synthetic Study's desired ID, Participant Count, Site
 
 By Default, the package constructs data that would create all KRIs that are available in the [`{gsm}`](https://github.com/Gilead-BioStats/gsm) package.
 
-## Installation **Temporarily broken due to repo permissions issue**
+## Installation \*Temporarily broken due to repo permissions issue\*
 You can install the development version of `{gsm.datasim}` from GitHub with:
 ```
 # install.packages("pak")
