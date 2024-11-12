@@ -12,8 +12,9 @@ raw_data_generator(
   template_path = "~/gsm.datasim/data-raw/template.csv",
   workflow_path = "workflow/1_mappings",
   generate_reports = FALSE,
-  kris = NULL,
-  package = "gsm"
+  mappings = NULL,
+  package = "gsm",
+  save = FALSE
 )
 }
 \arguments{
@@ -37,10 +38,12 @@ the function will use values from the template file.}
 
 \item{generate_reports}{A boolean, specifying whether or not to produce reports upon execution. Default is FALSE.}
 
+\item{package}{A string specifying the package in which the workflows used in \code{MakeWorkflowList()} are located. Default is "gsm".}
+
+\item{save}{A boolean, specifying whether or not this should be saved out as an RDS}
+
 \item{kris}{A string or array of strings specifying the KRIs that will be used to
 determine the spec. Default is \code{NULL}.}
-
-\item{package}{A string specifying the package in which the workflows used in \code{MakeWorkflowList()} are located. Default is "gsm".}
 }
 \value{
 A list of raw data generated for each study snapshot, saved as an RDS file in \code{"data-raw/raw_data.RDS"}.
@@ -65,13 +68,6 @@ the \code{template.csv} file to get the necessary parameters for multiple studie
 # Generate raw data using specified parameters
 data <- raw_data_generator(ParticipantCount = 100, SiteCount = 10, StudyID = "Study01", SnapshotCount = 5)
 
-# Generate raw data using specified parameters and KRIs
-data <- raw_data_generator(ParticipantCount = 100,
-                           SiteCount = 10,
-                           StudyID = "Study01",
-                           SnapshotCount = 5,
-                           workflow_path = "workflow/2_metrics",
-                           kris = c("kri0001", "kri0002", "kri0003"))
 
 # Generate raw data using a template file
 data <- raw_data_generator()
