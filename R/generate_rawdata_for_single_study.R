@@ -103,9 +103,15 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
       data$Raw_STUDY <- as.data.frame(Raw_STUDY(data, previous_data, combined_specs,
                                                 StudyID = StudyID,
                                                 SiteCount = SiteCount,
-                                                ParticipantCount = ParticipantCount))
+                                                ParticipantCount = ParticipantCount,
+                                                MinDate = start_dates[snapshot_idx],
+                                                MaxDate = end_dates[snapshot_idx],
+                                                GlobalMaxDate = max(end_dates)))
     } else {
       data$Raw_STUDY <- snapshots[[1]]$Raw_STUDY
+      data$Raw_STUDY$act_fpfv <- act_fpfv(start_dates[snapshot_idx],
+                                          end_dates[snapshot_idx],
+                                          data$Raw_STUDY$act_fpfv)
       previous_data <- snapshots[[snapshot_idx - 1]]
 
     }

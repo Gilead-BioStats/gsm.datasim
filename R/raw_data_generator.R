@@ -99,7 +99,7 @@ raw_data_generator <- function(
 
   } else {
     # Generate raw data for the single study configuration provided
-
+    devtools::load_all()
     raw_data_list[[StudyID]] <- generate_rawdata_for_single_study(
       SnapshotCount = SnapshotCount,
       ParticipantCount = ParticipantCount,
