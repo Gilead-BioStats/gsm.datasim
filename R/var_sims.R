@@ -40,6 +40,15 @@ subj_visit_repeated <- function(n, data, ...) {
   ))
 }
 
+act_fpfv <- function(date_min, date_lim, prev_data, ...) {
+  generate_random_fpfv(date_min, date_lim, FALSE, prev_data)
+}
+
+est_fpfv <- function(date_min, date_lim, prev_data, ...) {
+  generate_random_fpfv(date_min, date_lim, FALSE, prev_data)
+}
+
+
 subject_nsv_visit_repeated <- function(n, data, ...) {
   res <- repeat_rows(n, data)
   return(list(
