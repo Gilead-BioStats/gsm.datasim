@@ -1,0 +1,51 @@
+---
+title: "adding-new-simulated-data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{adding-new-simulated-data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(gsm.datasim)
+
+
+```
+
+## Adding vars
+
+To add vars firstly create a function in `var_sim.R` file with the same name as your variable that will be generating the values. It usually needs `n` as an input to produce data for all rows in one go.
+
+Consider next:
+- if variable can be created independently of others only 1 added function is needed
+- if it`s dependent combined creation function needs to be created with appropriate updates to all of the creating stack.
+
+## Examples of adding variables
+
+### Adding random independant var `n_changes`
+
+In `var_sim.R`
+
+
+``` {r}
+n_changes <- function(n, ...) {
+
+  # Function body for n_changes
+  sample(0:6,
+         prob = c(0.74, 0.22, 0.03, 0.005, 0.003, 0.0019, 0.0001),
+         n,
+         replace = TRUE)
+}
+
+```
+
+In `dataset_sim.R`
+
