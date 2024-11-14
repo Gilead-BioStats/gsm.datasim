@@ -75,7 +75,7 @@ Raw_STUDY <- function(data, previous_data, spec, ...) {
                num_plan_site = list(inps$SiteCount),
                num_plan_subj = list(inps$ParticipantCount),
                act_fpfv = list(inps$MinDate, inps$MaxDate, dataset$act_fpfv),
-               est_fpfv = list(inps$MinDate, inps$GlobalMaxDate, dataset$est_fpfv),
+               est_fpfv = list(inps$MinDate, inps$MaxDate, dataset$est_fpfv),
                default = list(1)
   )
 
