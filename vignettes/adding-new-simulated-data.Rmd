@@ -27,6 +27,7 @@ To add vars firstly create a function in `var_sim.R` file with the same name as 
 Consider next:
 - if variable can be created independently of others only 1 added function is needed
 - if it`s dependent combined creation function needs to be created with appropriate updates to all of the creating stack.
+- check utils.R if it can be of a help for function construction.
 
 ## Examples of adding variables
 
@@ -48,4 +49,530 @@ n_changes <- function(n, ...) {
 ```
 
 In `dataset_sim.R`
+
+Dependency is on `n` only so no updates needed. 
+
+
+### Adding random dependant var `City`
+
+In `var_sim.R`
+This var should be created together with `State` and `City` as they are linked. Also any supporting data should be created on this step or on `datasets` step and be passed as a param to function.
+The combination function is created `Country_State_City`and should return named list with all 3 variables.
+It will be unpacked on the`datasets` step.
+
+``` {r}
+
+Country_State_City_data <- data.frame(
+    country = c("UK","UK", "US", "US", "Japan", "Japan"),
+    state = c("Greater London", "Buckinghamshire", "CA", "PA", "Kanto", "Kumamoto Prefecture"),
+    city = c("London", "Milton Keynes", "Foster City", "Newtown Square", "Tokyo", "Kumamoto")
+)
+
+City <- function(n, ...) {
+  cities <- unique(Country_State_City_data$city)
+  # Function body for City
+  sample(cities,
+         n,
+         replace = TRUE)
+}
+
+State <- function(n, ...) {
+  args <- list(...)
+  if ("cities" %in% names(args)) {
+    indices <- match(args$cities, Country_State_City_data$city)
+    states <- Country_State_City_data$state[indices]
+  } else {
+    states <- Country_State_City_data$state %>%
+      sample(n,
+             replace = TRUE)
+  }
+  return(states)
+}
+
+Country <- function(n, ...) {
+  args <- list(...)
+  if ("cities" %in% names(args)) {
+    indices <- match(args$cities, Country_State_City_data$city)
+    countries <- Country_State_City_data$country[indices]
+  } else {
+    countries <- Country_State_City_data$country %>%
+      sample(n, replace = TRUE)
+  }
+  return(countries)
+}
+
+Country_State_City <- function(n, ...) {
+  cities <- City(n)
+  states <- State(n, cities = cities)
+  countries <- Country(n, cities = cities)
+  return(list(City = cities,
+              State = states,
+              Country = countries))
+}
+
+
+```
+
+In `dataset_sim.R`
+Here's a resulting dataset level update:
+
+```{r}
+
+
+Raw_SITE <- function(data, previous_data, spec, ...) {
+
+  inps <- list(...)
+
+  curr_spec <- spec$Raw_SITE
+
+  if ("Raw_SITE" %in% names(previous_data)) {
+    dataset <- previous_data$Raw_SITE
+    previous_row_num <- nrow(dataset)
+  } else {
+    dataset <- NULL
+    previous_row_num <- 0
+  }
+
+  n <- inps$n_sites - previous_row_num
+  if (n == 0) return(dataset)
+
+
+  if (all(c("Country", "State", "City") %in% names(curr_spec))) {
+    curr_spec$Country_State_City <- list(required = TRUE)
+    curr_spec$Country <- NULL
+    curr_spec$State <- NULL
+    curr_spec$City <- NULL
+
+  }
+
+  if (!("siteid" %in% names(curr_spec))) {
+    curr_spec$siteid <- list(required = TRUE)
+  }
+
+
+  # Function body for Raw_SITE
+  args <- list(
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
+    default = list(n)
+  )
+
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_SITE, ...)
+
+
+  return(res)
+}
+
+```
+
+We've added block to substitute 3 connected vars in spec with 1 combined one.
+```{r eval=FALSE}
+  curr_spec <- list()
+  if (all(c("Country", "State", "City") %in% names(curr_spec))) {
+    curr_spec$Country_State_City <- list(required = TRUE)
+    curr_spec$Country <- NULL
+    curr_spec$State <- NULL
+    curr_spec$City <- NULL
+
+  }
+
+```
+
+For this to work properly dataset's call arguments should also be updated in `generate_rawdata_for_single_study.R`:
+```{r eval=FALSE}
+      data_type <- "Raw_SITE"
+      # Determine arguments based on variable name
+      args <- switch(data_type,
+                     Raw_SITE = list(data, previous_data, combined_specs, n_sites = n, split_vars = list("Country_State_City")),
+                     Raw_SUBJ = list(data, previous_data, combined_specs, n_subj = n, startDate = start_dates[snapshot_idx],
+                                     endDate = end_dates[snapshot_idx], split_vars = list("subject_site_synq",
+                                                                          "subjid_subject_nsv",
+                                                                          "enrollyn_enrolldt_timeonstudy")),
+                     Raw_ENROLL = list(data, previous_data, combined_specs, n_enroll = n, split_vars = list("subject_to_enrollment")),
+                     Raw_SV = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated")),
+                     Raw_LB = list(data, previous_data, combined_specs, n = n, split_vars = list("subj_visit_repeated")),
+                     Raw_DATACHG = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
+                     Raw_DATAENT = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
+                     Raw_QUERY = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
+                     list(data, previous_data, combined_specs, n = n)  # Default case
+      )
+```
+ 
+Update is to `Raw_SITE` args with `split_vars = list("<name of combined var>")`
+```{r eval=FALSE}
+Raw_SITE = list(data, previous_data, combined_specs, n_sites = n, split_vars = list("Country_State_City"))
+```
+
+#### Adding set/derived variable
+
+Adding `enrolldt` var to the `Raw_SUBJ` dataset:
+In `var_sim.R` -- just create a function.
+```{r eval=FALSE}
+
+enrolldt <- function(n, startDate, endDate, enrollyn_dat, ...) {
+  full_sample <- sample(seq(as.Date(startDate), as.Date(endDate), by = "day"), n, replace = TRUE)
+  full_sample[enrollyn_dat == "N"] <- NA
+  return(full_sample)
+}
+```
+
+In `dataset_sim.R`
+As it is also derived alongside other vars we do the same update as in previously described type but as this functions needs more then default params `args` part should be updated as well:
+
+```{r}
+
+
+Raw_SUBJ <- function(data, previous_data, spec, startDate, endDate, ...) {
+
+  inps <- list(...)
+
+  curr_spec <- spec$Raw_SUBJ
+
+  if ("Raw_SUBJ" %in% names(previous_data)) {
+    dataset <- previous_data$Raw_SUBJ
+    previous_row_num <- nrow(dataset)
+  } else {
+    dataset <- NULL
+    previous_row_num <- 0
+  }
+
+  n <- inps$n_subj - previous_row_num
+  if (n == 0) return(dataset)
+
+  if (!("siteid" %in% names(curr_spec))) {
+    curr_spec$siteid <- list(required = TRUE)
+  }
+
+  if (!("enrolldt" %in% names(curr_spec))) {
+    curr_spec$enrolldt <- list(required = TRUE)
+  }
+
+  if (all(c("siteid", "invid", "country") %in% names(curr_spec))) {
+    curr_spec$subject_site_synq <- list(required = TRUE)
+    curr_spec$siteid <- NULL
+    curr_spec$invid <- NULL
+    curr_spec$country <- NULL
+
+  }
+
+  if (all(c("subjid", "subject_nsv") %in% names(curr_spec))) {
+    curr_spec$subjid_subject_nsv <- list(required = TRUE)
+    curr_spec$subjid <- NULL
+    curr_spec$subject_nsv <- NULL
+  }
+
+  if (all(c("enrollyn", "enrolldt", "timeonstudy") %in% names(curr_spec))) {
+    curr_spec$enrollyn_enrolldt_timeonstudy <- list(required = TRUE)
+    curr_spec$enrolldt <- NULL
+    curr_spec$timeonstudy <- NULL
+    curr_spec$enrollyn <- NULL
+
+  }
+
+  args <- list(
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
+    subjid_subject_nsv = list(n, previous_data$Raw_SUBJ$subjid),
+    subject_site_synq = list(n, data$Raw_SITE),
+    enrollyn_enrolldt_timeonstudy = list(n, startDate, endDate),
+    default = list(n)
+  )
+
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_SUBJ, ...)
+
+  # Recalculate for all data
+  res$timeonstudy <- timeonstudy(n, res$enrolldt, endDate)
+
+  return(res)
+}
+```
+
+Setting up combined function:
+```{r eval=FALSE}
+  if (all(c("enrollyn", "enrolldt", "timeonstudy") %in% names(curr_spec))) {
+    curr_spec$enrollyn_enrolldt_timeonstudy <- list(required = TRUE)
+    curr_spec$enrolldt <- NULL
+    curr_spec$timeonstudy <- NULL
+    curr_spec$enrollyn <- NULL
+
+  }
+```
+
+Adding customized params:
+```{r eval=FALSE}
+  args <- list(
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
+    subjid_subject_nsv = list(n, previous_data$Raw_SUBJ$subjid),
+    subject_site_synq = list(n, data$Raw_SITE),
+    enrollyn_enrolldt_timeonstudy = list(n, startDate, endDate),
+    default = list(n)
+  )
+
+  }
+```
+
+adding new main function params if needed
+
+```{r eval=FALSE}
+Raw_SUBJ <- function(data, previous_data, spec, startDate, endDate, ...) {
+}
+```
+For this to work properly dataset's call arguments should also be updated in `generate_rawdata_for_single_study.R`:
+
+```{r eval=FALSE}
+      args <- switch(data_type,
+                     Raw_SITE = list(data, previous_data, combined_specs, n_sites = n, split_vars = list("Country_State_City")),
+                     Raw_SUBJ = list(data, previous_data, combined_specs, n_subj = n, startDate = start_dates[snapshot_idx],
+                                     endDate = end_dates[snapshot_idx], split_vars = list("subject_site_synq",
+                                                                          "subjid_subject_nsv",
+                                                                          "enrollyn_enrolldt_timeonstudy")),
+                     Raw_ENROLL = list(data, previous_data, combined_specs, n_enroll = n, split_vars = list("subject_to_enrollment")),
+                     Raw_SV = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated")),
+                     Raw_LB = list(data, previous_data, combined_specs, n = n, split_vars = list("subj_visit_repeated")),
+                     Raw_DATACHG = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
+                     Raw_DATAENT = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
+                     Raw_QUERY = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
+                     list(data, previous_data, combined_specs, n = n)  # Default case
+      )
+```
+
+to be specific this one:
+
+```{r eval=FALSE}
+Raw_SUBJ = list(data,
+                previous_data,
+                combined_specs,
+                n_subj = n,
+                startDate = start_dates[snapshot_idx],
+                endDate = end_dates[snapshot_idx],
+                split_vars = list("subject_site_synq",
+                                  "subjid_subject_nsv",
+                                  "enrollyn_enrolldt_timeonstudy"))
+```
+
+## Example of adding dataset
+
+Set all the variables in `var_sims.R` as described in a previous paragraph.
+Then add new function to the `dataset_sims.R`:
+
+```{r eval=FALSE}
+
+Raw_AE <- function(data, previous_data, spec, ...) {
+  inps <- list(...)
+
+  curr_spec <- spec$Raw_AE
+
+  if ("Raw_AE" %in% names(previous_data)) {
+    dataset <- previous_data$Raw_AE
+    previous_row_num <- nrow(dataset)
+  } else {
+    dataset <- NULL
+    previous_row_num <- 0
+  }
+
+  n <- inps$n - previous_row_num
+  if (n == 0) return(dataset)
+
+  args <- list(
+    subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
+    default = list(n)
+  )
+
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_AE, ...)
+
+  return(res)
+}
+```
+
+Here just update args list for all the vars that needs non default params, here it's `external_subjid`:
+
+```{r eval=FALSE}
+  args <- list(
+    subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
+    default = list(n)
+  )
+
+```
+
+Also add some updates to the `generate_rawdata_for_single_study.R`:
+
+```{r eval=FALSE}
+generate_rawdata_for_single_study <- function(SnapshotCount,
+                                                 ParticipantCount,
+                                                 SiteCount,
+                                                 StudyID,
+                                                 combined_specs,
+                                                 desired_specs = NULL) {
+  # Generate start and end dates for snapshots
+  start_dates <- seq(as.Date("2012-01-01"), length.out = SnapshotCount, by = "months")
+  end_dates <- seq(as.Date("2012-02-01"), length.out = SnapshotCount, by = "months") - 1
+
+  # Specify the desired first few elements in order
+  desired_order <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL", "Raw_SV")
+  if (!("Raw_SV" %in% names(combined_specs))) {
+    combined_specs$Raw_SV <- list(
+      subjid = list(required = TRUE),
+      foldername = list(required = TRUE),
+      instancename = list(required = TRUE),
+      visit_dt = list(required = TRUE)
+    )
+  }
+  desired_order <- desired_order[desired_order %in% names(combined_specs)]
+
+  # Rearrange the elements
+  combined_specs <- combined_specs[c(desired_order, setdiff(names(combined_specs), desired_order))]
+
+  if (!is.null(desired_specs)) {
+    combined_specs <- combined_specs[desired_specs]
+  }
+
+  subject_count <- count_gen(ParticipantCount, SnapshotCount)
+  site_count <- count_gen(SiteCount, SnapshotCount)
+  enrollment_count <- enrollment_count_gen(subject_count)
+
+  ae_count <- subject_count * 3
+  pd_count <- subject_count * 3
+  sdrgcomp_count <- subject_count %/% 2
+  studcomp_count <- subject_count %/% 10
+
+  # print(subject_count)
+  # print(site_count)
+  # print(enrollment_count)
+  # print("--------------")
+
+  snapshots <- list()
+
+  # Generate snapshots using lapply
+  for (snapshot_idx in seq_len(SnapshotCount)) {
+    # Initialize list to store data types
+    logger::log_info(glue::glue(" -- Adding snapshot {snapshot_idx}..."))
+    data <- list()
+
+    if (snapshot_idx == 1) {
+      previous_data <- list()
+      data$Raw_STUDY <- as.data.frame(Raw_STUDY(data, previous_data, combined_specs,
+                                                StudyID = StudyID,
+                                                SiteCount = SiteCount,
+                                                ParticipantCount = ParticipantCount,
+                                                MinDate = start_dates[snapshot_idx],
+                                                MaxDate = end_dates[snapshot_idx],
+                                                GlobalMaxDate = max(end_dates)))
+    } else {
+      data$Raw_STUDY <- snapshots[[1]]$Raw_STUDY
+      data$Raw_STUDY$act_fpfv <- act_fpfv(start_dates[snapshot_idx],
+                                          end_dates[snapshot_idx],
+                                          data$Raw_STUDY$act_fpfv)
+      previous_data <- snapshots[[snapshot_idx - 1]]
+
+    }
+
+    # Loop over each raw data type specified in combined_specs
+    for (data_type in names(combined_specs)) {
+      if (data_type == "Raw_STUDY") next
+
+      logger::log_info(glue::glue(" ---- Adding dataset {data_type}..."))
+
+      # Determine the number of records 'n' based on data_type
+      n <- dplyr::case_when(
+        data_type == "Raw_AE" ~ ae_count[snapshot_idx],
+        data_type == "Raw_ENROLL" ~ unlist(enrollment_count[snapshot_idx]),
+        data_type == "Raw_SITE" ~ site_count[snapshot_idx],
+        data_type == "Raw_PD" ~ pd_count[snapshot_idx],
+        data_type == "Raw_SUBJ" ~ subject_count[snapshot_idx],
+        data_type == "Raw_SDRGCOMP" ~ sdrgcomp_count[snapshot_idx],
+        data_type == "Raw_STUDCOMP" ~ studcomp_count[snapshot_idx],
+        TRUE ~ subject_count[snapshot_idx]
+      )
+      generator_func <- data_type
+      # Determine arguments based on variable name
+      args <- switch(data_type,
+                     Raw_SITE = list(data, previous_data, combined_specs, n_sites = n, split_vars = list("Country_State_City")),
+                     Raw_SUBJ = list(data, previous_data, combined_specs, n_subj = n, startDate = start_dates[snapshot_idx],
+                                     endDate = end_dates[snapshot_idx], split_vars = list("subject_site_synq",
+                                                                          "subjid_subject_nsv",
+                                                                          "enrollyn_enrolldt_timeonstudy")),
+                     Raw_ENROLL = list(data, previous_data, combined_specs, n_enroll = n, split_vars = list("subject_to_enrollment")),
+                     Raw_SV = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated")),
+                     Raw_LB = list(data, previous_data, combined_specs, n = n, split_vars = list("subj_visit_repeated")),
+                     Raw_DATACHG = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
+                     Raw_DATAENT = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
+                     Raw_QUERY = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
+                     list(data, previous_data, combined_specs, n = n)  # Default case
+      )
+
+
+      variable_data <- do.call(generator_func, args)
+      # Combine variables into a data frame
+      data[[data_type]] <- as.data.frame(variable_data)
+      logger::log_info(glue::glue(" ---- Dataset {data_type} added successfully"))
+
+    }
+
+    if (nrow(data$Raw_ENROLL) > 0) {
+
+      to_subj <- data$Raw_ENROLL %>%
+        dplyr::select(subjid, enrollyn)
+
+      data$Raw_SUBJ <- data$Raw_SUBJ %>%
+        dplyr::rows_upsert(to_subj, by = "subjid") %>%
+        dplyr::mutate(
+          enrolldt = dplyr::if_else(enrollyn == "N", as.Date(NA), enrolldt),
+          timeonstudy = dplyr::if_else(enrollyn == "N", NA, timeonstudy)
+        )
+    }
+    snapshots[[snapshot_idx]] <- data
+    logger::log_info(glue::glue(" -- Snapshot {snapshot_idx} added successfully"))
+
+  }
+
+  # Assign snapshot end dates as names
+  names(snapshots) <- as.character(end_dates)
+  return(snapshots)
+}
+
+
+```
+
+Here first check if it needs to go in a specific order:
+
+```{r}
+  desired_order <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL", "Raw_SV")
+
+```
+
+Then generate appropriate counts:
+be sure to use `utils` and previous results to help with generation.
+Then update main case_when for your count to properly register.
+```{r eval=FALSE}
+  ae_count <- subject_count * 3
+
+  n <- dplyr::case_when(
+    data_type == "Raw_AE" ~ ae_count[snapshot_idx],
+    data_type == "Raw_ENROLL" ~ unlist(enrollment_count[snapshot_idx]),
+    data_type == "Raw_SITE" ~ site_count[snapshot_idx],
+    data_type == "Raw_PD" ~ pd_count[snapshot_idx],
+    data_type == "Raw_SUBJ" ~ subject_count[snapshot_idx],
+    data_type == "Raw_SDRGCOMP" ~ sdrgcomp_count[snapshot_idx],
+    data_type == "Raw_STUDCOMP" ~ studcomp_count[snapshot_idx],
+    TRUE ~ subject_count[snapshot_idx]
+  )
+
+```
+
+Add args to the main args list if it differes from the default, here no updates needed:
+
+```{r eval=FALSE}
+      args <- switch(data_type,
+                     Raw_SITE = list(data, previous_data, combined_specs, n_sites = n, split_vars = list("Country_State_City")),
+                     Raw_SUBJ = list(data, previous_data, combined_specs, n_subj = n, startDate = start_dates[snapshot_idx],
+                                     endDate = end_dates[snapshot_idx], split_vars = list("subject_site_synq",
+                                                                          "subjid_subject_nsv",
+                                                                          "enrollyn_enrolldt_timeonstudy")),
+                     Raw_ENROLL = list(data, previous_data, combined_specs, n_enroll = n, split_vars = list("subject_to_enrollment")),
+                     Raw_SV = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated")),
+                     Raw_LB = list(data, previous_data, combined_specs, n = n, split_vars = list("subj_visit_repeated")),
+                     Raw_DATACHG = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
+                     Raw_DATAENT = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
+                     Raw_QUERY = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
+                     list(data, previous_data, combined_specs, n = n)  # Default case
+      )
+```
 
