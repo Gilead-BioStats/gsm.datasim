@@ -20,20 +20,28 @@ library(gsm.datasim)
 
 ```
 
-## Adding vars
+## Overview
 
-To add vars firstly create a function in `var_sim.R` file with the same name as your variable that will be generating the values. It usually needs `n` as an input to produce data for all rows in one go.
+\*To be added\*. A high-level overview of the steps taken to add a new variable and/or domain to the gsm.datasim package
 
-Consider next:
-- if variable can be created independently of others only 1 added function is needed
-- if it`s dependent combined creation function needs to be created with appropriate updates to all of the creating stack.
-- check utils.R if it can be of a help for function construction.
+
+## Adding variables
+
+To add variables that can be used in any simulated data.frame, first create a function that will generate the values for the variable in the `var_sim.R` file with the same name as your variable. It usually needs `n` as an input to produce data for all rows at once.
+
+Important Considerations:
+
+- If the variable can be created independently of others only 1 added function is needed.
+  - See `n_changes` example below
+- If it`s dependent on other variables from the study, a combined creation function needs to be created with appropriate updates to all of the creating stack.
+  - See `City` example below.
+- Check utils.R for potential helper functions for variable function construction.
 
 ## Examples of adding variables
 
 ### Adding random independant var `n_changes`
 
-In `var_sim.R`
+In `var_sim.R`:
 
 
 ``` {r}
@@ -48,18 +56,18 @@ n_changes <- function(n, ...) {
 
 ```
 
-In `dataset_sim.R`
+In `dataset_sim.R`:
 
-Dependency is on `n` only so no updates needed. 
+Dependency is on `n` only so no updates needed in `datasim.R`. 
 
 
 ### Adding random dependant var `City`
 
-In `var_sim.R`
 This var should be created together with `State` and `City` as they are linked. Also any supporting data should be created on this step or on `datasets` step and be passed as a param to function.
 The combination function is created `Country_State_City`and should return named list with all 3 variables.
 It will be unpacked on the`datasets` step.
 
+In `var_sim.R`:
 ``` {r}
 
 Country_State_City_data <- data.frame(
@@ -113,8 +121,7 @@ Country_State_City <- function(n, ...) {
 
 ```
 
-In `dataset_sim.R`
-Here's a resulting dataset level update:
+In `dataset_sim.R`, here's the resulting dataset level update:
 
 ```{r}
 
