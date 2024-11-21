@@ -15,8 +15,8 @@ Imports:
   tictoc,
   utils
 Remotes:
-    clindata=Gilead-BioStats/clindata
-    gsm=Gilead-BioStats/gsm,
+    clindata=Gilead-BioStats/clindata,
+    gsm=Gilead-BioStats/gsm
 License: Apache License (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
