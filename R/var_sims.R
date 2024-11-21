@@ -409,11 +409,10 @@ nickname <- function(n, ...) {
 
 }
 
-protocol_title <- function(n,
-                           prot_title = c("New Drug Phase 1", "New Drug Phase 2", "New Drug Phase 3"), ...) {
+protocol_title <- function(n, ...) {
   # Function body for protocol_title
-  sample(prot_title, n, replace = TRUE)
-
+  letter <- sample(LETTERS, n, replace = TRUE)
+  paste("Protocol Title", letter)
 }
 
 status <- function(n, stat = c("Active", "", "Finalized"), ...) {
