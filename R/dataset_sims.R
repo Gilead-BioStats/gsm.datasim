@@ -66,14 +66,6 @@ Raw_STUDY <- function(data, previous_data, spec, ...) {
     dataset <- NULL
   }
 
-  curr_spec$phase <- list(required = TRUE)
-  curr_spec$est_lpfv <- list(required = TRUE)
-  curr_spec$est_lplv <- list(required = TRUE)
-  curr_spec$therapeutic_area <- list(required = TRUE)
-  curr_spec$protocol_indication <- list(required = TRUE)
-  curr_spec$product <- list(required = TRUE)
-
-
   args <- list(
                studyid = list(1, inps$StudyID),
                num_plan_site = list(inps$SiteCount),
