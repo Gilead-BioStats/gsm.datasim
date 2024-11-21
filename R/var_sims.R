@@ -52,7 +52,7 @@ est_lplv <- function(date_min, date_lim, prev_data, ...) {
   generate_random_fpfv(date_min, date_lim, FALSE, prev_data)
 }
 
-est_lfpv <- function(date_min, date_lim, prev_data, ...) {
+est_lpfv <- function(date_min, date_lim, prev_data, ...) {
   generate_random_fpfv(date_min, date_lim, FALSE, prev_data)
 }
 
