@@ -67,7 +67,7 @@ Raw_STUDY <- function(data, previous_data, spec, ...) {
   }
 
   curr_spec$phase <- list(required = TRUE)
-  curr_spec$est_lfpv <- list(required = TRUE)
+  curr_spec$est_lpfv <- list(required = TRUE)
   curr_spec$est_lplv <- list(required = TRUE)
   curr_spec$therapeutic_area <- list(required = TRUE)
   curr_spec$protocol_indication <- list(required = TRUE)
@@ -80,8 +80,8 @@ Raw_STUDY <- function(data, previous_data, spec, ...) {
                num_plan_subj = list(inps$ParticipantCount),
                act_fpfv = list(inps$MinDate, inps$MaxDate, dataset$act_fpfv),
                est_fpfv = list(inps$MinDate, inps$MaxDate, dataset$est_fpfv),
-               est_lfpv = list(inps$GlobalMaxDate + 1, inps$GlobalMaxDate + 30, dataset$act_lplv),
-               est_lplv = list(inps$GlobalMaxDate + 31, inps$GlobalMaxDate + 90, dataset$est_lplv),
+               est_lpfv = list(inps$GlobalMaxDate -30, inps$GlobalMaxDate, dataset$est_lpfv),
+               est_lplv = list(inps$GlobalMaxDate + 30, inps$GlobalMaxDate + 120, dataset$est_lplv),
                phase = list(1, external_phase = c("P1", "P2", "P3", "P4")),
                default = list(1)
   )
