@@ -405,8 +405,8 @@ Country_State_City <- function(n, ...) {
 
 nickname <- function(n, ...) {
   # Function body for nickname
-  sample(c("OAK", "TREE", "GROOVE"), n, replace = TRUE)
-
+  word <- sample(c("OAK", "TREE", "GROOVE"), n, replace = TRUE)
+  paste(word, sample(1:100, 1), sep = "-")
 }
 
 protocol_title <- function(n, ...) {
