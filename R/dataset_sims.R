@@ -459,7 +459,6 @@ Raw_SDRGCOMP <- function(data, previous_data, spec, ...) {
 
   args <- list(
     subjid = list(n, data$Raw_SUBJ$subjid, replace = FALSE),
-    phase = list(n, external_phase = data$Raw_STUDY$phase[1], replace = TRUE),
     default = list(n)
   )
 
