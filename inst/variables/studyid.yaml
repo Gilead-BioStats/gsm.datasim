@@ -1,0 +1,6 @@
+# studyid.yaml
+description: Generate study IDs.
+parameters:
+  n: NULL
+  pool_of_choises: NULL
+

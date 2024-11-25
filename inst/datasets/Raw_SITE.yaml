@@ -1,0 +1,51 @@
+required_vars:
+  siteid:
+    random: NULL
+  studyid:
+    data:
+      Raw_STUDY:
+         protocol_number: 1
+  invid:
+    random: NULL
+  InvestigatorFirstName:
+    random:
+      - John
+      - Joanne
+      - Fred
+  InvestigatorLastName:
+    random:
+      - Doe
+      - Deer
+      - Smith
+  site_status:
+    random:
+      - Active
+      - ""
+      - Closed
+  City:
+    grouped: NULL
+  State:
+    grouped: NULL
+  Country:
+    grouped: NULL
+
+group_vars:
+  Country_State_City:
+    - country: UK
+      state: Greater London
+      city: London
+    - country: UK
+      state: Buckinghamshire
+      city: Milton Keynes
+    - country: US
+      state: CA
+      city: Foster City
+    - country: US
+      state: PA
+      city: Newtown Square
+    - country: Japan
+      state: Kanto
+      city: Tokyo
+    - country: Japan
+      state: Kumamoto Prefecture
+      city: Kumamoto

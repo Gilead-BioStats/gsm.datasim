@@ -1,3 +1,5 @@
+'%!in%' <- function(x,y)!('%in%'(x,y))
+
 count_gen <- function(max_n, SnapshotCount) {
   iteration <- max_n / SnapshotCount
   counts <- c()
@@ -225,7 +227,7 @@ generate_random_fpfv <- function(min_date, max_date, canBeEmpty = FALSE, previou
 
 
   if (is.null(previous_date) || is.na(previous_date)) {
-    random_date <-sample(seq(from = min_date, to = max_date, by = "day"), 1)
+    random_date <- sample(seq(from = min_date, to = max_date, by = "day"), 1)
   } else {
     random_date <- previous_date
   }

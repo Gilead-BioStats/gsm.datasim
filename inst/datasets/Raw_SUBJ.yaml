@@ -1,0 +1,42 @@
+required_vars:
+  siteid:
+    random: NULL
+  studyid:
+    data:
+      Raw_STUDY:
+         protocol_number: 1
+  invid:
+    random: NULL
+  InvestigatorFirstName:
+    random:
+      - John
+      - Joanne
+      - Fred
+  InvestigatorLastName:
+    random:
+      - Doe
+      - Deer
+      - Smith
+  site_status:
+    random:
+      - Active
+      - ""
+      - Closed
+  City:
+    grouped: NULL
+  State:
+    grouped: NULL
+  Country:
+    grouped: NULL
+
+group_vars:
+  Country_State_City:
+    - Country: UK
+      State: Greater London
+      City: London
+    - Country: UK
+      State: Buckinghamshire
+      City: Milton Keynes
+    - Country: US
+      State: CA
+      City: Foster City

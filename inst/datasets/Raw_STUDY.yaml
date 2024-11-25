@@ -1,0 +1,40 @@
+required_vars:
+  phase:
+    random:
+      - Blinded Study Drug Completion
+  studyid:
+    external: StudyID
+  nickname:
+    random:
+      - OAK
+      - TREE
+      - GROOVE
+  protocol_title:
+    random:
+      New Drug Phase 1: NULL
+      New Drug Phase 2
+      New Drug Phase 3
+  status:
+    random:
+      - Active
+      - ""
+      - Finalized
+  num_plan_site:
+    external:
+      - SiteCount
+  num_plan_subj:
+    external:
+      - ParticipantCount
+  act_fpfv:
+    external:
+      - MinDate
+      - MaxDate
+    dataset:
+      - act_fpfv
+  est_fpfv:
+    external:
+      - MinDate
+      - MaxDate
+    dataset:
+      - est_fpfv
+

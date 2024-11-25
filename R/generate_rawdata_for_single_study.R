@@ -57,6 +57,89 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
   start_dates <- seq(as.Date("2012-01-01"), length.out = SnapshotCount, by = "months")
   end_dates <- seq(as.Date("2012-02-01"), length.out = SnapshotCount, by = "months") - 1
 
+
+  combined_specs <- preprocess_specs(combined_specs, desired_specs)
+
+  subject_count <- count_gen(ParticipantCount, SnapshotCount)
+  counts <- list(
+    "Raw_STUDY" = rep(1, SnapshotCount),
+    "Raw_SITE" = count_gen(SiteCount, SnapshotCount),
+    "Raw_SUBJ" = subject_count,
+    "Raw_ENROLL" = enrollment_count_gen(subject_count),
+    "Raw_SV" = subject_count
+  )
+
+
+  # ae_count <- subject_count * 3
+  # pd_count <- subject_count * 3
+  # sdrgcomp_count <- subject_count %/% 2
+  # studcomp_count <- subject_count %/% 10
+
+  # print(subject_count)
+  # print(site_count)
+  # print(enrollment_count)
+  # print("--------------")
+
+  snapshots <- list()
+
+  # Generate snapshots using lapply
+  for (snapshot_idx in seq_len(SnapshotCount)) {
+    # Initialize list to store data types
+    logger::log_info(glue::glue(" -- Adding snapshot {snapshot_idx}..."))
+    data <- list()
+    previous_data <- if (snapshot_idx == 1) list() else snapshots[[snapshot_idx - 1]]
+
+    MinDate <- start_dates[snapshot_idx]
+    MaxDate <- end_dates[snapshot_idx]
+    GlobalMaxDate <- max(end_dates)
+
+    # Loop over each raw data type specified in combined_specs
+    for (data_type in names(combined_specs)) {
+      logger::log_info(glue::glue(" ---- Adding dataset {data_type}..."))
+
+      # Determine the number of records 'n' based on data_type
+      n <- counts[[data_type]][snapshot_idx]
+
+      yaml_spec <- parse_yaml_spec(glue::glue("~/gsm.datasim/inst/datasets/{data_type}.yaml"))
+
+      # Extract all 'external' entries from 'required_vars'
+      external_names <- unique(unlist(lapply(yaml_spec$required_vars, function(e) e[["external"]]), use.names = FALSE))
+
+      # Retrieve the values of these variables and assign names
+      for (el in external_names) {
+        external[[el]] <- get(el)
+      }
+
+      variable_data <- create_dataset(data_type, n, data, previous_data, yaml_spec, combined_specs, external)
+      # Combine variables into a data frame
+      data[[data_type]] <- as.data.frame(variable_data)
+      logger::log_info(glue::glue(" ---- Dataset {data_type} added successfully"))
+
+    }
+
+    # if (nrow(data$Raw_ENROLL) > 0) {
+    #
+    #   to_subj <- data$Raw_ENROLL %>%
+    #     dplyr::select(subjid, enrollyn)
+    #
+    #   data$Raw_SUBJ <- data$Raw_SUBJ %>%
+    #     dplyr::rows_upsert(to_subj, by = "subjid") %>%
+    #     dplyr::mutate(
+    #       enrolldt = dplyr::if_else(enrollyn == "N", as.Date(NA), enrolldt),
+    #       timeonstudy = dplyr::if_else(enrollyn == "N", NA, timeonstudy)
+    #     )
+    # }
+    snapshots[[snapshot_idx]] <- data
+    logger::log_info(glue::glue(" -- Snapshot {snapshot_idx} added successfully"))
+
+  }
+
+  # Assign snapshot end dates as names
+  names(snapshots) <- as.character(end_dates)
+  return(snapshots)
+}
+
+preprocess_specs <- function(combined_specs, desired_specs) {
   # Specify the desired first few elements in order
   desired_order <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL", "Raw_SV")
   if (!("Raw_SV" %in% names(combined_specs))) {
@@ -72,111 +155,10 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
   # Rearrange the elements
   combined_specs <- combined_specs[c(desired_order, setdiff(names(combined_specs), desired_order))]
 
+
+  #Substitute if needed
   if (!is.null(desired_specs)) {
     combined_specs <- combined_specs[desired_specs]
   }
 
-  subject_count <- count_gen(ParticipantCount, SnapshotCount)
-  site_count <- count_gen(SiteCount, SnapshotCount)
-  enrollment_count <- enrollment_count_gen(subject_count)
-
-  ae_count <- subject_count * 3
-  pd_count <- subject_count * 3
-  sdrgcomp_count <- subject_count %/% 2
-  studcomp_count <- subject_count %/% 10
-
-  # print(subject_count)
-  # print(site_count)
-  # print(enrollment_count)
-  # print("--------------")
-
-  snapshots <- list()
-
-  # Generate snapshots using lapply
-  for (snapshot_idx in seq_len(SnapshotCount)) {
-    # Initialize list to store data types
-    logger::log_info(glue::glue(" -- Adding snapshot {snapshot_idx}..."))
-    data <- list()
-
-    if (snapshot_idx == 1) {
-      previous_data <- list()
-      data$Raw_STUDY <- as.data.frame(Raw_STUDY(data, previous_data, combined_specs,
-                                                StudyID = StudyID,
-                                                SiteCount = SiteCount,
-                                                ParticipantCount = ParticipantCount,
-                                                MinDate = start_dates[snapshot_idx],
-                                                MaxDate = end_dates[snapshot_idx],
-                                                GlobalMaxDate = max(end_dates)))
-    } else {
-      data$Raw_STUDY <- snapshots[[1]]$Raw_STUDY
-      data$Raw_STUDY$act_fpfv <- act_fpfv(start_dates[snapshot_idx],
-                                          end_dates[snapshot_idx],
-                                          data$Raw_STUDY$act_fpfv)
-      previous_data <- snapshots[[snapshot_idx - 1]]
-
-    }
-
-    # Loop over each raw data type specified in combined_specs
-    for (data_type in names(combined_specs)) {
-      if (data_type == "Raw_STUDY") next
-
-      logger::log_info(glue::glue(" ---- Adding dataset {data_type}..."))
-
-      # Determine the number of records 'n' based on data_type
-      n <- dplyr::case_when(
-        data_type == "Raw_AE" ~ ae_count[snapshot_idx],
-        data_type == "Raw_ENROLL" ~ unlist(enrollment_count[snapshot_idx]),
-        data_type == "Raw_SITE" ~ site_count[snapshot_idx],
-        data_type == "Raw_PD" ~ pd_count[snapshot_idx],
-        data_type == "Raw_SUBJ" ~ subject_count[snapshot_idx],
-        data_type == "Raw_SDRGCOMP" ~ sdrgcomp_count[snapshot_idx],
-        data_type == "Raw_STUDCOMP" ~ studcomp_count[snapshot_idx],
-        TRUE ~ subject_count[snapshot_idx]
-      )
-      generator_func <- data_type
-      # Determine arguments based on variable name
-      args <- switch(data_type,
-                     Raw_SITE = list(data, previous_data, combined_specs, n_sites = n, split_vars = list("Country_State_City")),
-                     Raw_SUBJ = list(data, previous_data, combined_specs, n_subj = n, startDate = start_dates[snapshot_idx],
-                                     endDate = end_dates[snapshot_idx], split_vars = list("subject_site_synq",
-                                                                          "subjid_subject_nsv",
-                                                                          "enrollyn_enrolldt_timeonstudy")),
-                     Raw_ENROLL = list(data, previous_data, combined_specs, n_enroll = n, split_vars = list("subject_to_enrollment")),
-                     Raw_SV = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated")),
-                     Raw_LB = list(data, previous_data, combined_specs, n = n, split_vars = list("subj_visit_repeated")),
-                     Raw_DATACHG = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
-                     Raw_DATAENT = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
-                     Raw_QUERY = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
-                     list(data, previous_data, combined_specs, n = n)  # Default case
-      )
-
-
-      variable_data <- do.call(generator_func, args)
-      # Combine variables into a data frame
-      data[[data_type]] <- as.data.frame(variable_data)
-      logger::log_info(glue::glue(" ---- Dataset {data_type} added successfully"))
-
-    }
-
-    if (nrow(data$Raw_ENROLL) > 0) {
-
-      to_subj <- data$Raw_ENROLL %>%
-        dplyr::select(subjid, enrollyn)
-
-      data$Raw_SUBJ <- data$Raw_SUBJ %>%
-        dplyr::rows_upsert(to_subj, by = "subjid") %>%
-        dplyr::mutate(
-          enrolldt = dplyr::if_else(enrollyn == "N", as.Date(NA), enrolldt),
-          timeonstudy = dplyr::if_else(enrollyn == "N", NA, timeonstudy)
-        )
-    }
-    snapshots[[snapshot_idx]] <- data
-    logger::log_info(glue::glue(" -- Snapshot {snapshot_idx} added successfully"))
-
-  }
-
-  # Assign snapshot end dates as names
-  names(snapshots) <- as.character(end_dates)
-  return(snapshots)
 }
-

@@ -116,11 +116,10 @@ studyid <- function(n, stid, ...) {
 
 }
 
-siteid <- function(n, isGenerated = FALSE, ...) {
+siteid <- function(n, siteid = NULL, isGenerated = FALSE, ...) {
   # Function body for invid
-  args <- list(...)
-  if ("siteid" %in% names(args)) {
-    already_generated <- args$siteid
+  if (!is.null(siteid)) {
+    already_generated <- siteid
   } else {
     already_generated <- c()
   }
@@ -156,10 +155,10 @@ subject_site_synq <- function(n, Raw_SITE_data, ...) {
 
 }
 
-invid <- function(n, isGenerated=FALSE, ...) {
+invid <- function(n, invid = NULL, isGenerated=FALSE, ...) {
   # Function body for invid
   args <- list(...)
-  if ("invid" %in% names(args)) {
+  if (!is.null(invid)) {
     already_generated <- args$invid
   } else {
     already_generated <- c()
@@ -318,16 +317,16 @@ queryage <- function(n, ...) {
          replace = T)
 }
 
-InvestigatorFirstName <- function(n, ...) {
+InvestigatorFirstName <- function(n, data_pool) {
   # Function body for InvestigatorFirstName
-  sample(c("John", "Joanne", "Fred"),
+  sample(data_pool,
          n,
          replace = TRUE)
 }
 
-InvestigatorLastName <- function(n, ...) {
+InvestigatorLastName <- function(n, data_pool) {
   # Function body for InvestigatorLastName
-  sample(c("Doe", "Deer", "Smith"),
+  sample(data_pool,
          n,
          replace = TRUE)
 }
