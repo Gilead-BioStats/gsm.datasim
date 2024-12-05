@@ -82,8 +82,8 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
 
   ae_count <- subject_count * 3
   pd_count <- subject_count * 3
-  sdrgcomp_count <- subject_count %/% 2
-  studcomp_count <- subject_count %/% 10
+  sdrgcomp_count <- ceiling(subject_count / 2)
+  studcomp_count <- ceiling(subject_count / 10)
 
   # print(subject_count)
   # print(site_count)
