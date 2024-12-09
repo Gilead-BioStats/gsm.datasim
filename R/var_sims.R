@@ -284,7 +284,7 @@ enrolldt <- function(n, startDate, endDate, enrollyn_dat, ...) {
 
 timeonstudy <- function(n, enrolldt, endDate, ...) {
   # Function body for timeonstudy
-  as.numeric(as.Date(endDate) - as.Date(enrolldt))
+  as.numeric(as.Date(endDate) - as.Date(enrolldt)) %>% as.integer()
 }
 
 enrollyn_enrolldt_timeonstudy <- function(n, startDate, endDate, ...) {
@@ -446,12 +446,12 @@ product <- function(n, ...) {
 
 num_plan_site <- function(num_pl_site, ...) {
   # Function body for num_plan_site
-  unlist(num_pl_site)
+  unlist(num_pl_site) %>% as.integer()
 }
 
 num_plan_subj <- function(num_pl_subj, ...) {
   # Function body for num_plan_subj
-  unlist(num_pl_subj)
+  unlist(num_pl_subj) %>% as.integer()
 }
 
 subject_to_enrollment <- function(n, data, previous_data, ...) {
