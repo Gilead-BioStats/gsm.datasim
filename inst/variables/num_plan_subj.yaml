@@ -1,0 +1,3 @@
+name: num_plan_subj
+method: return_value
+default_value: 100

@@ -1,7 +1,7 @@
-name: nickname
+name: status
 method: sample
 default_pool_of_choices:
-   - OAK
-   - TREE
-   - GROOVE
+  - Active
+  - ""
+  - Finalized
 default_replace: true

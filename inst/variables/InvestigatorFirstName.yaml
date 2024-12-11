@@ -1,0 +1,7 @@
+name: InvestigatorFirstName
+method: sample
+default_pool_of_choices:
+    - John
+    - Joanne
+    - Fred
+default_replace: true

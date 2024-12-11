@@ -1,0 +1,10 @@
+name: City
+method: sample
+default_pool_of_choices:
+  - "London"
+  - "Milton Keynes"
+  - "Foster City"
+  - "Newtown Square"
+  - "Tokyo"
+  - "Kumamoto"
+default_replace: true

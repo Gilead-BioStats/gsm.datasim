@@ -1,0 +1,7 @@
+name: protocol_title
+method: sample
+default_pool_of_choices:
+  - New Drug Phase 1
+  - New Drug Phase 2
+  - New Drug Phase 3
+default_replace: true

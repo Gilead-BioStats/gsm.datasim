@@ -1,51 +1,21 @@
 required_vars:
-  siteid:
-    random: NULL
+  siteid: .default
   studyid:
-    data:
-      Raw_STUDY:
-         protocol_number: 1
-  invid:
-    random: NULL
-  InvestigatorFirstName:
-    random:
-      - John
-      - Joanne
-      - Fred
-  InvestigatorLastName:
-    random:
-      - Doe
-      - Deer
-      - Smith
-  site_status:
-    random:
-      - Active
-      - ""
-      - Closed
+    parameters:
+      pool_of_choises:
+        current_data:
+          Raw_STUDY:
+             protocol_number: 1
+  invid: .default
+  InvestigatorFirstName: .default
+  InvestigatorLastName: .default
+  site_status: .default
   City:
-    grouped: NULL
+    grouped: .default
   State:
-    grouped: NULL
+    grouped: .default
   Country:
-    grouped: NULL
+    grouped: .default
 
 group_vars:
-  Country_State_City:
-    - country: UK
-      state: Greater London
-      city: London
-    - country: UK
-      state: Buckinghamshire
-      city: Milton Keynes
-    - country: US
-      state: CA
-      city: Foster City
-    - country: US
-      state: PA
-      city: Newtown Square
-    - country: Japan
-      state: Kanto
-      city: Tokyo
-    - country: Japan
-      state: Kumamoto Prefecture
-      city: Kumamoto
+  Country_State_City: .default

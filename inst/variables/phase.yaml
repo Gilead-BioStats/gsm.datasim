@@ -1,7 +1,5 @@
-name: nickname
+name: phase
 method: sample
 default_pool_of_choices:
-   - OAK
-   - TREE
-   - GROOVE
+   - Blinded Study Drug Completion
 default_replace: true

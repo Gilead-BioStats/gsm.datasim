@@ -59,8 +59,8 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
 
 
   combined_specs <- preprocess_specs(combined_specs, desired_specs)
-
   subject_count <- count_gen(ParticipantCount, SnapshotCount)
+
   counts <- list(
     "Raw_STUDY" = rep(1, SnapshotCount),
     "Raw_SITE" = count_gen(SiteCount, SnapshotCount),
@@ -92,25 +92,29 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
     MinDate <- start_dates[snapshot_idx]
     MaxDate <- end_dates[snapshot_idx]
     GlobalMaxDate <- max(end_dates)
-
     # Loop over each raw data type specified in combined_specs
     for (data_type in names(combined_specs)) {
       logger::log_info(glue::glue(" ---- Adding dataset {data_type}..."))
+
 
       # Determine the number of records 'n' based on data_type
       n <- counts[[data_type]][snapshot_idx]
 
       yaml_spec <- parse_yaml_spec(glue::glue("~/gsm.datasim/inst/datasets/{data_type}.yaml"))
 
-      # Extract all 'external' entries from 'required_vars'
-      external_names <- unique(unlist(lapply(yaml_spec$required_vars, function(e) e[["external"]]), use.names = FALSE))
+      external <- list(
+        "SnapshotCount" = SnapshotCount,
+        "ParticipantCount" = ParticipantCount,
+        "SiteCount" = SiteCount,
+        "StudyID" = StudyID,
+        "MinDate" = MinDate,
+        "MaxDate" = MaxDate,
+        "GlobalMaxDate" = GlobalMaxDate
 
-      # Retrieve the values of these variables and assign names
-      for (el in external_names) {
-        external[[el]] <- get(el)
-      }
+      )
 
-      variable_data <- create_dataset(data_type, n, data, previous_data, yaml_spec, combined_specs, external)
+      browser()
+      variable_data <- create_dataset_new(data_type, n, data, previous_data, yaml_spec, combined_specs, external)
       # Combine variables into a data frame
       data[[data_type]] <- as.data.frame(variable_data)
       logger::log_info(glue::glue(" ---- Dataset {data_type} added successfully"))

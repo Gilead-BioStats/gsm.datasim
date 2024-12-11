@@ -3,41 +3,61 @@ parse_yaml_spec <- function(file_path) {
   return(spec)
 }
 
+generate_padded_sequence <- function(range_str) {
+  # Split the input string into start and end parts
+  parts <- strsplit(range_str, ":", fixed = TRUE)[[1]]
 
-add_new_var_data <- function(dataset, vars, n, split_vars = NULL) {
-  internal_args <- list(...)
+  # Convert to integers
+  start_val <- as.integer(parts[1])
+  end_val <- as.integer(parts[2])
 
-  variable_data <- lapply(names(vars), function(var_name) {
-    # Generate data using the generator function
-    do.call(var_name, curr_args)
-  })
+  # Determine the number of digits needed based on the 'end' part
+  width <- nchar(parts[2])
 
+  # Generate the sequence and format with leading zeros
+  seq_values <- seq(from = start_val, to = end_val)
+  formatted_values <- sprintf(paste0("%0", width, "d"), seq_values)
 
-  names(variable_data) <- names(vars)
-
-  if (!is.null(split_vars)) {
-    variable_data <- combination_var_splitter(variable_data, internal_args$split_vars)
-  }
-
-  variable_data <- variable_data %>%
-    as.data.frame() %>%
-    rename_raw_data_vars_per_spec(orig_curr_spec)
-
-
-  if (!is.null(dataset)) {
-    return(dplyr::bind_rows(dataset, variable_data))
-  } else {
-    return(variable_data)
-  }
+  return(formatted_values)
 }
 
-create_dataset <- function(name, n, data, previous_data, yaml_spec, spec, external = NULL) {
+consecutive_generator <- function(n, prefix, variation, previous_data, retrieveGenerated = FALSE) {
+  if (!is.null(previous_data)) {
+    already_generated <- previous_data
+  } else {
+    already_generated <- c()
+  }
 
-  dataset <- if (name %in% names(previous_data)) previous_data[[name]] else NULL
-  previous_row_num <- if (!is.null(dataset)) nrow(dataset) else 0
+  if (retrieveGenerated) {
+    return(sample(already_generated, n, replace = TRUE))
+  }
+
+  # Generate all possible 3-digit numbers as strings with leading zeros
+  possible_numbers <- generate_padded_sequence(variation)
+
+  # Create all possible strings starting with "0X" and ending with the 3-digit numbers
+  possible_strings <- paste0(prefix, variation)
+
+  # Exclude the old strings to avoid duplication
+  new_strings_available <- setdiff(possible_strings, already_generated)
+
+  # Check if there are enough unique strings to generate
+  if (length(new_strings_available) < n) {
+    stop("Not enough unique strings available to generate ", n, " new strings.")
+  }
+
+  # Randomly sample 'n' unique strings from the available strings
+  sample(new_strings_available, n)
+
+}
+
+create_dataset_new <- function(name, n, current_data, previous_data, yaml_spec, spec, external = NULL) {
+  browser()
+  previous_dataset <- if (name %in% names(previous_data)) previous_data[[name]] else NULL
+  previous_row_num <- if (!is.null(previous_dataset)) nrow(previous_dataset) else 0
 
   n <- n - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) return(previous_dataset)
 
   curr_spec <- spec[[name]]
 
@@ -63,37 +83,49 @@ create_dataset <- function(name, n, data, previous_data, yaml_spec, spec, extern
   vars <- vars[!sapply(vars, function(x) "grouped" %in% names(x))]
 
   variable_data <- lapply(names(vars), function(var_name) {
+    browser()
     curr_var <- vars[[var_name]]
-    curr_args <- list(n)
-    if ("external" %in% names(curr_var)) {
-      for (el in curr_var$external) {
-        curr_args <- append(curr_args, external[[el]])
-      }
-    }
-    if ("dataset" %in% names(curr_var)) {
-      for (el in curr_var$dataset) {
-        curr_args <- append(curr_args, dataset[[el]])
-      }
-    }
+    # if (var_name == "act_fpfv") browser()
+    curr_args <- list("n" = n)
+    if ("parameters"  %in% names(curr_var)) {
+      params <- curr_var$parameters
+      for (param_name in names(params)) {
+        param <- params[[param_name]]
+        if (!is.null(param$external)) {
+          curr_args[[param_name]] <- external[[param$external]]
 
-    if ("data" %in% names(curr_var)) {
-      #browser()
-      for (df_name in names(curr_var$data)) {
-        for (col_name in names(curr_var$data[[df_name]])) {
+        } else if (!is.null(param$previous_dataset)) {
+          curr_args[[param_name]] <- previous_dataset[[param$previous_dataset]]
 
-          col <- curr_var$data[[df_name]][[col_name]]
-          additional_arg <- if (is.null(col)) data[[df_name]][[col_name]] else data[[df_name]][[col_name]][col]
-          curr_args <- append(curr_args, additional_arg)
+        } else if (!is.null(param$current_data)) {
+          for (ds_name in names(param$current_data)) {
+            ds <- param$current_data[[ds_name]]
+            for (col_name in names(ds)) {
+                col <- ds[[col_name]]
+                browser()
+                number_of_rows_to_add <- if (is.null(col)) 1 else ds[[col_name]]
+                arg_to_add <- current_data[[ds_name]][[col_name]]
+
+                if (is.vector(arg_to_add) | is.list(arg_to_add)) {
+                  arg_to_add <- arg_to_add[[1:number_of_rows_to_add]]
+                }
+
+                curr_args[[param_name]] <- arg_to_add
+            }
+          }
+
+        } else if (!is.null(param$random)) {
+            curr_args[[param_name]] <- param$random
         }
+
       }
+
     }
 
-    if ("random" %in% names(curr_var)) {
-        curr_args <- append(curr_args, list(curr_var$random))
-    }
+    func_yaml <- parse_yaml_spec(glue::glue("~/gsm.datasim/inst/variables/{var_name}.yaml"))
 
     # Generate data using the generator function
-    do.call(var_name, curr_args)
+    simulate_variable(func_yaml, curr_args)
   })
 
   names(variable_data) <- names(vars)
@@ -103,8 +135,10 @@ create_dataset <- function(name, n, data, previous_data, yaml_spec, spec, extern
   group_vars_data <- lapply(names(group_vars), function(var_name) {
     curr_var <- dplyr::bind_rows(group_vars[[var_name]])
     curr_args <- list(n, curr_var)
+    func_yaml <- parse_yaml_spec(glue::glue("~/gsm.datasim/inst/variables/{var_name}.yaml"))
+
     # Generate data using the generator function
-    do.call(var_name, curr_args)
+    simulate_variable(func_yaml, curr_args)
   })
 
   group_vars_data <- do.call(c, group_vars_data)
@@ -114,69 +148,71 @@ create_dataset <- function(name, n, data, previous_data, yaml_spec, spec, extern
     rename_raw_data_vars_per_spec(vars)
 
 
-  if (!is.null(dataset)) {
-    return(dplyr::bind_rows(dataset, all_variable_data))
+  if (!is.null(previous_dataset)) {
+    return(dplyr::bind_rows(previous_dataset, all_variable_data))
   } else {
     return(all_variable_data)
   }
 
 }
 
-################################## STUDY ####################################
-phase <- function(n, pool_of_choises, external_phase = NULL, replace = TRUE) {
-  if (!is.null(external_phase)) {
-    return(sample(external_phase, n, replace = replace))
+
+first_non_null <- function(...) {
+  args <- list(...)
+  for (arg in args) {
+    if (!is.null(arg)) return(arg)
   }
-  # Function body for phase
-  return(unlist(pool_of_choises))
+  return(NULL)  # if all are NULL
 }
 
-studyid <- function(n, pool_of_choises) {
-  # Function body for studyid
-  if (n == 1) {
-    unlist(pool_of_choises)
-  } else {
-    sample(pool_of_choises, n, replace = TRUE)
-  }
 
+get_arg <- function(arg_name, list_to_search, defaults) {
+  default_name <- paste0("default_", arg_name)
+  first_non_null(list_to_search[[arg_name]], defaults[[default_name]])
 }
 
-nickname <- function(n, pool_of_choises) {
-  # Function body for nickname
-  sample(pool_of_choises, n, replace = TRUE)
 
+
+# Universal simulation function
+simulate_variable <- function(var, var_inputs) {
+    #browser()
+    method <- var$method
+    name <- var$name
+    print(name)
+
+    if (method == 'sample') {
+      # Get pool_of_choices and replace from inputs or use defaults
+      pool <- get_arg("pool_of_choices", var_inputs, var)
+      replace <- get_arg("replace", var_inputs, var)
+      result <- sample(pool, var_inputs$n, replace = TRUE)
+
+    } else if (method == 'return_value') {
+      # Get value from inputs or use default
+      value <- get_arg("value", var_inputs, var)
+      result <- rep(value, var_inputs$n)
+
+    } else if (method == 'generate_random_fpfv') {
+      # Get date_min and date_lim from inputs or use defaults
+      date_min <- get_arg("MinDate", var_inputs, var)
+      date_max <- get_arg("MaxDate", var_inputs, var)
+      result <- generate_random_fpfv(min_date = date_min, max_date = date_max)
+
+    } else if (method == 'consecutive_generator') {
+      # Get date_min and date_lim from inputs or use defaults
+      prefix <- get_arg("prefix", var_inputs, var)
+      variation <- get_arg("variation", var_inputs, var)
+      previous_data <- get_arg("previous_data", var_inputs, var)
+      retrieveGenerated <- get_arg("retrieveGenerated", var_inputs, var)
+
+      result <- consecutive_generator(var_inputs$n, prefix, variation, previous_data, retrieveGenerated)
+
+    } else {
+      stop(paste("Unknown method", method, "for variable", name))
+    }
+
+  return(result)
 }
 
-protocol_title <- function(n, pool_of_choises) {
-  # Function body for protocol_title
-  sample(pool_of_choises, n, replace = TRUE)
-
-}
-
-status <- function(n, pool_of_choises) {
-  # Function body for status
-  sample(pool_of_choises,
-         n,
-         replace = TRUE)
-}
-
-num_plan_site <- function(n, pool_of_choises) {
-  # Function body for num_plan_site
-  unlist(pool_of_choises)
-}
-
-num_plan_subj <- function(n, pool_of_choises) {
-  # Function body for num_plan_subj
-  unlist(pool_of_choises)
-}
-
-act_fpfv <- function(n, date_min, date_lim, prev_data=NULL) {
-  generate_random_fpfv(date_min, date_lim, FALSE, prev_data)
-}
-
-est_fpfv <- function(n, date_min, date_lim, prev_data=NULL) {
-  generate_random_fpfv(date_min, date_lim, FALSE, prev_data)
-}
 
 ############################# SITE ################################
 
@@ -211,6 +247,9 @@ siteid <- function(n, siteid = NULL, isGenerated = FALSE, ...) {
   sample(new_strings_available, n)
 
 }
+
+
+
 
 invid <- function(n, invid = NULL, isGenerated=FALSE, ...) {
   # Function body for invid

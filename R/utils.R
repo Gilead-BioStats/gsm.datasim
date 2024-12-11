@@ -217,8 +217,15 @@ save_data_on_disk <- function(data, base_path = NULL) {
 
 generate_random_fpfv <- function(min_date, max_date, canBeEmpty = FALSE, previous_date = NULL) {
   # Ensure that max_date is a Date object
-  max_date <- as.Date(max_date)
-  min_date <- as.Date(min_date)
+  if (is.character(max_date)) {
+    max_date <- as.Date(max_date)
+
+  }
+
+  if (is.character(min_date)) {
+    min_date <- as.Date(min_date)
+
+  }
 
   # If canBeEmpty is TRUE, there is a chance that the result can be NA
   if (canBeEmpty && stats::runif(1) < 0.2 && (is.null(previous_date) || is.na(previous_date))) {

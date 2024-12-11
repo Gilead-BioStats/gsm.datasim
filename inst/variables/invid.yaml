@@ -1,0 +1,6 @@
+name: invid
+method: consecutive_generator
+default_prefix: 0X
+default_variation: "0:999"
+default_retrieveGenerated: false
+
