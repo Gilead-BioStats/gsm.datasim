@@ -37,6 +37,7 @@
 #' @importFrom gsm MakeWorkflowList CombineSpecs
 #' @importFrom utils read.csv
 #' @importFrom tictoc tic toc
+#' @importFrom rlang zap
 #'
 #' @examples
 #' \dontrun{
@@ -62,7 +63,8 @@ raw_data_generator <- function(
     save = FALSE
 ) {
   # Load workflow mappings and combine specifications
-  combined_specs <- load_specs(workflow_path, mappings, package)
+  combined_specs <- load_specs(workflow_path, mappings, package) |>
+    purrr::list_modify("Mapped_SUBJ" = rlang::zap())
 
   #check to see if Raw_Site Raw_Study and Raw_Subj are in the spec
 

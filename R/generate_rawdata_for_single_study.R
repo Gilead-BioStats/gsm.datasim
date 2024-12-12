@@ -69,7 +69,6 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
     "Raw_SV" = subject_count
   )
 
-
   # ae_count <- subject_count * 3
   # pd_count <- subject_count * 3
   # sdrgcomp_count <- subject_count %/% 2
