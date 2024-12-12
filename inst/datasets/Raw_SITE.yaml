@@ -10,12 +10,17 @@ required_vars:
   InvestigatorFirstName: .default
   InvestigatorLastName: .default
   site_status: .default
-  City:
-    grouped: .default
+  City: .default
   State:
-    grouped: .default
+    method: from_another_var
+    parameters:
+      City:
+        derived: City
   Country:
-    grouped: .default
+    method: from_another_var
+    parameters:
+      City:
+        derived: City
+      State:
+        derived: State
 
-group_vars:
-  Country_State_City: .default

@@ -1,25 +1,19 @@
-name: Country_State_City
-method: grouped
-default_methods:
-    - City
-    - Country
-    - State
-default_Country_State_City_dat:
-    - country: UK
-      state: Greater London
-      city: London
-    - country: UK
-      state: Buckinghamshire
-      city: Milton Keynes
-    - country: US
-      state: CA
-      city: Foster City
-    - country: US
-      state: PA
-      city: Newtown Square
-    - country: Japan
-      state: Kanto
-      city: Tokyo
-    - country: Japan
-      state: Kumamoto Prefecture
-      city: Kumamoto
+dataframe:
+  - country: UK
+    state: Greater London
+    city: London
+  - country: UK
+    state: Buckinghamshire
+    city: Milton Keynes
+  - country: US
+    state: CA
+    city: Foster City
+  - country: US
+    state: PA
+    city: Newtown Square
+  - country: Japan
+    state: Kanto
+    city: Tokyo
+  - country: Japan
+    state: Kumamoto Prefecture
+    city: Kumamoto

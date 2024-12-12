@@ -1,5 +1,5 @@
 name: City
-method: sample
+method: group_sample
 default_pool_of_choices:
   - "London"
   - "Milton Keynes"

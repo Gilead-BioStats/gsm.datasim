@@ -100,7 +100,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
       # Determine the number of records 'n' based on data_type
       n <- counts[[data_type]][snapshot_idx]
 
-      yaml_spec <- parse_yaml_spec(glue::glue("~/gsm.datasim/inst/datasets/{data_type}.yaml"))
+      yaml_spec <- parse_yaml_spec(data_type, base_path = "./inst/datasets")
 
       external <- list(
         "SnapshotCount" = SnapshotCount,

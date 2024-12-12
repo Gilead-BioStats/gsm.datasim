@@ -1,10 +1,15 @@
 name: State
-method: sample
-default_pool_of_choices:
-  - "Greater London"
-  - "Buckinghamshire"
-  - "CA"
-  - "PA"
-  - "Kanto"
-  - "Kumamoto Prefecture"
-default_replace: true
+methods:
+  sample:
+    default_pool_of_choices:
+      - "Greater London"
+      - "Buckinghamshire"
+      - "CA"
+      - "PA"
+      - "Kanto"
+      - "Kumamoto Prefecture"
+    default_replace: true
+  from_another_var:
+    default_full_df_pool:
+      yaml: Country_State_City
+

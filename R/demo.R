@@ -1,6 +1,65 @@
-parse_yaml_spec <- function(file_path) {
-  spec <- yaml::yaml.load_file(file_path)
-  return(spec)
+
+parse_yaml_const <- function(yaml_file) {
+  const_raw_data <- yaml::yaml.load_file(yaml_file)
+  result <- const_raw_data
+
+  if ("dataframe" %in% names(const_raw_data)) {
+    result <- dplyr::bind_rows(const_raw_data$dataframe)
+
+  } else if ("variable" %in% names(const_raw_data)) {
+    result <- const_raw_data$variable
+  }
+  return(result)
+}
+
+# A helper function that recursively searches for the `yaml` key and expands it
+expand_yaml_references <- function(x, base_path = ".") {
+  if (is.list(x) & !is.data.frame(x)) {
+    # If the current list element has a `yaml` key, read in the referenced YAML
+    if ("yaml" %in% names(x)) {
+      # The value of `yaml` should be a file stem that we append `.yaml` to
+      yaml_file <- file.path(base_path, paste0(x$yaml, ".yaml"))
+
+      # Load the referenced YAML file
+      parse_result <- parse_yaml_const(yaml_file)
+
+      # Recursively expand the included YAML in case it has nested references
+      return(expand_yaml_references(parse_result, base_path))
+
+    } else {
+      # If no `yaml` key at this level, check sub-elements
+      return(lapply(x, expand_yaml_references, base_path = base_path))
+    }
+  } else {
+    # If it's not a list, just return the value as is
+    return(x)
+  }
+}
+
+parse_yaml_spec <- function(spec_name, base_path = "./inst/variables", method_name=NULL) {
+  yaml_file <- file.path(base_path, paste0(spec_name, ".yaml"))
+  full_spec <- yaml::yaml.load_file(yaml_file)
+  method_spec <- full_spec
+  if ("methods" %in% names(full_spec)) {
+    if (is.null(method_name)) {
+      method_name <- names(full_spec$methods)[[1]]
+    }
+
+    # Store method_name in method_spec$method
+    method_spec$method <- method_name
+
+    # Copy elements from full_spec$methods[[method_name]] to method_spec
+    for (el in names(full_spec$methods[[method_name]])) {
+      method_spec[[el]] <- full_spec$methods[[method_name]][[el]]
+    }
+
+    # Remove the entire methods element
+    method_spec$methods <- NULL
+  }
+
+  method_spec <- expand_yaml_references(method_spec, base_path = base_path)
+
+  return(method_spec)
 }
 
 generate_padded_sequence <- function(range_str) {
@@ -82,10 +141,11 @@ create_dataset_new <- function(name, n, current_data, previous_data, yaml_spec, 
   # Delete all vars that are marked as grouped
   vars <- vars[!sapply(vars, function(x) "grouped" %in% names(x))]
 
-  variable_data <- lapply(names(vars), function(var_name) {
+  variable_data <- list()
+  for (var_name in names(vars)) {
     browser()
+
     curr_var <- vars[[var_name]]
-    # if (var_name == "act_fpfv") browser()
     curr_args <- list("n" = n)
     if ("parameters"  %in% names(curr_var)) {
       params <- curr_var$parameters
@@ -102,7 +162,6 @@ create_dataset_new <- function(name, n, current_data, previous_data, yaml_spec, 
             ds <- param$current_data[[ds_name]]
             for (col_name in names(ds)) {
                 col <- ds[[col_name]]
-                browser()
                 number_of_rows_to_add <- if (is.null(col)) 1 else ds[[col_name]]
                 arg_to_add <- current_data[[ds_name]][[col_name]]
 
@@ -116,30 +175,36 @@ create_dataset_new <- function(name, n, current_data, previous_data, yaml_spec, 
 
         } else if (!is.null(param$random)) {
             curr_args[[param_name]] <- param$random
+
+        }  else if (!is.null(param$derived)) {
+          curr_args[[param_name]] <- variable_data[[param$derived]]
         }
 
       }
 
     }
 
-    func_yaml <- parse_yaml_spec(glue::glue("~/gsm.datasim/inst/variables/{var_name}.yaml"))
+    func_yaml <- parse_yaml_spec(var_name, method_name = curr_var$method)
 
     # Generate data using the generator function
-    simulate_variable(func_yaml, curr_args)
-  })
-
-  names(variable_data) <- names(vars)
+    variable_data[[var_name]] <- simulate_variable(func_yaml, curr_args)
+  }
 
   group_vars <- yaml_spec$group_vars %||% list()
 
-  group_vars_data <- lapply(names(group_vars), function(var_name) {
-    curr_var <- dplyr::bind_rows(group_vars[[var_name]])
-    curr_args <- list(n, curr_var)
-    func_yaml <- parse_yaml_spec(glue::glue("~/gsm.datasim/inst/variables/{var_name}.yaml"))
-
-    # Generate data using the generator function
-    simulate_variable(func_yaml, curr_args)
-  })
+  # group_vars_data <- lapply(names(group_vars), function(var_name) {
+  #   browser()
+  #   curr_var <- group_vars[[var_name]]
+  #   # if (var_name == "act_fpfv") browser()
+  #   curr_args <- list("n" = n)
+  #
+  #   curr_var <- dplyr::bind_rows(group_vars[[var_name]])
+  #   curr_args <- list(n, curr_var)
+  #   func_yaml <- parse_yaml_spec(glue::glue("~/gsm.datasim/inst/variables/{var_name}.yaml"), curr_var$method)
+  #
+  #   # Generate data using the generator function
+  #   simulate_variable(func_yaml, curr_args)
+  # })
 
   group_vars_data <- do.call(c, group_vars_data)
 
@@ -175,7 +240,6 @@ get_arg <- function(arg_name, list_to_search, defaults) {
 
 # Universal simulation function
 simulate_variable <- function(var, var_inputs) {
-    #browser()
     method <- var$method
     name <- var$name
     print(name)
@@ -206,11 +270,22 @@ simulate_variable <- function(var, var_inputs) {
 
       result <- consecutive_generator(var_inputs$n, prefix, variation, previous_data, retrieveGenerated)
 
+    } else if (method == 'from_another_var') {
+      # Get date_min and date_lim from inputs or use defaults
+      full_df_pool <- get_arg("full_df_pool", var_inputs, var)
+      result <- from_another_var(var_inputs, full_df_pool = full_df_pool)
+
     } else {
       stop(paste("Unknown method", method, "for variable", name))
     }
 
   return(result)
+}
+
+from_another_var <- function(var_inputs, full_df_pool) {
+  browser()
+  print('aha')
+  return(0)
 }
 
 
