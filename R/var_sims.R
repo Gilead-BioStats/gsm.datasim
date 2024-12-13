@@ -41,10 +41,18 @@ subj_visit_repeated <- function(n, data, ...) {
 }
 
 act_fpfv <- function(date_min, date_lim, prev_data, ...) {
-  generate_random_fpfv(date_min, date_lim, TRUE, prev_data)
+  generate_random_fpfv(date_min, date_lim, FALSE, prev_data)
 }
 
 est_fpfv <- function(date_min, date_lim, prev_data, ...) {
+  generate_random_fpfv(date_min, date_lim, FALSE, prev_data)
+}
+
+est_lplv <- function(date_min, date_lim, prev_data, ...) {
+  generate_random_fpfv(date_min, date_lim, FALSE, prev_data)
+}
+
+est_lpfv <- function(date_min, date_lim, prev_data, ...) {
   generate_random_fpfv(date_min, date_lim, FALSE, prev_data)
 }
 
@@ -239,6 +247,13 @@ phase <- function(n, external_phase = NULL, replace = TRUE, ...) {
   return("Blinded Study Drug Completion")
 }
 
+sdrgyn <- function(n, ...) {
+  # Function body for sdrgyn
+  sample(c("Y", "N"),
+         n,
+         replace = TRUE)
+}
+
 compyn <- function(n, ...) {
   # Function body for compyn
   sample(c("", "N"),
@@ -268,7 +283,7 @@ enrolldt <- function(n, startDate, endDate, enrollyn_dat, ...) {
 
 timeonstudy <- function(n, enrolldt, endDate, ...) {
   # Function body for timeonstudy
-  as.numeric(as.Date(endDate) - as.Date(enrolldt))
+  as.numeric(as.Date(endDate) - as.Date(enrolldt)) %>% as.integer()
 }
 
 enrollyn_enrolldt_timeonstudy <- function(n, startDate, endDate, ...) {
@@ -389,15 +404,14 @@ Country_State_City <- function(n, ...) {
 
 nickname <- function(n, ...) {
   # Function body for nickname
-  sample(c("OAK", "TREE", "GROOVE"), n, replace = TRUE)
-
+  word <- sample(c("OAK", "TREE", "GROOVE"), n, replace = TRUE)
+  paste(word, sample(1:100, 1), sep = "-")
 }
 
-protocol_title <- function(n,
-                           prot_title = c("New Drug Phase 1", "New Drug Phase 2", "New Drug Phase 3"), ...) {
+protocol_title <- function(n, ...) {
   # Function body for protocol_title
-  sample(prot_title, n, replace = TRUE)
-
+  letter <- sample(LETTERS, n, replace = TRUE)
+  paste("Protocol Title", letter)
 }
 
 status <- function(n, stat = c("Active", "", "Finalized"), ...) {
@@ -407,14 +421,36 @@ status <- function(n, stat = c("Active", "", "Finalized"), ...) {
          replace = TRUE)
 }
 
+therapeutic_area <- function(n, stat = c("Oncology", "Virology", "Inflammation"), ...) {
+  # Function body for TA
+  sample(stat,
+         n,
+         replace = TRUE)
+}
+
+protocol_indication <- function(n, stat = c("Cardiovascular Health", "Lung Function", "Hematology"), ...) {
+  # Function body for protocol_indication
+  sample(stat,
+         n,
+         replace = TRUE)
+}
+
+product <- function(n, ...) {
+  # Function body for product
+  num <- sample(1:50,
+         n,
+         replace = TRUE)
+  paste("Product Name", num)
+}
+
 num_plan_site <- function(num_pl_site, ...) {
   # Function body for num_plan_site
-  unlist(num_pl_site)
+  unlist(num_pl_site) %>% as.integer()
 }
 
 num_plan_subj <- function(num_pl_subj, ...) {
   # Function body for num_plan_subj
-  unlist(num_pl_subj)
+  unlist(num_pl_subj) %>% as.integer()
 }
 
 subject_to_enrollment <- function(n, data, previous_data, ...) {
