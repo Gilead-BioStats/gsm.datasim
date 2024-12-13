@@ -1,10 +1,5 @@
 name: City
-method: group_sample
+method: sample
 default_pool_of_choices:
-  - "London"
-  - "Milton Keynes"
-  - "Foster City"
-  - "Newtown Square"
-  - "Tokyo"
-  - "Kumamoto"
+  yaml: Country_State_City
 default_replace: true

@@ -1,19 +1,19 @@
 dataframe:
-  - country: UK
-    state: Greater London
-    city: London
-  - country: UK
-    state: Buckinghamshire
-    city: Milton Keynes
-  - country: US
-    state: CA
-    city: Foster City
-  - country: US
-    state: PA
-    city: Newtown Square
-  - country: Japan
-    state: Kanto
-    city: Tokyo
-  - country: Japan
-    state: Kumamoto Prefecture
-    city: Kumamoto
+  - Country: UK
+    State: Greater London
+    City: London
+  - Country: UK
+    State: Buckinghamshire
+    City: Milton Keynes
+  - Country: US
+    State: CA
+    City: Foster City
+  - Country: US
+    State: PA
+    City: Newtown Square
+  - Country: Japan
+    State: Kanto
+    City: Tokyo
+  - Country: Japan
+    State: Kumamoto Prefecture
+    City: Kumamoto

@@ -95,7 +95,7 @@ consecutive_generator <- function(n, prefix, variation, previous_data, retrieveG
   possible_numbers <- generate_padded_sequence(variation)
 
   # Create all possible strings starting with "0X" and ending with the 3-digit numbers
-  possible_strings <- paste0(prefix, variation)
+  possible_strings <- paste0(prefix, possible_numbers)
 
   # Exclude the old strings to avoid duplication
   new_strings_available <- setdiff(possible_strings, already_generated)
@@ -111,7 +111,6 @@ consecutive_generator <- function(n, prefix, variation, previous_data, retrieveG
 }
 
 create_dataset_new <- function(name, n, current_data, previous_data, yaml_spec, spec, external = NULL) {
-  browser()
   previous_dataset <- if (name %in% names(previous_data)) previous_data[[name]] else NULL
   previous_row_num <- if (!is.null(previous_dataset)) nrow(previous_dataset) else 0
 
@@ -143,7 +142,6 @@ create_dataset_new <- function(name, n, current_data, previous_data, yaml_spec, 
 
   variable_data <- list()
   for (var_name in names(vars)) {
-    browser()
 
     curr_var <- vars[[var_name]]
     curr_args <- list("n" = n)
@@ -191,7 +189,7 @@ create_dataset_new <- function(name, n, current_data, previous_data, yaml_spec, 
   }
 
   group_vars <- yaml_spec$group_vars %||% list()
-
+  group_vars_data <- list()
   # group_vars_data <- lapply(names(group_vars), function(var_name) {
   #   browser()
   #   curr_var <- group_vars[[var_name]]
@@ -248,6 +246,8 @@ simulate_variable <- function(var, var_inputs) {
       # Get pool_of_choices and replace from inputs or use defaults
       pool <- get_arg("pool_of_choices", var_inputs, var)
       replace <- get_arg("replace", var_inputs, var)
+
+      if (is.data.frame(pool)) {pool <- pool[[name]]}
       result <- sample(pool, var_inputs$n, replace = TRUE)
 
     } else if (method == 'return_value') {
@@ -273,7 +273,7 @@ simulate_variable <- function(var, var_inputs) {
     } else if (method == 'from_another_var') {
       # Get date_min and date_lim from inputs or use defaults
       full_df_pool <- get_arg("full_df_pool", var_inputs, var)
-      result <- from_another_var(var_inputs, full_df_pool = full_df_pool)
+      result <- from_another_var(name, var_inputs, full_df_pool = full_df_pool)
 
     } else {
       stop(paste("Unknown method", method, "for variable", name))
@@ -282,10 +282,24 @@ simulate_variable <- function(var, var_inputs) {
   return(result)
 }
 
-from_another_var <- function(var_inputs, full_df_pool) {
-  browser()
-  print('aha')
-  return(0)
+from_another_var <- function(var_name, var_inputs, full_df_pool) {
+  key_cols <- names(var_inputs)[names(var_inputs) != "n"]
+  key_data <- var_inputs[key_cols]
+
+  # Convert inp_1 to a data frame
+  key_data_df <- as.data.frame(key_data, stringsAsFactors = FALSE)
+
+  # Create a combined key for both inp_1_df and inp_2 by concatenating all key columns
+  key_inp1 <- do.call(paste, c(key_data_df[key_cols], sep = "_"))
+  key_inp2 <- do.call(paste, c(full_df_pool[key_cols], sep = "_"))
+
+  # Match these combined keys to find corresponding rows in inp_2
+  positions <- match(key_inp1, key_inp2)
+
+  # Extract the values from the target column inp_3 in the matched order
+  result <- full_df_pool[[var_name]][positions]
+
+  return(result)
 }
 
 

@@ -113,7 +113,6 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
 
       )
 
-      browser()
       variable_data <- create_dataset_new(data_type, n, data, previous_data, yaml_spec, combined_specs, external)
       # Combine variables into a data frame
       data[[data_type]] <- as.data.frame(variable_data)
