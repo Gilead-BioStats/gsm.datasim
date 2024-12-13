@@ -12,6 +12,7 @@ parse_yaml_const <- function(yaml_file) {
   return(result)
 }
 
+
 # A helper function that recursively searches for the `yaml` key and expands it
 expand_yaml_references <- function(x, base_path = ".") {
   if (is.list(x) & !is.data.frame(x)) {
