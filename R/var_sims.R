@@ -415,7 +415,7 @@ protocol_title <- function(n, ...) {
   paste("Protocol Title", letter)
 }
 
-status <- function(n, stat = c("Active", "", "Finalized"), ...) {
+status <- function(n, stat = c("Active"), ...) {
   # Function body for status
   sample(stat,
          n,
