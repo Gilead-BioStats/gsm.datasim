@@ -13,8 +13,8 @@ required_vars:
         external: SiteCount
   num_plan_subj:
     parameters:
-      external:
-        value: ParticipantCount
+      value:
+        external: ParticipantCount
   act_fpfv:
     parameters:
       MinDate:

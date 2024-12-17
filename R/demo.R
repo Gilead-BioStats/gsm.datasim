@@ -1,4 +1,24 @@
 
+from_another_var <- function(var_name, var_inputs, full_df_pool) {
+  key_cols <- names(var_inputs)[names(var_inputs) != "n"]
+  key_data <- var_inputs[key_cols]
+
+  # Convert inp_1 to a data frame
+  key_data_df <- as.data.frame(key_data, stringsAsFactors = FALSE)
+
+  # Create a combined key for both inp_1_df and inp_2 by concatenating all key columns
+  key_inp1 <- do.call(paste, c(key_data_df[key_cols], sep = "_"))
+  key_inp2 <- do.call(paste, c(full_df_pool[key_cols], sep = "_"))
+
+  # Match these combined keys to find corresponding rows in inp_2
+  positions <- match(key_inp1, key_inp2)
+
+  # Extract the values from the target column inp_3 in the matched order
+  result <- full_df_pool[[var_name]][positions]
+
+  return(result)
+}
+
 parse_yaml_const <- function(yaml_file) {
   const_raw_data <- yaml::yaml.load_file(yaml_file)
   result <- const_raw_data
@@ -11,6 +31,19 @@ parse_yaml_const <- function(yaml_file) {
   }
   return(result)
 }
+
+assign_function <- function(fun_name, code_str, lis_args) {
+  # Check if code_str starts with "function(" pattern; if not, wrap it
+  if (!grepl("^\\s*function\\(", code_str)) {
+    arglist <- paste(lis_args, collapse = ", ")
+    # Wrap code_str in a function definition with provided arguments
+    code_str <- paste0("function(", arglist, ", ...) { ", code_str, " }")
+  }
+
+  # Parse and evaluate the code, then assign to global environment
+  assign(fun_name, eval(parse(text = code_str)), envir = .GlobalEnv)
+}
+
 
 
 # A helper function that recursively searches for the `yaml` key and expands it
@@ -111,6 +144,21 @@ consecutive_generator <- function(n, prefix, variation, previous_data, retrieveG
 
 }
 
+first_non_null <- function(...) {
+  args <- list(...)
+  for (arg in args) {
+    if (!is.null(arg)) return(arg)
+  }
+  return(NULL)  # if all are NULL
+}
+
+
+get_arg <- function(arg_name, list_to_search, defaults) {
+  default_name <- paste0("default_", arg_name)
+  first_non_null(list_to_search[[arg_name]], defaults[[default_name]])
+}
+
+
 create_dataset_new <- function(name, n, current_data, previous_data, yaml_spec, spec, external = NULL) {
   previous_dataset <- if (name %in% names(previous_data)) previous_data[[name]] else NULL
   previous_row_num <- if (!is.null(previous_dataset)) nrow(previous_dataset) else 0
@@ -157,21 +205,27 @@ create_dataset_new <- function(name, n, current_data, previous_data, yaml_spec, 
           curr_args[[param_name]] <- previous_dataset[[param$previous_dataset]]
 
         } else if (!is.null(param$current_data)) {
-          for (ds_name in names(param$current_data)) {
-            ds <- param$current_data[[ds_name]]
-            for (col_name in names(ds)) {
+
+          for (col_to_add in names(param$current_data)) {
+            for (ds_name in names(param$current_data[[col_to_add]])) {
+              ds <- param$current_data[[col_to_add]][[ds_name]]
+              for (col_name in names(ds)) {
                 col <- ds[[col_name]]
                 number_of_rows_to_add <- if (is.null(col)) 1 else ds[[col_name]]
+                if (number_of_rows_to_add == "n") number_of_rows_to_add <- n
+                skip_subset <- FALSE
+                if (number_of_rows_to_add == "all") skip_subset <- TRUE
+
                 arg_to_add <- current_data[[ds_name]][[col_name]]
 
-                if (is.vector(arg_to_add) | is.list(arg_to_add)) {
-                  arg_to_add <- arg_to_add[[1:number_of_rows_to_add]]
+                if ((is.vector(arg_to_add) | is.list(arg_to_add)) & !skip_subset) {
+                  arg_to_add <- sample(arg_to_add, number_of_rows_to_add, replace = TRUE)
                 }
 
-                curr_args[[param_name]] <- arg_to_add
+                curr_args[[param_name]][[col_to_add]] <- arg_to_add
+              }
             }
           }
-
         } else if (!is.null(param$random)) {
             curr_args[[param_name]] <- param$random
 
@@ -182,32 +236,14 @@ create_dataset_new <- function(name, n, current_data, previous_data, yaml_spec, 
       }
 
     }
-
     func_yaml <- parse_yaml_spec(var_name, method_name = curr_var$method)
+    if (name == "Raw_SUBJ") browser()
 
     # Generate data using the generator function
     variable_data[[var_name]] <- simulate_variable(func_yaml, curr_args)
   }
 
-  group_vars <- yaml_spec$group_vars %||% list()
-  group_vars_data <- list()
-  # group_vars_data <- lapply(names(group_vars), function(var_name) {
-  #   browser()
-  #   curr_var <- group_vars[[var_name]]
-  #   # if (var_name == "act_fpfv") browser()
-  #   curr_args <- list("n" = n)
-  #
-  #   curr_var <- dplyr::bind_rows(group_vars[[var_name]])
-  #   curr_args <- list(n, curr_var)
-  #   func_yaml <- parse_yaml_spec(glue::glue("~/gsm.datasim/inst/variables/{var_name}.yaml"), curr_var$method)
-  #
-  #   # Generate data using the generator function
-  #   simulate_variable(func_yaml, curr_args)
-  # })
-
-  group_vars_data <- do.call(c, group_vars_data)
-
-  all_variable_data <- c(variable_data, group_vars_data) %>%
+  all_variable_data <- variable_data %>%
     as.data.frame() %>%
     rename_raw_data_vars_per_spec(vars)
 
@@ -221,22 +257,6 @@ create_dataset_new <- function(name, n, current_data, previous_data, yaml_spec, 
 }
 
 
-first_non_null <- function(...) {
-  args <- list(...)
-  for (arg in args) {
-    if (!is.null(arg)) return(arg)
-  }
-  return(NULL)  # if all are NULL
-}
-
-
-get_arg <- function(arg_name, list_to_search, defaults) {
-  default_name <- paste0("default_", arg_name)
-  first_non_null(list_to_search[[arg_name]], defaults[[default_name]])
-}
-
-
-
 # Universal simulation function
 simulate_variable <- function(var, var_inputs) {
     method <- var$method
@@ -246,10 +266,11 @@ simulate_variable <- function(var, var_inputs) {
     if (method == 'sample') {
       # Get pool_of_choices and replace from inputs or use defaults
       pool <- get_arg("pool_of_choices", var_inputs, var)
+      probability <- get_arg("probability", var_inputs, var)
       replace <- get_arg("replace", var_inputs, var)
 
-      if (is.data.frame(pool)) {pool <- pool[[name]]}
-      result <- sample(pool, var_inputs$n, replace = TRUE)
+      if (is.data.frame(pool) | (name %in% names(pool))) {pool <- pool[[name]]}
+      result <- sample(pool, var_inputs$n, replace = replace, prob = probability)
 
     } else if (method == 'return_value') {
       # Get value from inputs or use default
@@ -267,6 +288,8 @@ simulate_variable <- function(var, var_inputs) {
       prefix <- get_arg("prefix", var_inputs, var)
       variation <- get_arg("variation", var_inputs, var)
       previous_data <- get_arg("previous_data", var_inputs, var)
+      if (name %in% names(previous_data)) previous_data <- previous_data[[name]]
+
       retrieveGenerated <- get_arg("retrieveGenerated", var_inputs, var)
 
       result <- consecutive_generator(var_inputs$n, prefix, variation, previous_data, retrieveGenerated)
@@ -274,7 +297,24 @@ simulate_variable <- function(var, var_inputs) {
     } else if (method == 'from_another_var') {
       # Get date_min and date_lim from inputs or use defaults
       full_df_pool <- get_arg("full_df_pool", var_inputs, var)
-      result <- from_another_var(name, var_inputs, full_df_pool = full_df_pool)
+      name_is_source <- if ("name_is_source" %in% names(var_inputs)) var_inputs$name_is_source else name
+
+      result <- from_another_var(name_is_source, var_inputs, full_df_pool = full_df_pool)
+
+    } else if (method == 'inline_function') {
+      code <- get_arg("code", var_inputs, var)
+      if (endsWith(code) == ".R") {
+        if (grep(.Platform$file.sep, code)) {
+          full_path <- code
+        } else {
+          full_path <- file.path("~/gsm.datasim/inst/var_methods", code)
+        }
+        source(full_path)
+      } else {
+        assign_function(name, code, var_inputs[names(var_inputs) != "code"])
+      }
+
+      result <- get(name)(var_inputs[names(var_inputs) != "code"])
 
     } else {
       stop(paste("Unknown method", method, "for variable", name))
@@ -283,152 +323,4 @@ simulate_variable <- function(var, var_inputs) {
   return(result)
 }
 
-from_another_var <- function(var_name, var_inputs, full_df_pool) {
-  key_cols <- names(var_inputs)[names(var_inputs) != "n"]
-  key_data <- var_inputs[key_cols]
-
-  # Convert inp_1 to a data frame
-  key_data_df <- as.data.frame(key_data, stringsAsFactors = FALSE)
-
-  # Create a combined key for both inp_1_df and inp_2 by concatenating all key columns
-  key_inp1 <- do.call(paste, c(key_data_df[key_cols], sep = "_"))
-  key_inp2 <- do.call(paste, c(full_df_pool[key_cols], sep = "_"))
-
-  # Match these combined keys to find corresponding rows in inp_2
-  positions <- match(key_inp1, key_inp2)
-
-  # Extract the values from the target column inp_3 in the matched order
-  result <- full_df_pool[[var_name]][positions]
-
-  return(result)
-}
-
-
-############################# SITE ################################
-
-siteid <- function(n, siteid = NULL, isGenerated = FALSE, ...) {
-  # Function body for invid
-  if (!is.null(siteid)) {
-    already_generated <- siteid
-  } else {
-    already_generated <- c()
-  }
-
-  if (isGenerated) {
-    return(sample(already_generated, n, replace = TRUE))
-  }
-
-
-  # Generate all possible 3-digit numbers as strings with leading zeros
-  possible_numbers <- sprintf("%03d", 0:9999)
-
-  # Create all possible strings starting with "0X" and ending with the 3-digit numbers
-  possible_strings <- paste0("Site", possible_numbers)
-
-  # Exclude the old strings to avoid duplication
-  new_strings_available <- setdiff(possible_strings, already_generated)
-
-  # Check if there are enough unique strings to generate
-  if (length(new_strings_available) < n) {
-    stop("Not enough unique strings available to generate ", n, " new strings.")
-  }
-
-  # Randomly sample 'n' unique strings from the available strings
-  sample(new_strings_available, n)
-
-}
-
-
-
-
-invid <- function(n, invid = NULL, isGenerated=FALSE, ...) {
-  # Function body for invid
-  args <- list(...)
-  if (!is.null(invid)) {
-    already_generated <- args$invid
-  } else {
-    already_generated <- c()
-  }
-
-  if (isGenerated) {
-    return(sample(already_generated, n, replace = TRUE))
-  }
-
-  # Generate all possible 3-digit numbers as strings with leading zeros
-  possible_numbers <- sprintf("%03d", 0:999)
-
-  # Create all possible strings starting with "0X" and ending with the 3-digit numbers
-  possible_strings <- paste0("0X", possible_numbers)
-
-  # Exclude the old strings to avoid duplication
-  new_strings_available <- setdiff(possible_strings, already_generated)
-
-  # Check if there are enough unique strings to generate
-  if (length(new_strings_available) < n) {
-    stop("Not enough unique strings available to generate ", n, " new strings.")
-  }
-
-  # Randomly sample 'n' unique strings from the available strings
-  sample(new_strings_available, n)
-}
-
-InvestigatorFirstName <- function(n, data_pool) {
-  # Function body for InvestigatorFirstName
-  sample(data_pool,
-         n,
-         replace = TRUE)
-}
-
-InvestigatorLastName <- function(n, data_pool) {
-  # Function body for InvestigatorLastName
-  sample(data_pool,
-         n,
-         replace = TRUE)
-}
-
-site_status <- function(n, ...) {
-  # Function body for site_status
-  sample(c("Active", "", "Closed"),
-         n,
-         replace = TRUE)
-}
-
-
-
-City <- function(n, Country_State_City_data) {
-  cities <- unique(Country_State_City_data$city)
-  # Function body for City
-  sample(cities,
-         n,
-         replace = TRUE)
-}
-
-State <- function(n, Country_State_City_data, cities = NULL) {
-  if (!is.null(cities)) {
-    indices <- match(cities, Country_State_City_data$city)
-    states <- Country_State_City_data$state[indices]
-  } else {
-    states <- sample(Country_State_City_data$state, n, replace = TRUE)
-  }
-  return(states)
-}
-
-Country <- function(n, Country_State_City_data, cities = NULL) {
-  if (!is.null(cities)) {
-    indices <- match(cities, Country_State_City_data$city)
-    countries <- Country_State_City_data$country[indices]
-  } else {
-    countries <- sample(Country_State_City_data$country, n, replace = TRUE)
-  }
-  return(countries)
-}
-
-Country_State_City <- function(n, Country_State_City_data) {
-  cities <- City(n, Country_State_City_data)
-  states <- State(n, Country_State_City_data, cities = cities)
-  countries <- Country(n, Country_State_City_data, cities = cities)
-  return(list(City = cities,
-              State = states,
-              Country = countries))
-}
 

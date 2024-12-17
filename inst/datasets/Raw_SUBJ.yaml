@@ -1,42 +1,69 @@
 required_vars:
   siteid:
-    random: NULL
+    parameters:
+      retrieveGenerated:
+        random: TRUE
+      previous_data:
+        current_data:
+          siteid:
+            Raw_SITE:
+              siteid: all
   studyid:
-    data:
-      Raw_STUDY:
-         protocol_number: 1
-  invid:
-    random: NULL
-  InvestigatorFirstName:
-    random:
-      - John
-      - Joanne
-      - Fred
-  InvestigatorLastName:
-    random:
-      - Doe
-      - Deer
-      - Smith
-  site_status:
-    random:
-      - Active
-      - ""
-      - Closed
-  City:
-    grouped: NULL
-  State:
-    grouped: NULL
-  Country:
-    grouped: NULL
+    parameters:
+      pool_of_choises:
+        current_data:
+          protocol_number:
+            Raw_STUDY:
+              protocol_number: 1
+  enrolldt:
+    parameters:
+      enrollyn:
+        derived: enrollyn
+      startDate:
+        external: startDate
+      endDate:
+        external: endDate
 
-group_vars:
-  Country_State_City:
-    - Country: UK
-      State: Greater London
-      City: London
-    - Country: UK
-      State: Buckinghamshire
-      City: Milton Keynes
-    - Country: US
-      State: CA
-      City: Foster City
+  invid:
+    method: from_another_var
+    parameters:
+      siteid:
+        derived: siteid
+      full_df_pool:
+        current_data:
+          invid:
+            Raw_SITE:
+              pi_number: all
+          siteid:
+            Raw_SITE:
+              siteid: all
+  country:
+    method: from_another_var
+    parameters:
+      siteid:
+        derived: siteid
+      full_df_pool:
+        current_data:
+          country:
+            Raw_SITE:
+              country: all
+          siteid:
+            Raw_SITE:
+              siteid: all
+  subjid: .default
+  subject_nsv:
+    method: inline_func
+    parameters:
+      code: "subject_nsv.R"
+      subjid:
+        derived: subjid
+  enrollyn: .default
+  timeonstudy:
+    parameters:
+      enrolldt:
+        derived: enrolldt
+      endDate:
+        external: endDate
+
+
+

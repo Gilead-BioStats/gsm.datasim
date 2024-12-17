@@ -1,0 +1,9 @@
+name: enrollyn
+method: sample
+default_pool_of_choices:
+    - Y
+    - N
+default_probability:
+    - 0.75
+    - 0.25
+default_replace: true

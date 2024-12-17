@@ -4,8 +4,9 @@ required_vars:
     parameters:
       pool_of_choises:
         current_data:
-          Raw_STUDY:
-             protocol_number: 1
+          protocol_number:
+            Raw_STUDY:
+              protocol_number: 1
   invid: .default
   InvestigatorFirstName: .default
   InvestigatorLastName: .default
