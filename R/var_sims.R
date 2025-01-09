@@ -422,6 +422,13 @@ status <- function(n, stat = c("Active"), ...) {
          replace = TRUE)
 }
 
+Status <- function(n, stat = c("Active"), ...) {
+  # Function body for status
+  sample(stat,
+         n,
+         replace = TRUE)
+}
+
 therapeutic_area <- function(n, stat = c("Oncology", "Virology", "Inflammation"), ...) {
   # Function body for TA
   sample(stat,
