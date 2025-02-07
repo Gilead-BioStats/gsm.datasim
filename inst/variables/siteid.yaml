@@ -1,0 +1,6 @@
+name: siteid
+method: consecutive_generator
+default_prefix: Site_
+default_variation: "0:9999"
+default_retrieveGenerated: false
+

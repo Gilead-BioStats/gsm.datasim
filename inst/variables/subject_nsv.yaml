@@ -1,0 +1,3 @@
+name: subject_nsv
+method: inline_function
+default_code: "paste0(subjid, '-XXXX')"

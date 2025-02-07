@@ -1,0 +1,11 @@
+name: Country
+methods:
+  sample:
+    default_pool_of_choices:
+      - UK
+      - US
+      - Japan
+    default_replace: true
+  from_another_var:
+    default_full_df_pool:
+      yaml: Country_State_City

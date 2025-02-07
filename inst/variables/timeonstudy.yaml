@@ -1,0 +1,3 @@
+name: enrollyn
+method: inline_function
+default_code: "as.numeric(as.Date(endDate) - as.Date(enrolldt)) %>% as.integer()"

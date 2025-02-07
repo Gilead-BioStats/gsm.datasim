@@ -1,0 +1,7 @@
+name: status
+method: sample
+default_pool_of_choices:
+  - Active
+  - ""
+  - Finalized
+default_replace: true

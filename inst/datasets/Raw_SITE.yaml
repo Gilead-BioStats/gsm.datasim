@@ -1,0 +1,27 @@
+required_vars:
+  siteid: .default
+  studyid:
+    parameters:
+      pool_of_choises:
+        current_data:
+          protocol_number:
+            Raw_STUDY:
+              protocol_number: 1
+  invid: .default
+  InvestigatorFirstName: .default
+  InvestigatorLastName: .default
+  site_status: .default
+  City: .default
+  State:
+    method: from_another_var
+    parameters:
+      City:
+        derived: City
+  Country:
+    method: from_another_var
+    parameters:
+      City:
+        derived: City
+      State:
+        derived: State
+

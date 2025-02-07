@@ -1,0 +1,4 @@
+name: est_fpfv
+method: generate_random_fpfv
+default_date_min: '2020-01-01'
+default_date_lim: '2020-12-31'

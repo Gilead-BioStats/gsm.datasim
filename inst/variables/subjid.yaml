@@ -1,0 +1,6 @@
+name: subjid
+method: consecutive_generator
+default_prefix: S
+default_variation: "0:99999"
+default_retrieveGenerated: false
+

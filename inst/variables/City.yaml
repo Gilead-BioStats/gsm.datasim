@@ -1,0 +1,5 @@
+name: City
+method: sample
+default_pool_of_choices:
+  yaml: Country_State_City
+default_replace: true

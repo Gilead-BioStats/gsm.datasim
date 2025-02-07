@@ -1,0 +1,7 @@
+name: InvestigatorLastName
+method: sample
+default_pool_of_choices:
+    - Doe
+    - Deer
+    - Smith
+default_replace: true

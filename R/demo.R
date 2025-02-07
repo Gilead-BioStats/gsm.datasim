@@ -1,0 +1,326 @@
+
+from_another_var <- function(var_name, var_inputs, full_df_pool) {
+  key_cols <- names(var_inputs)[names(var_inputs) != "n"]
+  key_data <- var_inputs[key_cols]
+
+  # Convert inp_1 to a data frame
+  key_data_df <- as.data.frame(key_data, stringsAsFactors = FALSE)
+
+  # Create a combined key for both inp_1_df and inp_2 by concatenating all key columns
+  key_inp1 <- do.call(paste, c(key_data_df[key_cols], sep = "_"))
+  key_inp2 <- do.call(paste, c(full_df_pool[key_cols], sep = "_"))
+
+  # Match these combined keys to find corresponding rows in inp_2
+  positions <- match(key_inp1, key_inp2)
+
+  # Extract the values from the target column inp_3 in the matched order
+  result <- full_df_pool[[var_name]][positions]
+
+  return(result)
+}
+
+parse_yaml_const <- function(yaml_file) {
+  const_raw_data <- yaml::yaml.load_file(yaml_file)
+  result <- const_raw_data
+
+  if ("dataframe" %in% names(const_raw_data)) {
+    result <- dplyr::bind_rows(const_raw_data$dataframe)
+
+  } else if ("variable" %in% names(const_raw_data)) {
+    result <- const_raw_data$variable
+  }
+  return(result)
+}
+
+assign_function <- function(fun_name, code_str, lis_args) {
+  # Check if code_str starts with "function(" pattern; if not, wrap it
+  if (!grepl("^\\s*function\\(", code_str)) {
+    arglist <- paste(lis_args, collapse = ", ")
+    # Wrap code_str in a function definition with provided arguments
+    code_str <- paste0("function(", arglist, ", ...) { ", code_str, " }")
+  }
+
+  # Parse and evaluate the code, then assign to global environment
+  assign(fun_name, eval(parse(text = code_str)), envir = .GlobalEnv)
+}
+
+
+
+# A helper function that recursively searches for the `yaml` key and expands it
+expand_yaml_references <- function(x, base_path = ".") {
+  if (is.list(x) & !is.data.frame(x)) {
+    # If the current list element has a `yaml` key, read in the referenced YAML
+    if ("yaml" %in% names(x)) {
+      # The value of `yaml` should be a file stem that we append `.yaml` to
+      yaml_file <- file.path(base_path, paste0(x$yaml, ".yaml"))
+
+      # Load the referenced YAML file
+      parse_result <- parse_yaml_const(yaml_file)
+
+      # Recursively expand the included YAML in case it has nested references
+      return(expand_yaml_references(parse_result, base_path))
+
+    } else {
+      # If no `yaml` key at this level, check sub-elements
+      return(lapply(x, expand_yaml_references, base_path = base_path))
+    }
+  } else {
+    # If it's not a list, just return the value as is
+    return(x)
+  }
+}
+
+parse_yaml_spec <- function(spec_name, base_path = "./inst/variables", method_name=NULL) {
+  yaml_file <- file.path(base_path, paste0(spec_name, ".yaml"))
+  full_spec <- yaml::yaml.load_file(yaml_file)
+  method_spec <- full_spec
+  if ("methods" %in% names(full_spec)) {
+    if (is.null(method_name)) {
+      method_name <- names(full_spec$methods)[[1]]
+    }
+
+    # Store method_name in method_spec$method
+    method_spec$method <- method_name
+
+    # Copy elements from full_spec$methods[[method_name]] to method_spec
+    for (el in names(full_spec$methods[[method_name]])) {
+      method_spec[[el]] <- full_spec$methods[[method_name]][[el]]
+    }
+
+    # Remove the entire methods element
+    method_spec$methods <- NULL
+  }
+
+  method_spec <- expand_yaml_references(method_spec, base_path = base_path)
+
+  return(method_spec)
+}
+
+generate_padded_sequence <- function(range_str) {
+  # Split the input string into start and end parts
+  parts <- strsplit(range_str, ":", fixed = TRUE)[[1]]
+
+  # Convert to integers
+  start_val <- as.integer(parts[1])
+  end_val <- as.integer(parts[2])
+
+  # Determine the number of digits needed based on the 'end' part
+  width <- nchar(parts[2])
+
+  # Generate the sequence and format with leading zeros
+  seq_values <- seq(from = start_val, to = end_val)
+  formatted_values <- sprintf(paste0("%0", width, "d"), seq_values)
+
+  return(formatted_values)
+}
+
+consecutive_generator <- function(n, prefix, variation, previous_data, retrieveGenerated = FALSE) {
+  if (!is.null(previous_data)) {
+    already_generated <- previous_data
+  } else {
+    already_generated <- c()
+  }
+
+  if (retrieveGenerated) {
+    return(sample(already_generated, n, replace = TRUE))
+  }
+
+  # Generate all possible 3-digit numbers as strings with leading zeros
+  possible_numbers <- generate_padded_sequence(variation)
+
+  # Create all possible strings starting with "0X" and ending with the 3-digit numbers
+  possible_strings <- paste0(prefix, possible_numbers)
+
+  # Exclude the old strings to avoid duplication
+  new_strings_available <- setdiff(possible_strings, already_generated)
+
+  # Check if there are enough unique strings to generate
+  if (length(new_strings_available) < n) {
+    stop("Not enough unique strings available to generate ", n, " new strings.")
+  }
+
+  # Randomly sample 'n' unique strings from the available strings
+  sample(new_strings_available, n)
+
+}
+
+first_non_null <- function(...) {
+  args <- list(...)
+  for (arg in args) {
+    if (!is.null(arg)) return(arg)
+  }
+  return(NULL)  # if all are NULL
+}
+
+
+get_arg <- function(arg_name, list_to_search, defaults) {
+  default_name <- paste0("default_", arg_name)
+  first_non_null(list_to_search[[arg_name]], defaults[[default_name]])
+}
+
+
+create_dataset_new <- function(name, n, current_data, previous_data, yaml_spec, spec, external = NULL) {
+  previous_dataset <- if (name %in% names(previous_data)) previous_data[[name]] else NULL
+  previous_row_num <- if (!is.null(previous_dataset)) nrow(previous_dataset) else 0
+
+  n <- n - previous_row_num
+  if (n == 0) return(previous_dataset)
+
+  curr_spec <- spec[[name]]
+
+  # Check for unsupported variables
+  unsupported_vars <- setdiff(names(curr_spec), names(yaml_spec$required_vars))
+  if (length(unsupported_vars) > 0) {
+    logger::log_error(glue::glue("Variable(s) {unsupported_vars} is/are not currently supported,
+                             please update yaml spec for {name} and add var .yamls if needed"))
+    stop()
+  }
+
+  # Update source_col for variables that have it
+  for (var_name in names(curr_spec)) {
+    var <- curr_spec[[var_name]]
+    if ('source_col' %in% names(var)) {
+      yaml_spec$required_vars[[var_name]]$source_col <- var$source_col
+    }
+  }
+
+  vars <- yaml_spec$required_vars
+
+  # Delete all vars that are marked as grouped
+  vars <- vars[!sapply(vars, function(x) "grouped" %in% names(x))]
+
+  variable_data <- list()
+  for (var_name in names(vars)) {
+
+    curr_var <- vars[[var_name]]
+    curr_args <- list("n" = n)
+    if ("parameters"  %in% names(curr_var)) {
+      params <- curr_var$parameters
+      for (param_name in names(params)) {
+        param <- params[[param_name]]
+        if (!is.null(param$external)) {
+          curr_args[[param_name]] <- external[[param$external]]
+
+        } else if (!is.null(param$previous_dataset)) {
+          curr_args[[param_name]] <- previous_dataset[[param$previous_dataset]]
+
+        } else if (!is.null(param$current_data)) {
+
+          for (col_to_add in names(param$current_data)) {
+            for (ds_name in names(param$current_data[[col_to_add]])) {
+              ds <- param$current_data[[col_to_add]][[ds_name]]
+              for (col_name in names(ds)) {
+                col <- ds[[col_name]]
+                number_of_rows_to_add <- if (is.null(col)) 1 else ds[[col_name]]
+                if (number_of_rows_to_add == "n") number_of_rows_to_add <- n
+                skip_subset <- FALSE
+                if (number_of_rows_to_add == "all") skip_subset <- TRUE
+
+                arg_to_add <- current_data[[ds_name]][[col_name]]
+
+                if ((is.vector(arg_to_add) | is.list(arg_to_add)) & !skip_subset) {
+                  arg_to_add <- sample(arg_to_add, number_of_rows_to_add, replace = TRUE)
+                }
+
+                curr_args[[param_name]][[col_to_add]] <- arg_to_add
+              }
+            }
+          }
+        } else if (!is.null(param$random)) {
+            curr_args[[param_name]] <- param$random
+
+        }  else if (!is.null(param$derived)) {
+          curr_args[[param_name]] <- variable_data[[param$derived]]
+        }
+
+      }
+
+    }
+    func_yaml <- parse_yaml_spec(var_name, method_name = curr_var$method)
+    if (name == "Raw_SUBJ") browser()
+
+    # Generate data using the generator function
+    variable_data[[var_name]] <- simulate_variable(func_yaml, curr_args)
+  }
+
+  all_variable_data <- variable_data %>%
+    as.data.frame() %>%
+    rename_raw_data_vars_per_spec(vars)
+
+
+  if (!is.null(previous_dataset)) {
+    return(dplyr::bind_rows(previous_dataset, all_variable_data))
+  } else {
+    return(all_variable_data)
+  }
+
+}
+
+
+# Universal simulation function
+simulate_variable <- function(var, var_inputs) {
+    method <- var$method
+    name <- var$name
+    print(name)
+
+    if (method == 'sample') {
+      # Get pool_of_choices and replace from inputs or use defaults
+      pool <- get_arg("pool_of_choices", var_inputs, var)
+      probability <- get_arg("probability", var_inputs, var)
+      replace <- get_arg("replace", var_inputs, var)
+
+      if (is.data.frame(pool) | (name %in% names(pool))) {pool <- pool[[name]]}
+      result <- sample(pool, var_inputs$n, replace = replace, prob = probability)
+
+    } else if (method == 'return_value') {
+      # Get value from inputs or use default
+      value <- get_arg("value", var_inputs, var)
+      result <- rep(value, var_inputs$n)
+
+    } else if (method == 'generate_random_fpfv') {
+      # Get date_min and date_lim from inputs or use defaults
+      date_min <- get_arg("MinDate", var_inputs, var)
+      date_max <- get_arg("MaxDate", var_inputs, var)
+      result <- generate_random_fpfv(min_date = date_min, max_date = date_max)
+
+    } else if (method == 'consecutive_generator') {
+      # Get date_min and date_lim from inputs or use defaults
+      prefix <- get_arg("prefix", var_inputs, var)
+      variation <- get_arg("variation", var_inputs, var)
+      previous_data <- get_arg("previous_data", var_inputs, var)
+      if (name %in% names(previous_data)) previous_data <- previous_data[[name]]
+
+      retrieveGenerated <- get_arg("retrieveGenerated", var_inputs, var)
+
+      result <- consecutive_generator(var_inputs$n, prefix, variation, previous_data, retrieveGenerated)
+
+    } else if (method == 'from_another_var') {
+      # Get date_min and date_lim from inputs or use defaults
+      full_df_pool <- get_arg("full_df_pool", var_inputs, var)
+      name_is_source <- if ("name_is_source" %in% names(var_inputs)) var_inputs$name_is_source else name
+
+      result <- from_another_var(name_is_source, var_inputs, full_df_pool = full_df_pool)
+
+    } else if (method == 'inline_function') {
+      code <- get_arg("code", var_inputs, var)
+      if (endsWith(code) == ".R") {
+        if (grep(.Platform$file.sep, code)) {
+          full_path <- code
+        } else {
+          full_path <- file.path("~/gsm.datasim/inst/var_methods", code)
+        }
+        source(full_path)
+      } else {
+        assign_function(name, code, var_inputs[names(var_inputs) != "code"])
+      }
+
+      result <- get(name)(var_inputs[names(var_inputs) != "code"])
+
+    } else {
+      stop(paste("Unknown method", method, "for variable", name))
+    }
+
+  return(result)
+}
+
+

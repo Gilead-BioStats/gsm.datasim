@@ -1,0 +1,69 @@
+required_vars:
+  siteid:
+    parameters:
+      retrieveGenerated:
+        random: TRUE
+      previous_data:
+        current_data:
+          siteid:
+            Raw_SITE:
+              siteid: all
+  studyid:
+    parameters:
+      pool_of_choises:
+        current_data:
+          protocol_number:
+            Raw_STUDY:
+              protocol_number: 1
+  enrolldt:
+    parameters:
+      enrollyn:
+        derived: enrollyn
+      startDate:
+        external: startDate
+      endDate:
+        external: endDate
+
+  invid:
+    method: from_another_var
+    parameters:
+      siteid:
+        derived: siteid
+      full_df_pool:
+        current_data:
+          invid:
+            Raw_SITE:
+              pi_number: all
+          siteid:
+            Raw_SITE:
+              siteid: all
+  country:
+    method: from_another_var
+    parameters:
+      siteid:
+        derived: siteid
+      full_df_pool:
+        current_data:
+          country:
+            Raw_SITE:
+              country: all
+          siteid:
+            Raw_SITE:
+              siteid: all
+  subjid: .default
+  subject_nsv:
+    method: inline_func
+    parameters:
+      code: "subject_nsv.R"
+      subjid:
+        derived: subjid
+  enrollyn: .default
+  timeonstudy:
+    parameters:
+      enrolldt:
+        derived: enrolldt
+      endDate:
+        external: endDate
+
+
+

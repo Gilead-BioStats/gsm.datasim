@@ -1,0 +1,8 @@
+name: studyid
+method: sample
+default_pool_of_choices:
+  - 101
+  - 102
+  - 103
+default_replace: true
+

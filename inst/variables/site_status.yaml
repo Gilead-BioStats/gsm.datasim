@@ -1,0 +1,7 @@
+name: site_status
+method: sample
+default_pool_of_choices:
+   - Active
+   - ""
+   - Closed
+default_replace: true

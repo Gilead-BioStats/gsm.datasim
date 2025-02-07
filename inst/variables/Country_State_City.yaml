@@ -1,0 +1,19 @@
+dataframe:
+  - Country: UK
+    State: Greater London
+    City: London
+  - Country: UK
+    State: Buckinghamshire
+    City: Milton Keynes
+  - Country: US
+    State: CA
+    City: Foster City
+  - Country: US
+    State: PA
+    City: Newtown Square
+  - Country: Japan
+    State: Kanto
+    City: Tokyo
+  - Country: Japan
+    State: Kumamoto Prefecture
+    City: Kumamoto

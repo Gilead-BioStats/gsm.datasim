@@ -1,0 +1,33 @@
+required_vars:
+  phase: .default
+  studyid:
+    parameters:
+      pool_of_choices:
+        external: StudyID
+  nickname: .default
+  protocol_title: .default
+  status: .default
+  num_plan_site:
+    parameters:
+      value:
+        external: SiteCount
+  num_plan_subj:
+    parameters:
+      value:
+        external: ParticipantCount
+  act_fpfv:
+    parameters:
+      MinDate:
+        external: MinDate
+      MaxDate:
+        external: MaxDate
+      act_fpfv:
+        previous_dataset: act_fpfv
+  est_fpfv:
+    parameters:
+      MinDate:
+        external: MinDate
+      MaxDate:
+        external: MaxDate
+
+
