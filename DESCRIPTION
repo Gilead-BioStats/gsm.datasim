@@ -9,6 +9,7 @@ Imports:
   clindata,
   dplyr, 
   gsm,
+  gsm.mapping,
   logger,
   magrittr,
   purrr,
@@ -16,7 +17,8 @@ Imports:
   utils
 Remotes:
     clindata=Gilead-BioStats/clindata,
-    gsm=Gilead-BioStats/gsm
+    gsm=Gilead-BioStats/gsm,
+    gsm.mapping=Gilead-BioStats/gsm.mapping
 License: Apache License (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

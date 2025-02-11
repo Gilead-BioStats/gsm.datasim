@@ -13,7 +13,7 @@ raw_data_generator(
   workflow_path = "workflow/1_mappings",
   generate_reports = FALSE,
   mappings = NULL,
-  package = "gsm",
+  package = "gsm.mapping",
   save = FALSE
 )
 }
