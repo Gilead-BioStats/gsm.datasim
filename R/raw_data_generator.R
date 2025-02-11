@@ -34,7 +34,8 @@
 #'   \item The generated data is saved as an RDS file and returned as a list.
 #' }
 #'
-#' @importFrom gsm MakeWorkflowList CombineSpecs
+#' @importFrom gsm MakeWorkflowList
+#' @importFrom gsm.mapping CombineSpecs
 #' @importFrom utils read.csv
 #' @importFrom tictoc tic toc
 #' @importFrom rlang zap
