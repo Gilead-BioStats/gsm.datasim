@@ -287,14 +287,38 @@ timeonstudy <- function(n, enrolldt, endDate, ...) {
   as.numeric(as.Date(endDate) - as.Date(enrolldt)) %>% as.integer()
 }
 
-enrollyn_enrolldt_timeonstudy <- function(n, startDate, endDate, ...) {
+# firstdosedate <- function(n, startDate, ...) {
+#   as.Date(startDate)
+# }
+#
+# timeontreatment <- function(n, startDate, endDate, ...) {
+#   as.numeric(as.Date(endDate) - as.Date(startDate)) %>% as.integer()
+# }
+agerep <- function(n, ...){
+  sample(18:55, n, replace = T)
+}
+sex <- function(n, ...){
+  sample(c("M", "F"), n, replace = T)
+}
+race <- function(n, ...){
+  sample(c("White", "Asian", "Black", "Other"), n, replace = T)
+}
+
+enrollyn_enrolldt_timeonstudy_firstparticipantdate_firstdosedate_timeontreatment <- function(n, startDate, endDate, ...) {
   enrollyn_dat <- enrollyn(n, ...)
   enrolldt_dat <- enrolldt(n, startDate, endDate, enrollyn_dat, ...)
   timeonstudy_dat <- timeonstudy(n, enrolldt_dat, endDate, ...)
+
+  firstparticipantdate_dat <- enrolldt_dat
+  firstdosedate_dat <- enrolldt_dat
+  timeontreatment_dat <- timeonstudy_dat
   return(list(
     enrollyn = enrollyn_dat,
     enrolldt = enrolldt_dat,
-    timeonstudy = timeonstudy_dat
+    timeonstudy = timeonstudy_dat,
+    firstparticipant = firstparticipantdate_dat,
+    firstdosedate = firstdosedate_dat,
+    timeontreatment = timeontreatment_dat
   ))
 }
 
@@ -475,4 +499,3 @@ subject_to_enrollment <- function(n, data, previous_data, ...) {
 
   return(res)
 }
-
