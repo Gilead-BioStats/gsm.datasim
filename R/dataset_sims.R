@@ -233,7 +233,7 @@ Raw_ENROLL <- function(data, previous_data, spec, ...) {
 
 
 
-Raw_AE <- function(data, previous_data, spec, ...) {
+Raw_AE <- function(data, previous_data, spec, startDate, endDate, ...) {
   inps <- list(...)
 
   curr_spec <- spec$Raw_AE
@@ -249,8 +249,17 @@ Raw_AE <- function(data, previous_data, spec, ...) {
   n <- inps$n - previous_row_num
   if (n == 0) return(dataset)
 
+  if (all(c("aeser", "aest_dt", "aeen_dt", "mdrpt_nsv", "mdrsoc_nsv", "aetoxgr") %in% names(curr_spec))) {
+    curr_spec$aeser <- NULL
+    curr_spec$aest_dt_aeen_dt <- list(required = TRUE)
+    curr_spec$mdrpt_nsv <- NULL
+    curr_spec$mdrsoc_nsv <- NULL
+    curr_spec$aetoxgr <- NULL
+  }
+
   args <- list(
     subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
+    aest_dt_aeen_dt = list(n, startDate, endDate),
     default = list(n)
   )
 

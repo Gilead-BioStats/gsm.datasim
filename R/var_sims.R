@@ -114,6 +114,32 @@ aeser <- function(n, ...) {
   sample(c("Y", "N"), n, replace = TRUE)
 }
 
+aest_dt <- function(n, startDate, endDate, ...) {
+  sample(seq(as.Date(Sys.Date()), as.Date(Sys.Date())+21, by = "day"), n, replace = TRUE)
+}
+aeen_dt <- function(n, startDate, ... ) {
+  as.Date(Sys.Date()) + sample(1:3, n, replace = TRUE)
+}
+mdrpt_nsv <- function(n, ...) {
+  sample(c("term1", "term2"), n, replace = TRUE)
+}
+mdrsoc_nsv <- function(n, ...) {
+  sample(c("soc1", "soc2"), n, replace = TRUE)
+}
+aetoxgr <- function(n, ...) {
+  sample(1:5, n, replace = TRUE)
+}
+
+
+aest_dt_aeen_dt <- function(n, startDate, endDate, ...) {
+  aest_dat <- aest_dt(n, startDate, endDate, ...)
+  aeen_dat <- aeen_dt(n, aest_dat, ...)
+  return(list(
+    aest_dt = aest_dat,
+    aeen_dt = aeen_dat
+  ))
+}
+
 studyid <- function(n, stid, ...) {
   # Function body for studyid
   if (n == 1) {
@@ -287,16 +313,10 @@ timeonstudy <- function(n, enrolldt, endDate, ...) {
   as.numeric(as.Date(endDate) - as.Date(enrolldt)) %>% as.integer()
 }
 
-# firstdosedate <- function(n, startDate, ...) {
-#   as.Date(startDate)
-# }
-#
-# timeontreatment <- function(n, startDate, endDate, ...) {
-#   as.numeric(as.Date(endDate) - as.Date(startDate)) %>% as.integer()
-# }
-agerep <- function(n, ...){
+agerep <- function(n, ...) {
   sample(18:55, n, replace = T)
 }
+
 sex <- function(n, ...){
   sample(c("M", "F"), n, replace = T)
 }
