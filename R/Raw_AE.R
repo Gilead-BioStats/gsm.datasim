@@ -17,6 +17,8 @@ Raw_AE <- function(data, previous_data, spec, startDate, endDate, ...) {
   if (all(c("aeser", "aest_dt", "aeen_dt", "mdrpt_nsv", "mdrsoc_nsv", "aetoxgr") %in% names(curr_spec))) {
     curr_spec$aeser <- NULL
     curr_spec$aest_dt_aeen_dt <- list(required = TRUE)
+    curr_spec$aest_dt <- NULL
+    curr_spec$aeen_dt <- NULL
     curr_spec$mdrpt_nsv <- NULL
     curr_spec$mdrsoc_nsv <- NULL
     curr_spec$aetoxgr <- NULL

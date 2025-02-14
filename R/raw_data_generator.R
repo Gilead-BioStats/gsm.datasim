@@ -84,7 +84,7 @@ raw_data_generator <- function(
         StudyID = curr_vars$StudyID,
         workflow_path = workflow_path,
         mappings = mappings,
-        package
+        package = package
       )
 
       logger::log_info(glue::glue("Added {curr_vars$StudyID} successfully"))
@@ -103,7 +103,9 @@ raw_data_generator <- function(
       ParticipantCount = ParticipantCount,
       SiteCount = SiteCount,
       StudyID = StudyID,
-      combined_specs = combined_specs
+      workflow_path = workflow_path,
+      mappings = mappings,
+      package = package
     )
   }
 

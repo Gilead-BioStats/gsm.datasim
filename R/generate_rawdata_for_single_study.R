@@ -48,20 +48,21 @@
 #'
 #' @export
 generate_rawdata_for_single_study <- function(SnapshotCount,
-                                                 ParticipantCount,
-                                                 SiteCount,
-                                                 StudyID,
-                                                 workflow_path,
-                                                 mappings,
-                                                 package,
-                                                 desired_specs = NULL) {
-  # Load workflow mappings and combine specifications
-  combined_specs <- load_specs(workflow_path, mappings, package) |>
-    purrr::list_modify("Mapped_SUBJ" = rlang::zap())
+                                              ParticipantCount,
+                                              SiteCount,
+                                              StudyID,
+                                              workflow_path,
+                                              mappings,
+                                              package,
+                                              desired_specs = NULL) {
 
   # Generate start and end dates for snapshots
   start_dates <- seq(as.Date("2012-01-01"), length.out = SnapshotCount, by = "months")
   end_dates <- seq(as.Date("2012-02-01"), length.out = SnapshotCount, by = "months") - 1
+
+  # Load workflow mappings and combine specifications
+  combined_specs <- load_specs(workflow_path, mappings, package) |>
+    purrr::list_modify("Mapped_SUBJ" = rlang::zap())
 
   # Specify the desired first few elements in order
   desired_order <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL", "Raw_SV")

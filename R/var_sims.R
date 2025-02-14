@@ -115,10 +115,10 @@ aeser <- function(n, ...) {
 }
 
 aest_dt <- function(n, startDate, endDate, ...) {
-  sample(seq(as.Date(Sys.Date()), as.Date(Sys.Date())+21, by = "day"), n, replace = TRUE)
+  sample(seq(as.Date(startDate), as.Date(endDate), by = "day"), n, replace = TRUE)
 }
 aeen_dt <- function(n, startDate, ... ) {
-  as.Date(Sys.Date()) + sample(1:3, n, replace = TRUE)
+  as.Date(startDate) + sample(1:3, n, replace = TRUE)
 }
 mdrpt_nsv <- function(n, ...) {
   sample(c("term1", "term2"), n, replace = TRUE)
