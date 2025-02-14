@@ -24,3 +24,11 @@ Raw_STUDCOMP <- function(data, previous_data, spec, ...) {
 
   return(res)
 }
+
+compyn <- function(n, ...) {
+  # Function body for compyn
+  sample(c("", "N"),
+         prob = c(0.1, 0.9),
+         n,
+         replace = TRUE)
+}

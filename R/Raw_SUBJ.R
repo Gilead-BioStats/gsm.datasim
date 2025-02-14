@@ -63,3 +63,139 @@ Raw_SUBJ <- function(data, previous_data, spec, startDate, endDate, ...) {
 
   return(res)
 }
+
+subjid <- function(n, external_subjid = NULL, replace = TRUE, previous_subjid=NULL, ...) {
+  args <- list(...)
+
+  if (!is.null(external_subjid)) {
+    return(sample(external_subjid, n, replace = replace))
+  }
+
+  # Generate all possible 3-digit numbers as strings with leading zeros
+  possible_numbers <- sprintf("%03d", 0:99999)
+
+  # Create all possible strings starting with "0X" and ending with the 3-digit numbers
+  possible_strings <- paste0("S", possible_numbers)
+
+  # Exclude the old strings to avoid duplication
+  new_strings_available <- setdiff(possible_strings, previous_subjid)
+
+  # Check if there are enough unique strings to generate
+  if (length(new_strings_available) < n) {
+    stop("Not enough unique strings available to generate ", n, " new strings.")
+  }
+  res <- sample(new_strings_available, n, replace = FALSE)
+
+  # Randomly sample 'n' unique strings from the available strings
+  return(res)
+}
+
+subjid_subject_nsv <- function(n, dataset,...) {
+  subjid_dat <- subjid(n, previous_subjid = dataset, ...)
+  subject_nsv_dat <- subject_nsv(n, subjid_dat, ...)
+  return(list(
+    subjid = subjid_dat,
+    subject_nsv = subject_nsv_dat
+  ))
+
+}
+
+subject_site_synq <- function(n, Raw_SITE_data, ...) {
+  Raw_SITE_data[sample(nrow(Raw_SITE_data), n, replace = TRUE),
+                c("siteid", "pi_number", "country")] %>%
+    dplyr::rename("invid" =  "pi_number")
+
+}
+
+invid <- function(n, isGenerated=FALSE, ...) {
+  # Function body for invid
+  args <- list(...)
+  if ("invid" %in% names(args)) {
+    already_generated <- args$invid
+  } else {
+    already_generated <- c()
+  }
+
+  if (isGenerated) {
+    return(sample(already_generated, n, replace = TRUE))
+  }
+
+  # Generate all possible 3-digit numbers as strings with leading zeros
+  possible_numbers <- sprintf("%03d", 0:999)
+
+  # Create all possible strings starting with "0X" and ending with the 3-digit numbers
+  possible_strings <- paste0("0X", possible_numbers)
+
+  # Exclude the old strings to avoid duplication
+  new_strings_available <- setdiff(possible_strings, already_generated)
+
+  # Check if there are enough unique strings to generate
+  if (length(new_strings_available) < n) {
+    stop("Not enough unique strings available to generate ", n, " new strings.")
+  }
+
+  # Randomly sample 'n' unique strings from the available strings
+  sample(new_strings_available, n)
+}
+
+enrollyn <- function(n, ...) {
+  # Function body for enrollyn
+  # if (isSubjDataset) {
+  #   return("Y")
+  # } else {
+  #   return("N")
+  # }
+  sample(c("Y", "N"),
+         prob = c(0.75, 0.25),
+         n,
+         replace = TRUE)
+
+}
+
+subject_nsv <- function(n, subjid, subject_nsv=NULL, replace = TRUE, ...) {
+  # Function body for subject_nsv
+  if (!is.null(subject_nsv)) {
+    return(sample(subject_nsv, n, replace = replace))
+  }
+  return(paste0(subjid, "-XXXX"))
+}
+
+enrolldt <- function(n, startDate, endDate, enrollyn_dat, ...) {
+  full_sample <- sample(seq(as.Date(startDate), as.Date(endDate), by = "day"), n, replace = TRUE)
+  full_sample[enrollyn_dat == "N"] <- NA
+  return(full_sample)
+}
+
+
+timeonstudy <- function(n, enrolldt, endDate, ...) {
+  # Function body for timeonstudy
+  as.numeric(as.Date(endDate) - as.Date(enrolldt)) %>% as.integer()
+}
+
+agerep <- function(n, ...) {
+  sample(18:55, n, replace = T)
+}
+
+sex <- function(n, ...){
+  sample(c("M", "F"), n, replace = T)
+}
+race <- function(n, ...){
+  sample(c("White", "Asian", "Black", "Other"), n, replace = T)
+}
+enrollyn_enrolldt_timeonstudy_firstparticipantdate_firstdosedate_timeontreatment <- function(n, startDate, endDate, ...) {
+  enrollyn_dat <- enrollyn(n, ...)
+  enrolldt_dat <- enrolldt(n, startDate, endDate, enrollyn_dat, ...)
+  timeonstudy_dat <- timeonstudy(n, enrolldt_dat, endDate, ...)
+
+  firstparticipantdate_dat <- enrolldt_dat
+  firstdosedate_dat <- enrolldt_dat
+  timeontreatment_dat <- timeonstudy_dat
+  return(list(
+    enrollyn = enrollyn_dat,
+    enrolldt = enrolldt_dat,
+    timeonstudy = timeonstudy_dat,
+    firstparticipant = firstparticipantdate_dat,
+    firstdosedate = firstdosedate_dat,
+    timeontreatment = timeontreatment_dat
+  ))
+}

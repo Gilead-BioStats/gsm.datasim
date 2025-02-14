@@ -24,3 +24,11 @@ Raw_SDRGCOMP <- function(data, previous_data, spec, ...) {
 
   return(res)
 }
+
+sdrgyn <- function(n, ...) {
+  # Function body for sdrgyn
+  sample(c("Y", "N"),
+         prob = c(0.75, 0.25),
+         n,
+         replace = TRUE)
+}

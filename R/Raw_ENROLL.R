@@ -33,3 +33,23 @@ Raw_ENROLL <- function(data, previous_data, spec, ...) {
 
   return(res)
 }
+
+subjectid <- function(n, ...) {
+  # Function body for subjectid
+  paste0("S", 1:n)
+}
+
+subject_to_enrollment <- function(n, data, previous_data, ...) {
+  if (length(previous_data) != 0) {
+    data_pool <- data$Raw_SUBJ[!(data$Raw_SUBJ$subjid %in% previous_data), ]
+  } else {
+    data_pool <- data$Raw_SUBJ
+  }
+
+  sample_subset <- sample(min(nrow(data_pool), n), n, replace = FALSE)
+  res <- data_pool[sample_subset,
+                   c("subjid", "invid", "country", "enrollyn")] %>%
+    dplyr::mutate(subjectid = paste0("XX-", subjid))
+
+  return(res)
+}

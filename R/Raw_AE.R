@@ -34,3 +34,34 @@ Raw_AE <- function(data, previous_data, spec, startDate, endDate, ...) {
 
   return(res)
 }
+
+aeser <- function(n, ...) {
+  # Function body for aeser
+  sample(c("Y", "N"), n, replace = TRUE)
+}
+
+aest_dt <- function(n, startDate, endDate, ...) {
+  sample(seq(as.Date(startDate), as.Date(endDate), by = "day"), n, replace = TRUE)
+}
+aeen_dt <- function(n, aestartDate, ... ) {
+  as.Date(aestartDate) + sample(1:3, n, replace = TRUE)
+}
+mdrpt_nsv <- function(n, ...) {
+  sample(c("term1", "term2"), n, replace = TRUE)
+}
+mdrsoc_nsv <- function(n, ...) {
+  sample(c("soc1", "soc2"), n, replace = TRUE)
+}
+aetoxgr <- function(n, ...) {
+  sample(1:5, n, replace = TRUE)
+}
+
+
+aest_dt_aeen_dt <- function(n, startDate, endDate, ...) {
+  aest_dat <- aest_dt(n, startDate, endDate, ...)
+  aeen_dat <- aeen_dt(n, aest_dat, ...)
+  return(list(
+    aest_dt = aest_dat,
+    aeen_dt = aeen_dat
+  ))
+}

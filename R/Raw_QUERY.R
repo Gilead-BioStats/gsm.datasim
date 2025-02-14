@@ -47,3 +47,18 @@ Raw_QUERY <- function(data, previous_data, spec, ...) {
   return(res)
 
 }
+
+querystatus <- function(n, ...) {
+  # Function body for querystatus
+  sample(c("Answered", "Closed", "Open"),
+         prob = c(0.02, 0.96, 0.02),
+         n,
+         replace = TRUE)
+}
+
+queryage <- function(n, ...) {
+  # Function body for queryage
+  sample(clindata::edc_queries$queryage,
+         n,
+         replace = T)
+}

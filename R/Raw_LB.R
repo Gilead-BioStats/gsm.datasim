@@ -80,3 +80,31 @@ Raw_LB <- function(data, previous_data, spec, ...) {
 
   return(res)
 }
+
+
+subj_visit_repeated <- function(n, data, ...) {
+  res <- repeat_rows(n, data)
+  return(list(
+    subjid = res$subjid,
+    visnam = res$instancename
+  ))
+}
+
+battrnam <- function(n, subj_visits, tests, ...) {
+  rep(tests$battrnam, nrow(subj_visits))
+
+}
+
+
+lbtstnam <- function(n, subj_visits, tests, ...) {
+  rep(tests$lbtstnam, nrow(subj_visits))
+
+}
+
+toxgrg_nsv <- function(n, ...) {
+  # Function body for toxgrg_nsv
+  sample(c("", "0", "1", "2", "3", "4"),
+         n,
+         prob = c(0.49,0.4875,0.01, 0.005, 0.005, 0.0025),
+         replace = TRUE)
+}

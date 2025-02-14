@@ -23,3 +23,8 @@ Raw_PD <- function(data, previous_data, spec, ...) {
 
   return(res)
 }
+
+deemedimportant <- function(n, ...) {
+  # Function body for deemedimportant
+  sample(c("Yes", "No"), n, replace = TRUE)
+}

@@ -70,3 +70,23 @@ Raw_SV <- function(data, previous_data, spec, startDate, ...) {
 
   return(res)
 }
+
+subjid_repeated <- function(n, subjs, ...) {
+  return(list(
+    subjid = repeat_rows(n, subjs)
+  ))
+
+}
+
+visit_dt <- function(n, subjs, start_date, possible_visits, ...) {
+  rep(generate_consecutive_random_dates(nrow(possible_visits), start_date, 30), length(subjs))
+}
+
+foldername <- function(n, subjs, possible_visits, ...) {
+  rep(possible_visits$foldername, length(subjs))
+}
+
+instancename <- function(n, subjs, possible_visits, ...) {
+  rep(possible_visits$instancename, length(subjs))
+}
+

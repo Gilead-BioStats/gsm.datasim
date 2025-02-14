@@ -56,3 +56,30 @@ Raw_DATACHG <- function(data, previous_data, spec, ...) {
 
   return(res)
 }
+
+subject_nsv_visit_repeated <- function(n, data, ...) {
+  res <- repeat_rows(n, data)
+  return(list(
+    subject_nsv = res$subject_nsv,
+    visnam = res$instancename
+  ))
+}
+
+form <- function(n, subject_nsv_visits, forms, ...) {
+  rep(forms$form, nrow(subject_nsv_visits))
+
+}
+
+field <- function(n, subject_nsv_visits, forms, ...) {
+  rep(forms$field, nrow(subject_nsv_visits))
+
+}
+
+n_changes <- function(n, ...) {
+
+  # Function body for n_changes
+  sample(0:6,
+         prob = c(0.74, 0.22, 0.03, 0.005, 0.003, 0.0019, 0.0001),
+         n,
+         replace = TRUE)
+}
