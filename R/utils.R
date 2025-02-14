@@ -1,3 +1,60 @@
+combination_var_splitter <- function(variable_data, split_vars) {
+  for (split_var_name in split_vars) {
+    # Step 1: Find the index of the sublist in the main list
+    sublist_index <- which(names(variable_data) == split_var_name)
+
+    # Step 2: Extract the elements of the sublist
+    sublist_elements <- variable_data[[sublist_index]]
+
+    # Step 3: Remove the sublist from the main list
+    variable_data[[sublist_index]] <- NULL
+
+    # Step 4: Insert the sublist elements into the main list at the original position
+    variable_data <- append(variable_data, sublist_elements, after = sublist_index - 1)
+  }
+
+  return(variable_data)
+}
+
+
+add_new_var_data <- function(dataset, vars, args, orig_curr_spec, ...) {
+  internal_args <- list(...)
+
+  variable_data <- lapply(names(vars), function(var_name) {
+    generator_func <- var_name
+    if (!(var_name %in% names(args))) {
+      curr_args <- args$default
+    } else {
+      curr_args <- args[[var_name]]
+      if (!(var_name %in% names(dataset))) {
+        curr_args[[var_name]] <- NULL
+      } else {
+        curr_args[[var_name]] <- dataset[[var_name]]
+      }
+    }
+
+    # Generate data using the generator function
+    do.call(generator_func, curr_args)
+  })
+
+
+  names(variable_data) <- names(vars)
+  if ("split_vars" %in% names(internal_args)) {
+    variable_data <- combination_var_splitter(variable_data, internal_args$split_vars)
+  }
+
+  variable_data <- variable_data %>%
+    as.data.frame() %>%
+    rename_raw_data_vars_per_spec(orig_curr_spec)
+
+
+  if (!is.null(dataset)) {
+    return(dplyr::bind_rows(dataset, variable_data))
+  } else {
+    return(variable_data)
+  }
+}
+
 count_gen <- function(max_n, SnapshotCount) {
   iteration <- max_n / SnapshotCount
   counts <- c()

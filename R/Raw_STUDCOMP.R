@@ -1,0 +1,26 @@
+Raw_STUDCOMP <- function(data, previous_data, spec, ...) {
+  # Function body for Raw_SDRGCOMP
+  inps <- list(...)
+
+  curr_spec <- spec$Raw_STUDCOMP
+
+  if ("Raw_STUDCOMP" %in% names(previous_data)) {
+    dataset <- previous_data$Raw_STUDCOMP
+    previous_row_num <- nrow(dataset)
+  } else {
+    dataset <- NULL
+    previous_row_num <- 0
+  }
+
+  n <- inps$n - previous_row_num
+  if (n == 0) return(dataset)
+
+  args <- list(
+    subjid = list(n, data$Raw_SUBJ$subjid, replace = FALSE),
+    default = list(n)
+  )
+
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_STUDCOMP, ...)
+
+  return(res)
+}

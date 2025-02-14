@@ -63,12 +63,6 @@ raw_data_generator <- function(
     package = "gsm.mapping",
     save = FALSE
 ) {
-  # Load workflow mappings and combine specifications
-  combined_specs <- load_specs(workflow_path, mappings, package) |>
-    purrr::list_modify("Mapped_SUBJ" = rlang::zap())
-
-  #check to see if Raw_Site Raw_Study and Raw_Subj are in the spec
-
   # Initialize the list to store raw data
   raw_data_list <- list()
 
@@ -88,7 +82,9 @@ raw_data_generator <- function(
         ParticipantCount = curr_vars$ParticipantCount,
         SiteCount = curr_vars$SiteCount,
         StudyID = curr_vars$StudyID,
-        combined_specs = combined_specs
+        workflow_path = workflow_path,
+        mappings = mappings,
+        package
       )
 
       logger::log_info(glue::glue("Added {curr_vars$StudyID} successfully"))
