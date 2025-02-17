@@ -15,8 +15,8 @@ Raw_AntiCancer <- function(data, previous_data, spec, startDate, ...) {
   if (n == 0) return(dataset)
 
   if (all(c("act_treatment", "act_date") %in% names(curr_spec))) {
-    curr_spec$act_treatment <- NULL
-    curr_spec$act_date <- NULL
+    curr_spec$act_treatment <- list(required = TRUE)
+    curr_spec$act_date <- list(required = TRUE)
   }
 
   args <- list(
