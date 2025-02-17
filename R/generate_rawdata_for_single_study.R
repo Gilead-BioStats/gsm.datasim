@@ -156,6 +156,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                      Raw_QUERY = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
                      Raw_AE = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx],
                                    endDate = end_dates[snapshot_idx], split_vars = list("aest_dt_aeen_dt")),
+                     Raw_AntiCancer = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      list(data, previous_data, combined_specs, n = n)  # Default case
       )
 
