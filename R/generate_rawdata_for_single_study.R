@@ -159,6 +159,8 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                      Raw_AntiCancer = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      Raw_Baseline = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      Raw_Consents = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
+                     # Raw_Death is default
+                     # Raw_Overall is default for now
                      list(data, previous_data, combined_specs, n = n)  # Default case
       )
 
