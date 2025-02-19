@@ -2,14 +2,16 @@
 % Please edit documentation in R/generate_rawdata_for_single_study.R
 \name{generate_rawdata_for_single_study}
 \alias{generate_rawdata_for_single_study}
-\title{Generate Snapshots of Study Data}
+\title{Generate Snapshots for Single Study Data}
 \usage{
 generate_rawdata_for_single_study(
   SnapshotCount,
   ParticipantCount,
   SiteCount,
   StudyID,
-  combined_specs,
+  workflow_path,
+  mappings,
+  package,
   desired_specs = NULL
 )
 }
@@ -22,11 +24,13 @@ generate_rawdata_for_single_study(
 
 \item{StudyID}{A string specifying the study identifier.}
 
-\item{combined_specs}{A list of specifications for the raw data variables, where each element contains
-variable-generating functions for different data types (e.g., "Raw_AE", "Raw_ENROLL").}
+\item{workflow_path}{A string specifying the path to the workflow mappings.}
 
-\item{desired_specs}{A list of specifications of the data types that should be included. Default values include:
-'Raw_STUDY', 'Raw_SITE', 'Raw_SUBJ', 'Raw_ENROLL', 'Raw_AE', 'Raw_PD'.}
+\item{mappings}{A string specifying the names of the workflows to run.}
+
+\item{package}{A string specifying the package in which the workflows used in \code{MakeWorkflowList()} are located.}
+
+\item{desired_specs}{A list of specifications of the data types that should be included.}
 }
 \value{
 A list of data snapshots, where each element contains simulated data for a particular snapshot
@@ -48,21 +52,15 @@ specified in \code{combined_specs}.
 }
 }
 \examples{
-\dontrun{
-# Define variable-generating functions
-some_function <- function(...) { ... }
-
-# Generate 5 snapshots of study data
-snapshots <- generate_snapshot(
-  SnapshotCount = 5,
-  ParticipantCount = 100,
-  SiteCount = 10,
-  StudyID = "Study01",
-  combined_specs = list(
-    "Raw_AE" = list("subjid" = some_function, ...),
-    "Raw_ENROLL" = list("subjid" = some_function, ...)
-  )
+snapshots <- generate_rawdata_for_single_study(
+  SnapshotCount = 3,
+  ParticipantCount = 50,
+  SiteCount = 5,
+  StudyID = "ABC",
+  workflow_path = "workflow/1_mappings",
+  mappings = "AE",
+  package = "gsm.mapping",
+  desired_specs = NULL
 )
-}
 
 }

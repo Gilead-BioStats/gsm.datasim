@@ -1,4 +1,4 @@
-#' Generate Snapshots of Study Data
+#' Generate Snapshots for Single Study Data
 #'
 #' This function generates a list of study data snapshots based on the provided specifications,
 #' including participant count, site count, study ID, and the number of snapshots to be generated.
@@ -9,14 +9,15 @@
 #' @param ParticipantCount An integer specifying the number of participants in the study.
 #' @param SiteCount An integer specifying the number of sites for the study.
 #' @param StudyID A string specifying the study identifier.
-#' @param combined_specs A list of specifications for the raw data variables, where each element contains
-#' variable-generating functions for different data types (e.g., "Raw_AE", "Raw_ENROLL").
-#' @param desired_specs A list of specifications of the data types that should be included. Default values include:
-#' 'Raw_STUDY', 'Raw_SITE', 'Raw_SUBJ', 'Raw_ENROLL', 'Raw_AE', 'Raw_PD'.
+#' @param workflow_path A string specifying the path to the workflow mappings.
+#' @param mappings A string specifying the names of the workflows to run.
+#' @param package A string specifying the package in which the workflows used in `MakeWorkflowList()` are located.
+#' @param desired_specs A list of specifications of the data types that should be included.
 #'
 #' @return A list of data snapshots, where each element contains simulated data for a particular snapshot
 #' period (typically a month), with variables populated according to the provided specifications.
 #'
+#' @export
 #' @details
 #' The function generates snapshots over a sequence of months, starting from `"2012-01-01"`. For each snapshot:
 #' \enumerate{
@@ -26,27 +27,18 @@
 #'   specified in `combined_specs`.
 #' }
 #'
-#' @importFrom dplyr case_when
-#'
 #' @examples
-#' \dontrun{
-#' # Define variable-generating functions
-#' some_function <- function(...) { ... }
-#'
-#' # Generate 5 snapshots of study data
-#' snapshots <- generate_snapshot(
-#'   SnapshotCount = 5,
-#'   ParticipantCount = 100,
-#'   SiteCount = 10,
-#'   StudyID = "Study01",
-#'   combined_specs = list(
-#'     "Raw_AE" = list("subjid" = some_function, ...),
-#'     "Raw_ENROLL" = list("subjid" = some_function, ...)
-#'   )
+#' snapshots <- generate_rawdata_for_single_study(
+#'   SnapshotCount = 3,
+#'   ParticipantCount = 50,
+#'   SiteCount = 5,
+#'   StudyID = "ABC",
+#'   workflow_path = "workflow/1_mappings",
+#'   mappings = "AE",
+#'   package = "gsm.mapping",
+#'   desired_specs = NULL
 #' )
-#' }
 #'
-#' @export
 generate_rawdata_for_single_study <- function(SnapshotCount,
                                               ParticipantCount,
                                               SiteCount,

@@ -3,7 +3,6 @@
 export("%>%")
 export(generate_rawdata_for_single_study)
 export(raw_data_generator)
-importFrom(dplyr,case_when)
 importFrom(gsm,MakeWorkflowList)
 importFrom(gsm.mapping,CombineSpecs)
 importFrom(magrittr,"%>%")
