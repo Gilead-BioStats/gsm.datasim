@@ -6,6 +6,7 @@ Authors@R: c(
     person("Laura", "Maxwell", email = "laura.maxwell@atorusresearch.com", role = c("aut")))
 Description: Generates synthetic test data for the RBQM of Clinical Trials based on several parameters. 
 Imports:
+  arrow,
   clindata,
   dplyr, 
   gsm,
@@ -13,6 +14,7 @@ Imports:
   logger,
   magrittr,
   purrr,
+  rlang,
   tictoc,
   utils
 Remotes:

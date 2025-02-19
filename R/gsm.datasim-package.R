@@ -1,10 +1,15 @@
 #' @keywords internal
 "_PACKAGE"
 
-#' @importFrom gsm MakeWorkflowList
+#' @import dplyr
+#' @importFrom arrow write_parquet
+#' @importFrom glue glue
+#' @importFrom gsm MakeWorkflowList RunWorkflows
 #' @importFrom gsm.mapping CombineSpecs
-#' @importFrom utils read.csv
-#' @importFrom tictoc tic toc
+#' @importFrom logger log_info
+#' @importFrom purrr map imap
 #' @importFrom rlang zap
-#' @importFrom dplyr case_when
+#' @importFrom tictoc tic toc
+#' @importFrom utils read.csv
+
 NULL
