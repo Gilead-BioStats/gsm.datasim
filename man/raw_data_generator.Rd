@@ -38,12 +38,11 @@ the function will use values from the template file.}
 
 \item{generate_reports}{A boolean, specifying whether or not to produce reports upon execution. Default is FALSE.}
 
+\item{mappings}{A string specifying the names of the workflows to run.}
+
 \item{package}{A string specifying the package in which the workflows used in \code{MakeWorkflowList()} are located. Default is "gsm".}
 
 \item{save}{A boolean, specifying whether or not this should be saved out as an RDS}
-
-\item{kris}{A string or array of strings specifying the KRIs that will be used to
-determine the spec. Default is \code{NULL}.}
 }
 \value{
 A list of raw data generated for each study snapshot, saved as an RDS file in \code{"data-raw/raw_data.RDS"}.

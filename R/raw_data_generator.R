@@ -18,8 +18,7 @@
 #' @param workflow_path A string specifying the path to the workflow mappings. Default is
 #' `"workflow/1_mappings"`.
 #' @param generate_reports A boolean, specifying whether or not to produce reports upon execution. Default is FALSE.
-#' @param kris A string or array of strings specifying the KRIs that will be used to
-#' determine the spec. Default is `NULL`.
+#' @param mappings A string specifying the names of the workflows to run.
 #' @param package A string specifying the package in which the workflows used in `MakeWorkflowList()` are located. Default is "gsm".
 #' @param save A boolean, specifying whether or not this should be saved out as an RDS
 #'
@@ -33,12 +32,6 @@
 #'   \item It generates raw data for study snapshots based on either provided parameters or the template file.
 #'   \item The generated data is saved as an RDS file and returned as a list.
 #' }
-#'
-#' @importFrom gsm MakeWorkflowList
-#' @importFrom gsm.mapping CombineSpecs
-#' @importFrom utils read.csv
-#' @importFrom tictoc tic toc
-#' @importFrom rlang zap
 #'
 #' @examples
 #' \dontrun{
