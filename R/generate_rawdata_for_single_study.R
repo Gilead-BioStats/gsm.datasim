@@ -77,7 +77,10 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
 
   subject_count <- count_gen(ParticipantCount, SnapshotCount)
   site_count <- count_gen(SiteCount, SnapshotCount)
-  enrollment_count <- enrollment_count_gen(subject_count)
+  if(SnapshotCount > 1){
+    enrollment_count <- enrollment_count_gen(subject_count)
+  }
+  enrollment_count <- subject_count
 
   ae_count <- subject_count * 3
   pd_count <- subject_count * 3
