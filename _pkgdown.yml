@@ -2,3 +2,7 @@ url: https://gilead-biostats.github.io/gsm.datasim/
 template:
   bootstrap: 5
 
+navbar:
+  structure:
+    left: [articles,reference, news]
+    right: [search, github]

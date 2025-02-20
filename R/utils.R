@@ -101,7 +101,7 @@ rename_raw_data_vars_per_spec <- function(variable_data, spec) {
       # Retrieve the new name from "source_col"
       new_name <- variabale[["source_col"]]
       # Rename the variable in the appropriate dataset in the snapshot
-      variable_data <- variable_data %>% dplyr::rename(!!new_name := var_name)
+      variable_data <- variable_data %>% dplyr::rename(!!rlang::sym(new_name) := all_of(var_name))
     }
   }
   return(variable_data)
