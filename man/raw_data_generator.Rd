@@ -9,7 +9,7 @@ raw_data_generator(
   SiteCount = NULL,
   StudyID = NULL,
   SnapshotCount = NULL,
-  template_path = "~/gsm.datasim/data-raw/template.csv",
+  template_path = "~/gsm.datasim/inst/template.csv",
   workflow_path = "workflow/1_mappings",
   generate_reports = FALSE,
   mappings = NULL,
@@ -31,7 +31,7 @@ from the template file.}
 the function will use values from the template file.}
 
 \item{template_path}{A string specifying the path to the template CSV file. Default is
-\code{"~/gsm.datasim/data-raw/template.csv"}.}
+\code{"~/gsm.datasim/inst/template.csv"}.}
 
 \item{workflow_path}{A string specifying the path to the workflow mappings. Default is
 \code{"workflow/1_mappings"}.}

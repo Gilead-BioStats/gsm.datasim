@@ -14,7 +14,7 @@
 #' @param SnapshotCount An integer specifying the number of snapshots for the study. If `NULL`,
 #' the function will use values from the template file.
 #' @param template_path A string specifying the path to the template CSV file. Default is
-#' `"~/gsm.datasim/data-raw/template.csv"`.
+#' `"~/gsm.datasim/inst/template.csv"`.
 #' @param workflow_path A string specifying the path to the workflow mappings. Default is
 #' `"workflow/1_mappings"`.
 #' @param generate_reports A boolean, specifying whether or not to produce reports upon execution. Default is FALSE.
@@ -49,7 +49,7 @@ raw_data_generator <- function(
     SiteCount = NULL,
     StudyID = NULL,
     SnapshotCount = NULL,
-    template_path = "~/gsm.datasim/data-raw/template.csv",
+    template_path = "~/gsm.datasim/inst/template.csv",
     workflow_path = "workflow/1_mappings",
     generate_reports = FALSE,
     mappings = NULL,
