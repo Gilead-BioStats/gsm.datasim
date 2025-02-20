@@ -10,6 +10,7 @@ Imports:
     arrow,
     clindata,
     dplyr, 
+    glue,
     gsm,
     gsm.mapping,
     logger,
@@ -18,6 +19,10 @@ Imports:
     rlang,
     tictoc,
     utils
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat
 Remotes:
     clindata=Gilead-BioStats/clindata,
     gsm=Gilead-BioStats/gsm@gsm-core-test,
