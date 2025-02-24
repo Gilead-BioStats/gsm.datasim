@@ -1,3 +1,12 @@
+#' Generate Raw SDRGCOMP Data
+#'
+#' Generate Raw SDRGCOMP based on `SDRGCOMP.yaml` from `gsm.mapping`.
+#'
+#' @inheritParams Raw_STUDY
+#' @returns a data.frame pertaining to the raw dataset plugged into `SDRGCOMP.yaml`
+#' @family internal
+#' @keywords internal
+
 Raw_SDRGCOMP <- function(data, previous_data, spec, ...) {
   # Function body for Raw_SDRGCOMP
   inps <- list(...)

@@ -1,3 +1,14 @@
+#' Generate Raw AE Data
+#'
+#' Generate Raw AE Data based on `AE.yaml` from `gsm.mapping`.
+#'
+#' @inheritParams Raw_STUDY
+#' @param startDate The beginning of dates to which the AEs can occur.
+#' @param endDate The end of dates to which the AEs can occur.
+#'
+#' @returns a data.frame pertaining to the raw dataset plugged into `AE.yaml`
+#' @family internal
+#' @keywords internal
 Raw_AE <- function(data, previous_data, spec, startDate, endDate, ...) {
   inps <- list(...)
 

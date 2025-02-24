@@ -1,3 +1,12 @@
+#' Generate Raw STUDCOMP Data
+#'
+#' Generate Raw STUDCOMP based on `STUDCOMP.yaml` from `gsm.mapping`.
+#'
+#' @inheritParams Raw_STUDY
+#' @returns a data.frame pertaining to the raw dataset plugged into `STUDCOMP.yaml`
+#' @family internal
+#' @keywords internal
+
 Raw_STUDCOMP <- function(data, previous_data, spec, ...) {
   # Function body for Raw_SDRGCOMP
   inps <- list(...)

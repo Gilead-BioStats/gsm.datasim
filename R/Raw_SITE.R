@@ -1,3 +1,12 @@
+#' Generate Raw SITE Data
+#'
+#' Generate Raw SITE based on `SITE.yaml` from `gsm.mapping`.
+#'
+#' @inheritParams Raw_STUDY
+#' @returns a data.frame pertaining to the raw dataset plugged into `SITE.yaml`
+#' @family internal
+#' @keywords internal
+
 Raw_SITE <- function(data, previous_data, spec, ...) {
 
   inps <- list(...)

@@ -1,3 +1,12 @@
+#' Generate Raw PD Data
+#'
+#' Generate Raw PD based on `PD.yaml` from `gsm.mapping`.
+#'
+#' @inheritParams Raw_STUDY
+#' @returns a data.frame pertaining to the raw dataset plugged into `PD.yaml`
+#' @family internal
+#' @keywords internal
+
 Raw_PD <- function(data, previous_data, spec, ...) {
   inps <- list(...)
 

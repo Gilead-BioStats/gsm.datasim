@@ -1,5 +1,15 @@
+#' Generate Raw SUBJ Data
+#'
+#' Generate Raw SUBJ Data based on `SUBJ.yaml` from `gsm.mapping`.
+#'
+#' @inheritParams Raw_STUDY
+#' @param startDate The beginning of dates to which the subjects can be enrolled/started
+#' @param endDate The end of dates to which the subjects completed/leave study.
+#'
+#' @returns a data.frame pertaining to the raw dataset plugged into `SUBJ.yaml`
+#' @family internal
+#' @keywords internal
 Raw_SUBJ <- function(data, previous_data, spec, startDate, endDate, ...) {
-
   inps <- list(...)
 
   curr_spec <- spec$Raw_SUBJ

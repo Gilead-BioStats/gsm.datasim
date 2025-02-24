@@ -1,3 +1,12 @@
+#' Generate Raw QUERY Data
+#'
+#' Generate Raw QUERY based on `QUERY.yaml` from `gsm.mapping`.
+#'
+#' @inheritParams Raw_STUDY
+#' @returns a data.frame pertaining to the raw dataset plugged into `QUERY.yaml`
+#' @family internal
+#' @keywords internal
+
 Raw_QUERY <- function(data, previous_data, spec, ...) {
   inps <- list(...)
 

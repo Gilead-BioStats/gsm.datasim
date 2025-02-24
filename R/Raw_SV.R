@@ -1,3 +1,12 @@
+#' Generate Raw VISIT Data
+#'
+#' Generate Raw VISIT Data based on `VISIT.yaml` from `gsm.mapping`.
+#'
+#' @inheritParams Raw_STUDY
+#' @param startDate The beginning of dates to which the subjects' visits are
+#' @returns a data.frame pertaining to the raw dataset plugged into `VISIT.yaml`
+#' @family internal
+#' @keywords internal
 Raw_SV <- function(data, previous_data, spec, startDate, ...) {
   inps <- list(...)
   if ("Raw_SV" %in% names(previous_data)) {

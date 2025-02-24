@@ -1,3 +1,12 @@
+#' Generate Raw LB Data
+#'
+#' Generate Raw LB based on `LB.yaml` from `gsm.mapping`.
+#'
+#' @inheritParams Raw_STUDY
+#' @returns a data.frame pertaining to the raw dataset plugged into `LB.yaml`
+#' @family internal
+#' @keywords internal
+
 Raw_LB <- function(data, previous_data, spec, ...) {
   # Function body for Raw_LB
   inps <- list(...)

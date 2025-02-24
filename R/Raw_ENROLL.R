@@ -1,3 +1,11 @@
+#' Generate Raw ENROLL Data
+#'
+#' Generate Raw ENROLL based on `ENROLL.yaml` from `gsm.mapping`.
+#'
+#' @inheritParams Raw_STUDY
+#' @returns a data.frame pertaining to the raw dataset plugged into `ENROLL.yaml`
+#' @family internal
+#' @keywords internal
 Raw_ENROLL <- function(data, previous_data, spec, ...) {
   inps <- list(...)
 

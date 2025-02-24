@@ -1,3 +1,12 @@
+#' Generate Raw DATACHG Data
+#'
+#' Generate Raw DATACHG based on `DATACHG.yaml` from `gsm.mapping`.
+#'
+#' @inheritParams Raw_STUDY
+#' @returns a data.frame pertaining to the raw dataset plugged into `DATACHG.yaml`
+#' @family internal
+#' @keywords internal
+
 Raw_DATACHG <- function(data, previous_data, spec, ...) {
   # Function body for Raw_DATACHG
   # Function body for Raw_SDRGCOMP

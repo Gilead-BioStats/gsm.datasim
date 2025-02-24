@@ -11,7 +11,9 @@ Generates synthetic test data for the RBQM of Clinical Trials based on several p
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://gilead-biostats.github.io/gsm.datasim/}
+  \item \url{https://github.com/Gilead-BioStats/gsm.datasim}
+  \item \url{https://gilead-biostats.github.io/gsm.datasim}
+  \item Report bugs at \url{https://github.com/Gilead-BioStats/gsm.datasim/issues}
 }
 
 }
@@ -21,6 +23,7 @@ Useful links:
 Authors:
 \itemize{
   \item Laura Maxwell \email{laura.maxwell@atorusresearch.com}
+  \item Zelos Zhu \email{zelos.zhu@atorusresearch.com}
 }
 
 }

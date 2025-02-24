@@ -1,3 +1,18 @@
+#' Generate Raw Study Data
+#'
+#' Generate Raw Study Data based on `STUDY.yaml` from `gsm.mapping`.
+#' Includes information about a clinical study, target enrollment/recruitment numbers and
+#' actual enrollment.
+#'
+#' @param data List of data frames pertaining to a simulated study which is passed through in a list of snapshots
+#' @param previous_data List of data frames pertaining to prior snpashot with relation to `data`
+#' @param spec  A list representing the combined specifications from `CombineSpecs` across the desired domains for a simulation.
+#' @param ... Additional arguments to be passed.
+#'
+#' @returns a data.frame pertaining to the raw dataset plugged into `STUDY.yaml`
+#' @family internal
+#' @keywords internal
+
 Raw_STUDY <- function(data, previous_data, spec, ...) {
   inps <- list(...)
 

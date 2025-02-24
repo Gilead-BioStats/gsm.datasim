@@ -1,3 +1,12 @@
+#' Generate Raw DATAENT Data
+#'
+#' Generate Raw DATAENT based on `DATAENT.yaml` from `gsm.mapping`.
+#'
+#' @inheritParams Raw_STUDY
+#' @returns a data.frame pertaining to the raw dataset plugged into `DATAENT.yaml`
+#' @family internal
+#' @keywords internal
+
 Raw_DATAENT <- function(data, previous_data, spec, ...) {
 
   inps <- list(...)
