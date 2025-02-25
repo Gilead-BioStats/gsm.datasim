@@ -31,6 +31,7 @@
 #' @examples
 #' snapshots <- generate_rawdata_for_single_study(
 #'   SnapshotCount = 3,
+#'   SnapshotWidth = "months",
 #'   ParticipantCount = 50,
 #'   SiteCount = 5,
 #'   StudyID = "ABC",

@@ -36,7 +36,8 @@ Other internal:
 \code{\link{Raw_SITE}()},
 \code{\link{Raw_STUDCOMP}()},
 \code{\link{Raw_STUDY}()},
-\code{\link{Raw_SUBJ}()}
+\code{\link{Raw_SUBJ}()},
+\code{\link{Raw_VISIT}()}
 }
 \concept{internal}
 \keyword{internal}
