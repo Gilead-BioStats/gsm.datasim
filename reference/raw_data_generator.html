@@ -56,6 +56,7 @@ is saved as an RDS file.</p>
 <span>  SiteCount <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  StudyID <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  SnapshotCount <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  SnapshotWidth <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  template_path <span class="op">=</span> <span class="st">"~/gsm.datasim/inst/template.csv"</span>,</span>
 <span>  workflow_path <span class="op">=</span> <span class="st">"workflow/1_mappings"</span>,</span>
 <span>  generate_reports <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -87,6 +88,10 @@ from the template file.</p></dd>
 <dt id="arg-snapshotcount">SnapshotCount<a class="anchor" aria-label="anchor" href="#arg-snapshotcount"></a></dt>
 <dd><p>An integer specifying the number of snapshots for the study. If <code>NULL</code>,
 the function will use values from the template file.</p></dd>
+
+
+<dt id="arg-snapshotwidth">SnapshotWidth<a class="anchor" aria-label="anchor" href="#arg-snapshotwidth"></a></dt>
+<dd><p>A character specifying the frequency of snapshots, defaults to "months".</p></dd>
 
 
 <dt id="arg-template-path">template_path<a class="anchor" aria-label="anchor" href="#arg-template-path"></a></dt>

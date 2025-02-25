@@ -53,6 +53,7 @@ adverse events, and time on study being populated according to the study's speci
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">generate_rawdata_for_single_study</span><span class="op">(</span></span>
 <span>  <span class="va">SnapshotCount</span>,</span>
+<span>  <span class="va">SnapshotWidth</span>,</span>
 <span>  <span class="va">ParticipantCount</span>,</span>
 <span>  <span class="va">SiteCount</span>,</span>
 <span>  <span class="va">StudyID</span>,</span>
@@ -69,6 +70,10 @@ adverse events, and time on study being populated according to the study's speci
 
 <dl><dt id="arg-snapshotcount">SnapshotCount<a class="anchor" aria-label="anchor" href="#arg-snapshotcount"></a></dt>
 <dd><p>An integer specifying the number of snapshots to generate.</p></dd>
+
+
+<dt id="arg-snapshotwidth">SnapshotWidth<a class="anchor" aria-label="anchor" href="#arg-snapshotwidth"></a></dt>
+<dd><p>A character specifying the frequency of snapshots, defaults to "months".</p></dd>
 
 
 <dt id="arg-participantcount">ParticipantCount<a class="anchor" aria-label="anchor" href="#arg-participantcount"></a></dt>
