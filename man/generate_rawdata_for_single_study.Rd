@@ -6,6 +6,7 @@
 \usage{
 generate_rawdata_for_single_study(
   SnapshotCount,
+  SnapshotWidth,
   ParticipantCount,
   SiteCount,
   StudyID,
@@ -17,6 +18,8 @@ generate_rawdata_for_single_study(
 }
 \arguments{
 \item{SnapshotCount}{An integer specifying the number of snapshots to generate.}
+
+\item{SnapshotWidth}{A character specifying the frequency of snapshots, defaults to "months".}
 
 \item{ParticipantCount}{An integer specifying the number of participants in the study.}
 

@@ -6,6 +6,7 @@
 #' adverse events, and time on study being populated according to the study's specifications.
 #'
 #' @param SnapshotCount An integer specifying the number of snapshots to generate.
+#' @param SnapshotWidth A character specifying the frequency of snapshots, defaults to "months".
 #' @param ParticipantCount An integer specifying the number of participants in the study.
 #' @param SiteCount An integer specifying the number of sites for the study.
 #' @param StudyID A string specifying the study identifier.
