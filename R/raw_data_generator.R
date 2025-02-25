@@ -72,6 +72,7 @@ raw_data_generator <- function(
       tictoc::tic()
       res <- generate_rawdata_for_single_study(
         SnapshotCount = curr_vars$SnapshotCount,
+        SnapshotWidth = curr_vars$SnapshotWidth,
         ParticipantCount = curr_vars$ParticipantCount,
         SiteCount = curr_vars$SiteCount,
         StudyID = curr_vars$StudyID,
