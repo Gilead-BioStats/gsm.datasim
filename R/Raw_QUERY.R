@@ -6,6 +6,7 @@
 #' @returns a data.frame pertaining to the raw dataset plugged into `QUERY.yaml`
 #' @family internal
 #' @keywords internal
+#' @noRd
 
 Raw_QUERY <- function(data, previous_data, spec, ...) {
   inps <- list(...)

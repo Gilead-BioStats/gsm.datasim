@@ -6,6 +6,7 @@
 #' @returns a data.frame pertaining to the raw dataset plugged into `SDRGCOMP.yaml`
 #' @family internal
 #' @keywords internal
+#' @noRd
 
 Raw_SDRGCOMP <- function(data, previous_data, spec, ...) {
   # Function body for Raw_SDRGCOMP

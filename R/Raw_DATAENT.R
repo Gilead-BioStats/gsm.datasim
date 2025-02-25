@@ -6,6 +6,7 @@
 #' @returns a data.frame pertaining to the raw dataset plugged into `DATAENT.yaml`
 #' @family internal
 #' @keywords internal
+#' @noRd
 
 Raw_DATAENT <- function(data, previous_data, spec, ...) {
 

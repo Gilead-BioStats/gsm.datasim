@@ -7,6 +7,7 @@
 #' @returns a data.frame pertaining to the raw dataset plugged into `VISIT.yaml`
 #' @family internal
 #' @keywords internal
+#' @noRd
 Raw_SV <- function(data, previous_data, spec, startDate, ...) {
   inps <- list(...)
   if ("Raw_SV" %in% names(previous_data)) {

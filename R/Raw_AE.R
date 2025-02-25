@@ -9,6 +9,7 @@
 #' @returns a data.frame pertaining to the raw dataset plugged into `AE.yaml`
 #' @family internal
 #' @keywords internal
+#' @noRd
 Raw_AE <- function(data, previous_data, spec, startDate, endDate, ...) {
   inps <- list(...)
 

@@ -6,6 +6,7 @@
 #' @returns a data.frame pertaining to the raw dataset plugged into `DATACHG.yaml`
 #' @family internal
 #' @keywords internal
+#' @noRd
 
 Raw_DATACHG <- function(data, previous_data, spec, ...) {
   # Function body for Raw_DATACHG

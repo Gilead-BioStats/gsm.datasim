@@ -9,6 +9,7 @@
 #' @returns a data.frame pertaining to the raw dataset plugged into `SUBJ.yaml`
 #' @family internal
 #' @keywords internal
+#' @noRd
 Raw_SUBJ <- function(data, previous_data, spec, startDate, endDate, ...) {
   inps <- list(...)
 
