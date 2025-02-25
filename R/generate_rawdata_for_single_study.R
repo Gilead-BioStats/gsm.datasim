@@ -40,6 +40,7 @@
 #' )
 #'
 generate_rawdata_for_single_study <- function(SnapshotCount,
+                                              SnapshotWidth,
                                               ParticipantCount,
                                               SiteCount,
                                               StudyID,
@@ -49,8 +50,8 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                                               desired_specs = NULL) {
 
   # Generate start and end dates for snapshots
-  start_dates <- seq(as.Date("2012-01-01"), length.out = SnapshotCount, by = "months")
-  end_dates <- seq(as.Date("2012-02-01"), length.out = SnapshotCount, by = "months") - 1
+  start_dates <- seq(as.Date("2012-01-01"), length.out = SnapshotCount, by = SnapshotWidth)
+  end_dates <- seq(as.Date("2012-02-01"), length.out = SnapshotCount, by = SnapshotWidth) - 1
 
   # Load workflow mappings and combine specifications
   combined_specs <- load_specs(workflow_path, mappings, package) |>
