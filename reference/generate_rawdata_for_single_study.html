@@ -121,6 +121,7 @@ specified in <code>combined_specs</code>.</p></li>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">snapshots</span> <span class="op">&lt;-</span> <span class="fu">generate_rawdata_for_single_study</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  SnapshotCount <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>  SnapshotWidth <span class="op">=</span> <span class="st">"months"</span>,</span></span>
 <span class="r-in"><span>  ParticipantCount <span class="op">=</span> <span class="fl">50</span>,</span></span>
 <span class="r-in"><span>  SiteCount <span class="op">=</span> <span class="fl">5</span>,</span></span>
 <span class="r-in"><span>  StudyID <span class="op">=</span> <span class="st">"ABC"</span>,</span></span>
@@ -129,7 +130,48 @@ specified in <code>combined_specs</code>.</p></li>
 <span class="r-in"><span>  package <span class="op">=</span> <span class="st">"gsm.mapping"</span>,</span></span>
 <span class="r-in"><span>  desired_specs <span class="op">=</span> <span class="cn">NULL</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in seq.Date(as.Date("2012-01-01"), length.out = SnapshotCount, by = SnapshotWidth):</span> exactly two of 'to', 'by' and 'length.out' / 'along.with' must be specified</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:24]  -- Adding snapshot 1...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:24]  ---- Adding dataset Raw_SITE...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:24]  ---- Dataset Raw_SITE added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:24]  ---- Adding dataset Raw_SUBJ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:24]  ---- Dataset Raw_SUBJ added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:24]  ---- Adding dataset Raw_ENROLL...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:24]  ---- Dataset Raw_ENROLL added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:24]  ---- Adding dataset Raw_SV...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:24]  ---- Dataset Raw_SV added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:24]  ---- Adding dataset Raw_AE...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:24]  ---- Dataset Raw_AE added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:24]  ---- Adding dataset Raw_DATAENT...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:24]  ---- Dataset Raw_DATAENT added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:24]  -- Snapshot 1 added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:24]  -- Adding snapshot 2...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:24]  ---- Adding dataset Raw_SITE...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:24]  ---- Dataset Raw_SITE added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:24]  ---- Adding dataset Raw_SUBJ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Dataset Raw_SUBJ added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Adding dataset Raw_ENROLL...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Dataset Raw_ENROLL added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Adding dataset Raw_SV...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Dataset Raw_SV added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Adding dataset Raw_AE...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Dataset Raw_AE added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Adding dataset Raw_DATAENT...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Dataset Raw_DATAENT added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  -- Snapshot 2 added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  -- Adding snapshot 3...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Adding dataset Raw_SITE...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Dataset Raw_SITE added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Adding dataset Raw_SUBJ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Dataset Raw_SUBJ added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Adding dataset Raw_ENROLL...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Dataset Raw_ENROLL added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Adding dataset Raw_SV...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Dataset Raw_SV added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Adding dataset Raw_AE...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Dataset Raw_AE added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Adding dataset Raw_DATAENT...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  ---- Dataset Raw_DATAENT added successfully</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> INFO [2025-02-25 21:10:25]  -- Snapshot 3 added successfully</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
