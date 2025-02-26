@@ -1,3 +1,13 @@
+#' Generate Raw Consents Data
+#'
+#' Generate Raw Consents Data based on `Consents.yaml` from `gsm.mapping`.
+#'
+#' @inheritParams Raw_STUDY
+#' @param startDate The beginning of dates to which the changes in consent can occur.
+#' @returns a data.frame pertaining to the raw dataset plugged into `Consents.yaml`
+#' @family internal
+#' @keywords internal
+#' @noRd
 Raw_Consents <- function(data, previous_data, spec, startDate, ...) {
   inps <- list(...)
 

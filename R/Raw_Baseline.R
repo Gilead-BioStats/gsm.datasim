@@ -1,3 +1,14 @@
+#' Generate Raw Baseline Imaging Data
+#'
+#' Generate Raw Baseline Imaging Data based on `Baseline.yaml` from `gsm.mapping`.
+#'
+#' @inheritParams Raw_STUDY
+#' @param startDate The beginning of dates to which the Baseline Imaging date can occur.
+#'
+#' @returns a data.frame pertaining to the raw dataset plugged into `Baseline.yaml`
+#' @family internal
+#' @keywords internal
+#' @noRd
 Raw_Baseline <- function(data, previous_data, spec, startDate, ...) {
   inps <- list(...)
 

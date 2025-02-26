@@ -1,3 +1,14 @@
+#' Generate Raw Overall Response Data
+#'
+#' Generate Raw Overall Response Data based on `OverallResponse.yaml` from `gsm.mapping`.
+#' These values align with RECIST 1.1 guidelines.
+#'
+#' @inheritParams Raw_STUDY
+#'
+#' @returns a data.frame pertaining to the raw dataset plugged into `OverallResponse.yaml`
+#' @family internal
+#' @keywords internal
+#' @noRd
 Raw_OverallResponse <- function(data, previous_data, spec, ...) {
   # Function body for Raw_OverallResponse
   inps <- list(...)

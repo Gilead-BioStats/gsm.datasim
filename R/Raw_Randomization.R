@@ -1,3 +1,14 @@
+#' Generate Raw Randomization Data
+#'
+#' Generate Raw Randomization Data based on `Randomization.yaml` from `gsm.mapping`.
+#'
+#' @inheritParams Raw_STUDY
+#' @param startDate The beginning of dates to which the randomization dates can occur.
+#'
+#' @returns a data.frame pertaining to the raw dataset plugged into `Randomization.yaml`
+#' @family internal
+#' @keywords internal
+#' @noRd
 Raw_Randomization <- function(data, previous_data, spec, startDate, ...) {
   inps <- list(...)
 

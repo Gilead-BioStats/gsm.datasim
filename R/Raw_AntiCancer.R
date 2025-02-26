@@ -1,3 +1,14 @@
+#' Generate Raw Anticancer Data
+#'
+#' Generate Raw Anticancer Data based on `Anticancer.yaml` from `gsm.mapping`.
+#'
+#' @inheritParams Raw_STUDY
+#' @param startDate The beginning of dates to which the Anti-cancer treatments can occur.
+#'
+#' @returns a data.frame pertaining to the raw dataset plugged into `Anticancer.yaml`
+#' @family internal
+#' @keywords internal
+#' @noRd
 Raw_AntiCancer <- function(data, previous_data, spec, startDate, ...) {
   inps <- list(...)
 
