@@ -162,6 +162,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                      Raw_Visit = list(data, previous_data, combined_specs, n = n,
                                       startDate = start_dates[snapshot_idx],
                                       SnapshotCount = SnapshotCount),
+                     Raw_Randomization = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      list(data, previous_data, combined_specs, n = n)  # Default case
       )
 
