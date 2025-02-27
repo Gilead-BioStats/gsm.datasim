@@ -27,13 +27,13 @@ Raw_AE <- function(data, previous_data, spec, startDate, endDate, ...) {
   if (n == 0) return(dataset)
 
   if (all(c("aeser", "aest_dt", "aeen_dt", "mdrpt_nsv", "mdrsoc_nsv", "aetoxgr") %in% names(curr_spec))) {
-    curr_spec$aeser <- NULL
+    curr_spec$aeser <- list(required = TRUE)
     curr_spec$aest_dt_aeen_dt <- list(required = TRUE)
-    curr_spec$aest_dt <- NULL
-    curr_spec$aeen_dt <- NULL
-    curr_spec$mdrpt_nsv <- NULL
-    curr_spec$mdrsoc_nsv <- NULL
-    curr_spec$aetoxgr <- NULL
+    curr_spec$aest_dt <- list(required = TRUE)
+    curr_spec$aeen_dt <- list(required = TRUE)
+    curr_spec$mdrpt_nsv <- list(required = TRUE)
+    curr_spec$mdrsoc_nsv <- list(required = TRUE)
+    curr_spec$aetoxgr <- list(required = TRUE)
   }
 
   args <- list(
