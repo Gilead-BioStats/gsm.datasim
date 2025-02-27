@@ -160,7 +160,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                      Raw_Consents = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      # Raw_Death is default
                      # Raw_Overall is default for now
-                     Raw_Visit = list(data, previous_data, combined_specs, n = n,
+                     Raw_VISIT = list(data, previous_data, combined_specs, n = n,
                                       startDate = start_dates[snapshot_idx],
                                       SnapshotCount = SnapshotCount,
                                       SnapshotWidth = SnapshotWidth),

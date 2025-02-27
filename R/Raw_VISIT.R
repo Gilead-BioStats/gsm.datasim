@@ -8,10 +8,10 @@
 #' @family internal
 #' @keywords internal
 #' @noRd
-Raw_Visit <- function(data, previous_data, spec, startDate, SnapshotCount, SnapshotWidth,...) {
+Raw_VISIT <- function(data, previous_data, spec, startDate, SnapshotCount, SnapshotWidth,...) {
   inps <- list(...)
-  if ("Raw_Visit" %in% names(previous_data)) {
-    dataset <- previous_data$Raw_Visit
+  if ("Raw_VISIT" %in% names(previous_data)) {
+    dataset <- previous_data$Raw_VISIT
     previous_row_num <- length(unique(dataset$subjid))
   } else {
     dataset <- NULL
@@ -25,7 +25,7 @@ Raw_Visit <- function(data, previous_data, spec, startDate, SnapshotCount, Snaps
     visit = c("Screening", paste0("VISIT ", 1:SnapshotCount), "Follow-up")
   )
 
-  curr_spec <- spec$Raw_Visit
+  curr_spec <- spec$Raw_VISIT
 
 
   if (!("subjid" %in% names(curr_spec))) {
@@ -58,7 +58,7 @@ Raw_Visit <- function(data, previous_data, spec, startDate, SnapshotCount, Snaps
     default = list(n, subjs, possible_Visits)
   )
 
-  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_Visit, ...)
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_VISIT, ...)
   return(res)
 }
 
@@ -66,7 +66,7 @@ visit_date <- function(n, subjs, start_date, possible_Visits, SnapshotWidth,...)
   rep(generate_consecutive_random_dates(nrow(possible_Visits), start_date, period_to_days(SnapshotWidth)), length(subjs))
 }
 
-visit_folder <- function(n, subjs, possible_Visits, ...) {
+visit <- function(n, subjs, possible_Visits, ...) {
   rep(possible_Visits$visit, length(subjs))
 }
 
