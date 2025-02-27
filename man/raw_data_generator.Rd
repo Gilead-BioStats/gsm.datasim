@@ -31,7 +31,8 @@ from the template file.}
 \item{SnapshotCount}{An integer specifying the number of snapshots for the study. If \code{NULL},
 the function will use values from the template file.}
 
-\item{SnapshotWidth}{A character specifying the frequency of snapshots, defaults to "months".}
+\item{SnapshotWidth}{A character specifying the frequency of snapshots, defaults to "months".
+Accepts "days", "weeks", "months" and "years". User can also place a number and unit such as "3 months".}
 
 \item{template_path}{A string specifying the path to the template CSV file. Default is
 \code{"~/gsm.datasim/inst/template.csv"}.}

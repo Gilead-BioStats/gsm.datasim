@@ -14,6 +14,7 @@
 #' @param SnapshotCount An integer specifying the number of snapshots for the study. If `NULL`,
 #' the function will use values from the template file.
 #' @param SnapshotWidth A character specifying the frequency of snapshots, defaults to "months".
+#' Accepts "days", "weeks", "months" and "years". User can also place a number and unit such as "3 months".
 #' @param template_path A string specifying the path to the template CSV file. Default is
 #' `"~/gsm.datasim/inst/template.csv"`.
 #' @param workflow_path A string specifying the path to the workflow mappings. Default is
@@ -62,7 +63,7 @@ raw_data_generator <- function(
   raw_data_list <- list()
 
   # Check if any of the key parameters are NULL
-  if (any(is.null(c(ParticipantCount, SiteCount, StudyID, SnapshotCount)))) {
+  if (any(is.null(c(ParticipantCount, SiteCount, StudyID, SnapshotCount, SnapshotWidth)))) {
     # Read the template CSV file
     template <- read.csv(template_path, stringsAsFactors = FALSE)
 
@@ -96,6 +97,7 @@ raw_data_generator <- function(
     # Generate raw data for the single study configuration provided
     raw_data_list[[StudyID]] <- generate_rawdata_for_single_study(
       SnapshotCount = SnapshotCount,
+      SnapshotWidth = SnapshotWidth,
       ParticipantCount = ParticipantCount,
       SiteCount = SiteCount,
       StudyID = StudyID,
