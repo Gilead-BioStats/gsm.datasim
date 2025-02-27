@@ -7,6 +7,7 @@
 #'
 #' @param SnapshotCount An integer specifying the number of snapshots to generate.
 #' @param SnapshotWidth A character specifying the frequency of snapshots, defaults to "months".
+#' Accepts "days", "weeks", "months" and "years". User can also place a number and unit such as "3 months".
 #' @param ParticipantCount An integer specifying the number of participants in the study.
 #' @param SiteCount An integer specifying the number of sites for the study.
 #' @param StudyID A string specifying the study identifier.
@@ -161,7 +162,8 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                      # Raw_Overall is default for now
                      Raw_Visit = list(data, previous_data, combined_specs, n = n,
                                       startDate = start_dates[snapshot_idx],
-                                      SnapshotCount = SnapshotCount),
+                                      SnapshotCount = SnapshotCount,
+                                      SnapshotWidth = SnapshotWidth),
                      Raw_Randomization = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      list(data, previous_data, combined_specs, n = n)  # Default case
       )

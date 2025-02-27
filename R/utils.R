@@ -290,4 +290,47 @@ generate_random_fpfv <- function(min_date, max_date, canBeEmpty = FALSE, previou
   return(random_date)
 }
 
+period_to_days <- function(period) {
+  # Convert to lowercase and trim any extra whitespace
+  p <- tolower(trimws(period))
+
+  # 1) Look for patterns like "4 weeks", "10 days", etc.
+  #    This pattern means: one or more digits, followed by spaces, followed by letters.
+  #    For example: "4 weeks" -> c("4", "weeks")
+  if (grepl("^\\d+\\s+\\w+$", p)) {
+    parts <- strsplit(p, "\\s+")[[1]]
+    num   <- as.numeric(parts[1])
+    unit  <- parts[2]
+
+    # Map the unit to a multiplier (rough or exact, as needed)
+    # Adjust as you see fit; for instance, "months" can be ~30, but is an approximation.
+    day_equiv <- switch(unit,
+                        "day"    = 1,
+                        "days"   = 1,
+                        "week"   = 7,
+                        "weeks"  = 7,
+                        "month"  = 30,
+                        "months" = 30,
+                        "year"   = 365,
+                        "years"  = 365,
+                        stop("Unrecognized unit in '", period, "'")
+    )
+    return(num * day_equiv)
+
+    # 2) Handle single-word strings like "weekly", "biweekly", etc.
+  } else {
+    # For single-word strings, create a small dictionary of known terms.
+    # You can expand this as much as you want.
+    return(switch(p,
+                  "days"      = 1,
+                  "weeks"     = 7,
+                  "months"    = 30,
+                  "years"     = 365,
+                  # fallback if nothing matches
+                  stop("Unrecognized period: ", period)
+    ))
+  }
+}
+period_to_days("months")
+
 

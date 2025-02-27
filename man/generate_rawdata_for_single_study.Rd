@@ -19,7 +19,8 @@ generate_rawdata_for_single_study(
 \arguments{
 \item{SnapshotCount}{An integer specifying the number of snapshots to generate.}
 
-\item{SnapshotWidth}{A character specifying the frequency of snapshots, defaults to "months".}
+\item{SnapshotWidth}{A character specifying the frequency of snapshots, defaults to "months".
+Accepts "days", "weeks", "months" and "years". User can also place a number and unit such as "3 months".}
 
 \item{ParticipantCount}{An integer specifying the number of participants in the study.}
 

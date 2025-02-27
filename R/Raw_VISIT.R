@@ -8,7 +8,7 @@
 #' @family internal
 #' @keywords internal
 #' @noRd
-Raw_Visit <- function(data, previous_data, spec, startDate, SnapshotCount,...) {
+Raw_Visit <- function(data, previous_data, spec, startDate, SnapshotCount, SnapshotWidth,...) {
   inps <- list(...)
   if ("Raw_Visit" %in% names(previous_data)) {
     dataset <- previous_data$Raw_Visit
@@ -53,7 +53,7 @@ Raw_Visit <- function(data, previous_data, spec, startDate, SnapshotCount,...) {
   subjs <- subjid(n, external_subjid = data$Raw_SUBJ$subjid, replace = FALSE)
   args <- list(
     subjid_repeated = list(nrow(possible_Visits), subjs),
-    visit_date = list(n, subjs, startDate, possible_Visits),
+    visit_date = list(n, subjs, startDate, possible_Visits, SnapshotWidth),
     invid = list(n = length(subjs)),
     default = list(n, subjs, possible_Visits)
   )
@@ -62,8 +62,8 @@ Raw_Visit <- function(data, previous_data, spec, startDate, SnapshotCount,...) {
   return(res)
 }
 
-visit_date <- function(n, subjs, start_date, possible_Visits, ...) {
-  rep(generate_consecutive_random_dates(nrow(possible_Visits), start_date, 30), length(subjs))
+visit_date <- function(n, subjs, start_date, possible_Visits, SnapshotWidth,...) {
+  rep(generate_consecutive_random_dates(nrow(possible_Visits), start_date, period_to_days(SnapshotWidth)), length(subjs))
 }
 
 visit_folder <- function(n, subjs, possible_Visits, ...) {
