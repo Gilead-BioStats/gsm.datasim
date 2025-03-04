@@ -165,6 +165,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                                       SnapshotCount = SnapshotCount,
                                       SnapshotWidth = SnapshotWidth),
                      Raw_Randomization = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
+                     Raw_PK = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated")),
                      list(data, previous_data, combined_specs, n = n)  # Default case
       )
 
