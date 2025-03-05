@@ -13,9 +13,12 @@ single_result <- generate_rawdata_for_single_study(SnapshotCount = 3,
                                                    package = "gsm.mapping",
                                                    desired_specs = NULL)
 
-result <- raw_data_generator(template_path = "~/gsm.datasim/inst/template.csv",
-                             workflow_path = "workflow/1_mappings",
-                             mappings = core_mappings,
-                             package = "gsm.mapping")
+# Below is the code to run multiple snapshots for multiple studies
+# Highly memory intensive, make sure hardware can handle
+#
+# result <- raw_data_generator(template_path = "~/gsm.datasim/inst/template.csv",
+#                              workflow_path = "workflow/1_mappings",
+#                              mappings = core_mappings,
+#                              package = "gsm.mapping")
 
 result2 <- raw_data_generator(template_path = "~/gsm.datasim/inst/small_template.csv")
