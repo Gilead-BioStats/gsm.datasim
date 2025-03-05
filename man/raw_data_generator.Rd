@@ -9,11 +9,12 @@ raw_data_generator(
   SiteCount = NULL,
   StudyID = NULL,
   SnapshotCount = NULL,
-  template_path = "~/gsm.datasim/data-raw/template.csv",
+  SnapshotWidth = NULL,
+  template_path = "~/gsm.datasim/inst/template.csv",
   workflow_path = "workflow/1_mappings",
   generate_reports = FALSE,
   mappings = NULL,
-  package = "gsm",
+  package = "gsm.mapping",
   save = FALSE
 )
 }
@@ -30,20 +31,22 @@ from the template file.}
 \item{SnapshotCount}{An integer specifying the number of snapshots for the study. If \code{NULL},
 the function will use values from the template file.}
 
+\item{SnapshotWidth}{A character specifying the frequency of snapshots, defaults to "months".
+Accepts "days", "weeks", "months" and "years". User can also place a number and unit such as "3 months".}
+
 \item{template_path}{A string specifying the path to the template CSV file. Default is
-\code{"~/gsm.datasim/data-raw/template.csv"}.}
+\code{"~/gsm.datasim/inst/template.csv"}.}
 
 \item{workflow_path}{A string specifying the path to the workflow mappings. Default is
 \code{"workflow/1_mappings"}.}
 
 \item{generate_reports}{A boolean, specifying whether or not to produce reports upon execution. Default is FALSE.}
 
+\item{mappings}{A string specifying the names of the workflows to run.}
+
 \item{package}{A string specifying the package in which the workflows used in \code{MakeWorkflowList()} are located. Default is "gsm".}
 
 \item{save}{A boolean, specifying whether or not this should be saved out as an RDS}
-
-\item{kris}{A string or array of strings specifying the KRIs that will be used to
-determine the spec. Default is \code{NULL}.}
 }
 \value{
 A list of raw data generated for each study snapshot, saved as an RDS file in \code{"data-raw/raw_data.RDS"}.
@@ -66,7 +69,7 @@ the \code{template.csv} file to get the necessary parameters for multiple studie
 \examples{
 \dontrun{
 # Generate raw data using specified parameters
-data <- raw_data_generator(ParticipantCount = 100, SiteCount = 10, StudyID = "Study01", SnapshotCount = 5)
+data <- raw_data_generator(ParticipantCount = 100, SiteCount = 10, StudyID = "Study01", SnapshotCount = 5, SnapshotWidth = "months")
 
 
 # Generate raw data using a template file

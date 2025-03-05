@@ -1,0 +1,4 @@
+StudyID,ParticipantCount,SiteCount,SnapshotCount,SnapshotWidth,KRI,DeepDive,ADO
+"S0001",1000,40,10,"weeks","All",TRUE,FALSE
+"S0004",300,20,4,"months","All",TRUE,TRUE
+"S0006",25,10,10,"months","All",TRUE,FALSE

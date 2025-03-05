@@ -1,4 +1,4 @@
-#' Generate Snapshots of Study Data
+#' Generate Snapshots for Single Study Data
 #'
 #' This function generates a list of study data snapshots based on the provided specifications,
 #' including participant count, site count, study ID, and the number of snapshots to be generated.
@@ -6,17 +6,20 @@
 #' adverse events, and time on study being populated according to the study's specifications.
 #'
 #' @param SnapshotCount An integer specifying the number of snapshots to generate.
+#' @param SnapshotWidth A character specifying the frequency of snapshots, defaults to "months".
+#' Accepts "days", "weeks", "months" and "years". User can also place a number and unit such as "3 months".
 #' @param ParticipantCount An integer specifying the number of participants in the study.
 #' @param SiteCount An integer specifying the number of sites for the study.
 #' @param StudyID A string specifying the study identifier.
-#' @param combined_specs A list of specifications for the raw data variables, where each element contains
-#' variable-generating functions for different data types (e.g., "Raw_AE", "Raw_ENROLL").
-#' @param desired_specs A list of specifications of the data types that should be included. Default values include:
-#' 'Raw_STUDY', 'Raw_SITE', 'Raw_SUBJ', 'Raw_ENROLL', 'Raw_AE', 'Raw_PD'.
+#' @param workflow_path A string specifying the path to the workflow mappings.
+#' @param mappings A string specifying the names of the workflows to run.
+#' @param package A string specifying the package in which the workflows used in `MakeWorkflowList()` are located.
+#' @param desired_specs A list of specifications of the data types that should be included.
 #'
 #' @return A list of data snapshots, where each element contains simulated data for a particular snapshot
 #' period (typically a month), with variables populated according to the provided specifications.
 #'
+#' @export
 #' @details
 #' The function generates snapshots over a sequence of months, starting from `"2012-01-01"`. For each snapshot:
 #' \enumerate{
@@ -26,36 +29,36 @@
 #'   specified in `combined_specs`.
 #' }
 #'
-#' @importFrom dplyr case_when
-#'
 #' @examples
-#' \dontrun{
-#' # Define variable-generating functions
-#' some_function <- function(...) { ... }
-#'
-#' # Generate 5 snapshots of study data
-#' snapshots <- generate_snapshot(
-#'   SnapshotCount = 5,
-#'   ParticipantCount = 100,
-#'   SiteCount = 10,
-#'   StudyID = "Study01",
-#'   combined_specs = list(
-#'     "Raw_AE" = list("subjid" = some_function, ...),
-#'     "Raw_ENROLL" = list("subjid" = some_function, ...)
-#'   )
+#' snapshots <- generate_rawdata_for_single_study(
+#'   SnapshotCount = 3,
+#'   SnapshotWidth = "months",
+#'   ParticipantCount = 50,
+#'   SiteCount = 5,
+#'   StudyID = "ABC",
+#'   workflow_path = "workflow/1_mappings",
+#'   mappings = "AE",
+#'   package = "gsm.mapping",
+#'   desired_specs = NULL
 #' )
-#' }
 #'
-#' @export
 generate_rawdata_for_single_study <- function(SnapshotCount,
-                                                 ParticipantCount,
-                                                 SiteCount,
-                                                 StudyID,
-                                                 combined_specs,
-                                                 desired_specs = NULL) {
+                                              SnapshotWidth,
+                                              ParticipantCount,
+                                              SiteCount,
+                                              StudyID,
+                                              workflow_path,
+                                              mappings,
+                                              package,
+                                              desired_specs = NULL) {
+
   # Generate start and end dates for snapshots
-  start_dates <- seq(as.Date("2012-01-01"), length.out = SnapshotCount, by = "months")
-  end_dates <- seq(as.Date("2012-02-01"), length.out = SnapshotCount, by = "months") - 1
+  start_dates <- seq(as.Date("2012-01-01"), length.out = SnapshotCount, by = SnapshotWidth)
+  end_dates <- seq(as.Date("2012-02-01"), length.out = SnapshotCount, by = SnapshotWidth) - 1
+
+  # Load workflow mappings and combine specifications
+  combined_specs <- load_specs(workflow_path, mappings, package) |>
+    purrr::list_modify("Mapped_SUBJ" = rlang::zap())
 
   # Specify the desired first few elements in order
   desired_order <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL", "Raw_SV")
@@ -78,7 +81,10 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
 
   subject_count <- count_gen(ParticipantCount, SnapshotCount)
   site_count <- count_gen(SiteCount, SnapshotCount)
-  enrollment_count <- enrollment_count_gen(subject_count)
+  if(SnapshotCount > 1){
+    enrollment_count <- enrollment_count_gen(subject_count)
+  }
+  enrollment_count <- subject_count
 
   ae_count <- subject_count * 3
   pd_count <- subject_count * 3
@@ -140,13 +146,26 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                      Raw_SUBJ = list(data, previous_data, combined_specs, n_subj = n, startDate = start_dates[snapshot_idx],
                                      endDate = end_dates[snapshot_idx], split_vars = list("subject_site_synq",
                                                                           "subjid_subject_nsv",
-                                                                          "enrollyn_enrolldt_timeonstudy")),
+                                                                          "enrollyn_enrolldt_timeonstudy_firstparticipantdate_firstdosedate_timeontreatment")),
                      Raw_ENROLL = list(data, previous_data, combined_specs, n_enroll = n, split_vars = list("subject_to_enrollment")),
                      Raw_SV = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated")),
                      Raw_LB = list(data, previous_data, combined_specs, n = n, split_vars = list("subj_visit_repeated")),
                      Raw_DATACHG = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
                      Raw_DATAENT = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
                      Raw_QUERY = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
+                     Raw_AE = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx],
+                                   endDate = end_dates[snapshot_idx], split_vars = list("aest_dt_aeen_dt")),
+                     Raw_AntiCancer = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
+                     Raw_Baseline = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
+                     Raw_Consents = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
+                     # Raw_Death is default
+                     # Raw_Overall is default for now
+                     Raw_VISIT = list(data, previous_data, combined_specs, n = n,
+                                      startDate = start_dates[snapshot_idx],
+                                      SnapshotCount = SnapshotCount,
+                                      SnapshotWidth = SnapshotWidth),
+                     Raw_Randomization = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
+                     Raw_PK = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated")),
                      list(data, previous_data, combined_specs, n = n)  # Default case
       )
 

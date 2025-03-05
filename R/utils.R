@@ -1,3 +1,60 @@
+combination_var_splitter <- function(variable_data, split_vars) {
+  for (split_var_name in split_vars) {
+    # Step 1: Find the index of the sublist in the main list
+    sublist_index <- which(names(variable_data) == split_var_name)
+
+    # Step 2: Extract the elements of the sublist
+    sublist_elements <- variable_data[[sublist_index]]
+
+    # Step 3: Remove the sublist from the main list
+    variable_data[[sublist_index]] <- NULL
+
+    # Step 4: Insert the sublist elements into the main list at the original position
+    variable_data <- append(variable_data, sublist_elements, after = sublist_index - 1)
+  }
+
+  return(variable_data)
+}
+
+
+add_new_var_data <- function(dataset, vars, args, orig_curr_spec, ...) {
+  internal_args <- list(...)
+
+  variable_data <- lapply(names(vars), function(var_name) {
+    generator_func <- var_name
+    if (!(var_name %in% names(args))) {
+      curr_args <- args$default
+    } else {
+      curr_args <- args[[var_name]]
+      if (!(var_name %in% names(dataset))) {
+        curr_args[[var_name]] <- NULL
+      } else {
+        curr_args[[var_name]] <- dataset[[var_name]]
+      }
+    }
+
+    # Generate data using the generator function
+    do.call(generator_func, curr_args)
+  })
+
+
+  names(variable_data) <- names(vars)
+  if ("split_vars" %in% names(internal_args)) {
+    variable_data <- combination_var_splitter(variable_data, internal_args$split_vars)
+  }
+
+  variable_data <- variable_data %>%
+    as.data.frame() %>%
+    rename_raw_data_vars_per_spec(orig_curr_spec)
+
+
+  if (!is.null(dataset)) {
+    return(dplyr::bind_rows(dataset, variable_data))
+  } else {
+    return(variable_data)
+  }
+}
+
 count_gen <- function(max_n, SnapshotCount) {
   iteration <- max_n / SnapshotCount
   counts <- c()
@@ -28,9 +85,9 @@ count_gen <- function(max_n, SnapshotCount) {
 
 load_specs <- function(workflow_path, mappings, package) {
   wf_mapping <- gsm::MakeWorkflowList(strPath = workflow_path, strNames = mappings, strPackage = package)
-  wf_req <-  gsm::MakeWorkflowList(strPath =  "workflow/1_mappings", strNames = c("SUBJ", "STUDY", "SITE"), strPackage = "gsm")
+  wf_req <-  gsm::MakeWorkflowList(strPath =  "workflow/1_mappings", strNames = c("SUBJ", "STUDY", "SITE", "ENROLL"), strPackage = "gsm.mapping")
   wf_all <- modifyList(wf_mapping, wf_req)
-  combined_specs <- gsm::CombineSpecs(wf_all)
+  combined_specs <- CombineSpecs(wf_all)
 
   return(combined_specs)
 }
@@ -44,7 +101,7 @@ rename_raw_data_vars_per_spec <- function(variable_data, spec) {
       # Retrieve the new name from "source_col"
       new_name <- variabale[["source_col"]]
       # Rename the variable in the appropriate dataset in the snapshot
-      variable_data <- variable_data %>% dplyr::rename(!!new_name := var_name)
+      variable_data <- variable_data %>% dplyr::rename(!!rlang::sym(new_name) := all_of(var_name))
     }
   }
   return(variable_data)
@@ -232,5 +289,48 @@ generate_random_fpfv <- function(min_date, max_date, canBeEmpty = FALSE, previou
 
   return(random_date)
 }
+
+period_to_days <- function(period) {
+  # Convert to lowercase and trim any extra whitespace
+  p <- tolower(trimws(period))
+
+  # 1) Look for patterns like "4 weeks", "10 days", etc.
+  #    This pattern means: one or more digits, followed by spaces, followed by letters.
+  #    For example: "4 weeks" -> c("4", "weeks")
+  if (grepl("^\\d+\\s+\\w+$", p)) {
+    parts <- strsplit(p, "\\s+")[[1]]
+    num   <- as.numeric(parts[1])
+    unit  <- parts[2]
+
+    # Map the unit to a multiplier (rough or exact, as needed)
+    # Adjust as you see fit; for instance, "months" can be ~30, but is an approximation.
+    day_equiv <- switch(unit,
+                        "day"    = 1,
+                        "days"   = 1,
+                        "week"   = 7,
+                        "weeks"  = 7,
+                        "month"  = 30,
+                        "months" = 30,
+                        "year"   = 365,
+                        "years"  = 365,
+                        stop("Unrecognized unit in '", period, "'")
+    )
+    return(num * day_equiv)
+
+    # 2) Handle single-word strings like "weekly", "biweekly", etc.
+  } else {
+    # For single-word strings, create a small dictionary of known terms.
+    # You can expand this as much as you want.
+    return(switch(p,
+                  "days"      = 1,
+                  "weeks"     = 7,
+                  "months"    = 30,
+                  "years"     = 365,
+                  # fallback if nothing matches
+                  stop("Unrecognized period: ", period)
+    ))
+  }
+}
+period_to_days("months")
 
 

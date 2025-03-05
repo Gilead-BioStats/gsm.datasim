@@ -13,13 +13,14 @@
 #' from the template file.
 #' @param SnapshotCount An integer specifying the number of snapshots for the study. If `NULL`,
 #' the function will use values from the template file.
+#' @param SnapshotWidth A character specifying the frequency of snapshots, defaults to "months".
+#' Accepts "days", "weeks", "months" and "years". User can also place a number and unit such as "3 months".
 #' @param template_path A string specifying the path to the template CSV file. Default is
-#' `"~/gsm.datasim/data-raw/template.csv"`.
+#' `"~/gsm.datasim/inst/template.csv"`.
 #' @param workflow_path A string specifying the path to the workflow mappings. Default is
 #' `"workflow/1_mappings"`.
 #' @param generate_reports A boolean, specifying whether or not to produce reports upon execution. Default is FALSE.
-#' @param kris A string or array of strings specifying the KRIs that will be used to
-#' determine the spec. Default is `NULL`.
+#' @param mappings A string specifying the names of the workflows to run.
 #' @param package A string specifying the package in which the workflows used in `MakeWorkflowList()` are located. Default is "gsm".
 #' @param save A boolean, specifying whether or not this should be saved out as an RDS
 #'
@@ -34,15 +35,10 @@
 #'   \item The generated data is saved as an RDS file and returned as a list.
 #' }
 #'
-#' @importFrom gsm MakeWorkflowList CombineSpecs
-#' @importFrom utils read.csv
-#' @importFrom tictoc tic toc
-#' @importFrom rlang zap
-#'
 #' @examples
 #' \dontrun{
 #' # Generate raw data using specified parameters
-#' data <- raw_data_generator(ParticipantCount = 100, SiteCount = 10, StudyID = "Study01", SnapshotCount = 5)
+#' data <- raw_data_generator(ParticipantCount = 100, SiteCount = 10, StudyID = "Study01", SnapshotCount = 5, SnapshotWidth = "months")
 #'
 #'
 #' # Generate raw data using a template file
@@ -55,24 +51,19 @@ raw_data_generator <- function(
     SiteCount = NULL,
     StudyID = NULL,
     SnapshotCount = NULL,
-    template_path = "~/gsm.datasim/data-raw/template.csv",
+    SnapshotWidth = NULL,
+    template_path = "~/gsm.datasim/inst/template.csv",
     workflow_path = "workflow/1_mappings",
     generate_reports = FALSE,
     mappings = NULL,
-    package = "gsm",
+    package = "gsm.mapping",
     save = FALSE
 ) {
-  # Load workflow mappings and combine specifications
-  combined_specs <- load_specs(workflow_path, mappings, package) |>
-    purrr::list_modify("Mapped_SUBJ" = rlang::zap())
-
-  #check to see if Raw_Site Raw_Study and Raw_Subj are in the spec
-
   # Initialize the list to store raw data
   raw_data_list <- list()
 
   # Check if any of the key parameters are NULL
-  if (any(is.null(c(ParticipantCount, SiteCount, StudyID, SnapshotCount)))) {
+  if (any(is.null(c(ParticipantCount, SiteCount, StudyID, SnapshotCount, SnapshotWidth)))) {
     # Read the template CSV file
     template <- read.csv(template_path, stringsAsFactors = FALSE)
 
@@ -84,10 +75,13 @@ raw_data_generator <- function(
       tictoc::tic()
       res <- generate_rawdata_for_single_study(
         SnapshotCount = curr_vars$SnapshotCount,
+        SnapshotWidth = curr_vars$SnapshotWidth,
         ParticipantCount = curr_vars$ParticipantCount,
         SiteCount = curr_vars$SiteCount,
         StudyID = curr_vars$StudyID,
-        combined_specs = combined_specs
+        workflow_path = workflow_path,
+        mappings = mappings,
+        package = package
       )
 
       logger::log_info(glue::glue("Added {curr_vars$StudyID} successfully"))
@@ -103,10 +97,13 @@ raw_data_generator <- function(
     # Generate raw data for the single study configuration provided
     raw_data_list[[StudyID]] <- generate_rawdata_for_single_study(
       SnapshotCount = SnapshotCount,
+      SnapshotWidth = SnapshotWidth,
       ParticipantCount = ParticipantCount,
       SiteCount = SiteCount,
       StudyID = StudyID,
-      combined_specs = combined_specs
+      workflow_path = workflow_path,
+      mappings = mappings,
+      package = package
     )
   }
 
