@@ -18,4 +18,4 @@ result <- raw_data_generator(template_path = "~/gsm.datasim/inst/template.csv",
                              mappings = core_mappings,
                              package = "gsm.mapping")
 
-result2 <- raw_data_generator(template_path = "~/gsm.datasim/data-raw/small_template.csv")
+result2 <- raw_data_generator(template_path = "~/gsm.datasim/inst/small_template.csv")

@@ -131,10 +131,10 @@ invid <- function(n, isGenerated=FALSE, ...) {
     return(sample(already_generated, n, replace = TRUE))
   }
 
-  # Generate all possible 3-digit numbers as strings with leading zeros
-  possible_numbers <- sprintf("%03d", 0:999)
+  # Generate all possible 4-digit numbers as strings with leading zeros
+  possible_numbers <- sprintf("%04d", 0:9999)
 
-  # Create all possible strings starting with "0X" and ending with the 3-digit numbers
+  # Create all possible strings starting with "0X" and ending with the 4-digit numbers
   possible_strings <- paste0("0X", possible_numbers)
 
   # Exclude the old strings to avoid duplication
