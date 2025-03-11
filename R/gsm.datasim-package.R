@@ -5,7 +5,7 @@
 #' @import purrr
 #' @importFrom arrow write_parquet
 #' @importFrom glue glue
-#' @importFrom gsm MakeWorkflowList RunWorkflows
+#' @importFrom gsm.core MakeWorkflowList RunWorkflows
 #' @importFrom logger log_info
 #' @importFrom rlang zap
 #' @importFrom tictoc tic toc
