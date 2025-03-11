@@ -8,10 +8,9 @@ Authors@R: c(
 Description: Generates synthetic test data for the RBQM of Clinical Trials based on several parameters. 
 Imports:
     arrow,
-    clindata,
     dplyr, 
     glue,
-    gsm,
+    gsm.core,
     logger,
     magrittr,
     purrr,
@@ -24,8 +23,7 @@ Suggests:
     rmarkdown,
     testthat
 Remotes:
-    clindata=Gilead-BioStats/clindata,
-    gsm=Gilead-BioStats/gsm@gsm-core-test,
+    gsm.core=Gilead-BioStats/gsm.core@dev,
     gsm.mapping=Gilead-BioStats/gsm.mapping@dev
 License: Apache License (>= 2)
 Encoding: UTF-8

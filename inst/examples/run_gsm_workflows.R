@@ -1,5 +1,5 @@
-remotes::install_github("Gilead-BioStats/gsm@main") # need gsm v2.1.1
-library(gsm)
+remotes::install_github("Gilead-BioStats/gsm.core@dev") # need gsm v2.1.1
+library(gsm.core)
 devtools::load_all()
 
 data <- raw_data_generator(ParticipantCount = 100, SiteCount = 10, StudyID = "Study01", SnapshotCount = 5)
