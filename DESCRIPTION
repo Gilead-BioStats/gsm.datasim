@@ -4,8 +4,7 @@ Version: 1.0.0
 Authors@R: c(
     person("Roman", "Rogoza", email = "roman.rogoza@atorusresearch.com", role = c("aut", "cre")),
     person("Laura", "Maxwell", email = "laura.maxwell@atorusresearch.com", role = c("aut")),
-    person("Zelos", "Zhu", email = "zelos.zhu@atorusresearch.com", role = c("aut")),
-    person("Gilead Sciences", role = "cph"))
+    person("Zelos", "Zhu", email = "zelos.zhu@atorusresearch.com", role = c("aut")))
 Description: Generates synthetic test data for the RBQM of Clinical Trials based on several parameters. 
 Imports:
     arrow,

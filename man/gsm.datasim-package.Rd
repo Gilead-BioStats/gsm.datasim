@@ -26,10 +26,5 @@ Authors:
   \item Zelos Zhu \email{zelos.zhu@atorusresearch.com}
 }
 
-Other contributors:
-\itemize{
-  \item Gilead Sciences [copyright holder]
-}
-
 }
 \keyword{internal}
