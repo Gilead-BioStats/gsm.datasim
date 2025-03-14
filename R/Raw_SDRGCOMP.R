@@ -38,7 +38,7 @@ Raw_SDRGCOMP <- function(data, previous_data, spec, ...) {
 sdrgyn <- function(n, ...) {
   # Function body for sdrgyn
   sample(c("Y", "N"),
-         prob = c(0.75, 0.25),
+         # prob = c(0.75, 0.25), potentially not enough instances for cou0007
          n,
          replace = TRUE)
 }

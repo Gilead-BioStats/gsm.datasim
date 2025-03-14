@@ -89,7 +89,7 @@ n_changes <- function(n, ...) {
 
   # Function body for n_changes
   sample(0:6,
-         prob = c(0.74, 0.22, 0.03, 0.005, 0.003, 0.0019, 0.0001),
+         prob = c(0.74, 0.22, 0.03, 0.005, 0.003, 0.0019, 0.0001), # 26% should suffice for cou0011
          n,
          replace = TRUE)
 }

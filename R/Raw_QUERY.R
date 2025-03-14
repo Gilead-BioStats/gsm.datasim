@@ -61,14 +61,14 @@ Raw_QUERY <- function(data, previous_data, spec, ...) {
 querystatus <- function(n, ...) {
   # Function body for querystatus
   sample(c("Answered", "Closed", "Open"),
-         prob = c(0.02, 0.96, 0.02),
+         prob = c(0.3, 0.4, 0.3),
          n,
          replace = TRUE)
 }
 
 queryage <- function(n, ...) {
   # Function body for queryage
-  sample(clindata::edc_queries$queryage,
+  sample(1:359, # should be okay for >30 filtering on cou0009
          n,
          replace = T)
 }

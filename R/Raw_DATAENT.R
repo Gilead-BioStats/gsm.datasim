@@ -68,8 +68,8 @@ Raw_DATAENT <- function(data, previous_data, spec, ...) {
 data_entry_lag <- function(n, ...) {
   # Function body for data_entry_lag
   sample(0:20,
-         prob = c(0.25, 0.18, 0.14, 0.10, 0.07, 0.05, 0.05, 0.04, 0.03, 0.02, 0.02,
-                  rep(0.005, 10)),
+         prob = c(0.2, 0.16, 0.11, 0.07, 0.05, 0.04, 0.04, 0.04, 0.02, 0.01, 0.01,
+                  rep(0.025, 10)), # modify to have enough instances for cou0010
          n,
          replace = TRUE)
 }
