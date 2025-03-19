@@ -70,7 +70,7 @@ Raw_SUBJ <- function(data, previous_data, spec, startDate, endDate, ...) {
   res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_SUBJ, ...)
 
   # Recalculate for all data
-  res$timeonstudy <- timeonstudy(n, res$enrolldt, endDate)
+  # res$timeonstudy <- timeonstudy(n, res$enrolldt, endDate)
 
   return(res)
 }
@@ -180,7 +180,8 @@ enrolldt <- function(n, startDate, endDate, enrollyn_dat, ...) {
 
 timeonstudy <- function(n, enrolldt, endDate, ...) {
   # Function body for timeonstudy
-  as.numeric(as.Date(endDate) - as.Date(enrolldt)) %>% as.integer()
+  # as.numeric(as.Date(endDate) - as.Date(enrolldt)) %>% as.integer()
+  sample(30:365, n, replace = T)
 }
 
 agerep <- function(n, ...) {

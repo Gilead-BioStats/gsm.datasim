@@ -115,6 +115,6 @@ toxgrg_nsv <- function(n, ...) {
   # Function body for toxgrg_nsv
   sample(c("", "0", "1", "2", "3", "4"),
          n,
-         # prob = c(0.49,0.4875,0.01, 0.005, 0.005, 0.0025), potentially not enough instances for cou0005
+         prob = c(0.49,0.475,0.01, 0.005, 0.01, 0.01), # potentially not enough instances for cou0005
          replace = TRUE)
 }

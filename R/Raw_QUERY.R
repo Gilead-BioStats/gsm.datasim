@@ -61,7 +61,7 @@ Raw_QUERY <- function(data, previous_data, spec, ...) {
 querystatus <- function(n, ...) {
   # Function body for querystatus
   sample(c("Answered", "Closed", "Open"),
-         prob = c(0.3, 0.4, 0.3),
+         prob = c(0.02, 0.96, 0.02),
          n,
          replace = TRUE)
 }
