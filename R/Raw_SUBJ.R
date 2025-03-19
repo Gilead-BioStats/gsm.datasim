@@ -157,7 +157,7 @@ enrollyn <- function(n, ...) {
   #   return("N")
   # }
   sample(c("Y", "N"),
-         prob = c(0.75, 0.25), # 25% should be enough for cou0012
+         prob = c(0.55, 0.45), # 45% should be enough for cou0012
          n,
          replace = TRUE)
 
