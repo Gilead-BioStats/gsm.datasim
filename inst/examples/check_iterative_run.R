@@ -23,16 +23,20 @@ single_result <- generate_rawdata_for_single_study(SnapshotCount = 3,
 
 result2 <- raw_data_generator(template_path = "~/gsm.datasim/inst/small_template.csv")
 
+
+# Below provides sufficient flagging across all kri's except kri0008
 set.seed(123)
 
-basic_sim <- gsm.datasim::generate_rawdata_for_single_study(
-  SnapshotCount = 1,
+lSource_ <- gsm.datasim::generate_rawdata_for_single_study(
+  SnapshotCount = 5,
   SnapshotWidth = "months",
-  ParticipantCount = 100,
-  SiteCount = 3,
+  ParticipantCount = 1000,
+  SiteCount = 200,
   StudyID = "ABC",
   workflow_path = "workflow/1_mappings",
   mappings = core_mappings,
   package = "gsm.mapping",
   desired_specs = NULL
 )
+
+lSource <- lSource_[[5]]
