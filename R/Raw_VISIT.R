@@ -53,7 +53,7 @@ Raw_VISIT <- function(data, previous_data, spec, startDate, SnapshotCount, Snaps
   subjs <- subjid(n, external_subjid = data$Raw_SUBJ$subjid, replace = FALSE)
   args <- list(
     subjid_repeated = list(nrow(possible_Visits), subjs),
-    visit_dt = list(n, subjs, startDate, possible_Visits, SnapshotWidth),
+    visit_dt = list(n, subjs, startDate, possible_Visits, SnapshotWidth = SnapshotWidth),
     invid = list(n = length(subjs)),
     default = list(n, subjs, possible_Visits)
   )

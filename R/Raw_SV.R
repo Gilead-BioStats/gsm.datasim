@@ -8,7 +8,7 @@
 #' @family internal
 #' @keywords internal
 #' @noRd
-Raw_SV <- function(data, previous_data, spec, startDate, ...) {
+Raw_SV <- function(data, previous_data, spec, startDate, SnapshotWidth,...) {
   inps <- list(...)
   if ("Raw_SV" %in% names(previous_data)) {
     dataset <- previous_data$Raw_SV
@@ -72,7 +72,7 @@ Raw_SV <- function(data, previous_data, spec, startDate, ...) {
   subjs <- subjid(n, external_subjid = data$Raw_SUBJ$subjid, replace = FALSE)
   args <- list(
     subjid_repeated = list(nrow(possible_visits), subjs),
-    visit_dt = list(n, subjs, startDate, possible_visits),
+    visit_dt = list(n, subjs, startDate, possible_visits, SnapshotWidth),
     default = list(n, subjs, possible_visits)
   )
 
@@ -86,10 +86,6 @@ subjid_repeated <- function(n, subjs, ...) {
     subjid = repeat_rows(n, subjs)
   ))
 
-}
-
-visit_dt <- function(n, subjs, start_date, possible_visits, ...) {
-  rep(generate_consecutive_random_dates(nrow(possible_visits), start_date, 30), length(subjs))
 }
 
 foldername <- function(n, subjs, possible_visits, ...) {

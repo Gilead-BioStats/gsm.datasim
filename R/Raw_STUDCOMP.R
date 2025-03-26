@@ -70,7 +70,7 @@ compyn <- function(n, ...) {
          replace = TRUE)
 }
 
-completion_reason <- function(n, ...) {
+compreas <- function(n, ...) {
   rep("TERMINATION OF MEDICATION", n)
 }
 
