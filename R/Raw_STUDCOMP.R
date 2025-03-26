@@ -71,7 +71,8 @@ compyn <- function(n, ...) {
 }
 
 compreas <- function(n, ...) {
-  rep("TERMINATION OF MEDICATION", n)
+  sample(c("Lost to Follow-Up", "Death", "Withdrew Consent"),
+         n)
 }
 
 completion_date <- function(n, ...) {
