@@ -72,7 +72,8 @@ compyn <- function(n, ...) {
 
 compreas <- function(n, ...) {
   sample(c("Lost to Follow-Up", "Death", "Withdrew Consent"),
-         n)
+         size = n,
+         replace = TRUE)
 }
 
 completion_date <- function(n, ...) {
