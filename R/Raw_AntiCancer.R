@@ -25,14 +25,14 @@ Raw_AntiCancer <- function(data, previous_data, spec, startDate, ...) {
   n <- inps$n - previous_row_num
   if (n == 0) return(dataset)
 
-  if (all(c("act_treatment", "act_date") %in% names(curr_spec))) {
-    curr_spec$act_treatment <- list(required = TRUE)
-    curr_spec$act_date <- list(required = TRUE)
+  if (all(c("cmtrt", "cmst_dt") %in% names(curr_spec))) {
+    curr_spec$cmtrt <- list(required = TRUE)
+    curr_spec$cmst_dt <- list(required = TRUE)
   }
 
   args <- list(
     subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
-    act_date = list(n, startDate),
+    cmst_dt = list(n, startDate),
     default = list(n)
   )
 
@@ -41,10 +41,10 @@ Raw_AntiCancer <- function(data, previous_data, spec, startDate, ...) {
   return(res)
 }
 
-act_treatment <- function(n, ...) {
+cmtrt <- function(n, ...) {
   sample(c("RADIOTHERAPY", "OTHER CHEMOTHERAPY"), n, replace = TRUE)
 }
 
-act_date <- function(n, startDate, ...) {
+cmst_dt <- function(n, startDate, ...) {
   as.Date(startDate + sample(-5:5, n, replace = TRUE))
 }

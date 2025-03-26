@@ -14,8 +14,8 @@ Raw_Death <- function(data, previous_data, spec, ...) {
   n <- inps$n - previous_row_num
   if (n == 0) return(dataset)
 
-  if (all(c("death_date") %in% names(curr_spec))) {
-    curr_spec$death_date <- list(required = TRUE)
+  if (all(c("death_dt") %in% names(curr_spec))) {
+    curr_spec$death_dt <- list(required = TRUE)
   }
 
   args <- list(
@@ -28,6 +28,6 @@ Raw_Death <- function(data, previous_data, spec, ...) {
   return(res)
 }
 
-death_date <- function(n, ...) {
+death_dt <- function(n, ...) {
   as.Date(sample(c(NA, Sys.Date()), n, replace = TRUE, prob = c(0.9, 0.1)))
 }

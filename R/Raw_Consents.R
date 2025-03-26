@@ -24,15 +24,15 @@ Raw_Consents <- function(data, previous_data, spec, startDate, ...) {
   n <- inps$n - previous_row_num
   if (n == 0) return(dataset)
 
-  if (all(c("consdat", "constype", "conscat") %in% names(curr_spec))) {
-    curr_spec$consdat <- list(required = TRUE)
+  if (all(c("cons_dt", "constype", "conscat") %in% names(curr_spec))) {
+    curr_spec$cons_dt <- list(required = TRUE)
     curr_spec$constype <- list(required = TRUE)
     curr_spec$conscat <- list(required = TRUE)
   }
 
   args <- list(
     subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
-    consdat = list(n, startDate),
+    cons_dt = list(n, startDate),
     default = list(n)
   )
 
@@ -49,6 +49,6 @@ conscat <- function(n, ...) {
   rep("MAIN STUDY CONSENT", n)
 }
 
-consdat <- function(n, startDate, ...) {
+cons_dt <- function(n, startDate, ...) {
   as.Date(startDate)
 }

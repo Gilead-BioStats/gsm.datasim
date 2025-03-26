@@ -25,14 +25,14 @@ Raw_Randomization <- function(data, previous_data, spec, startDate, ...) {
   n <- inps$n - previous_row_num
   if (n == 0) return(dataset)
 
-  if (all(c("randomization_date") %in% names(curr_spec))) {
-    curr_spec$randomization_date <- list(required = TRUE)
+  if (all(c("rgmn_dt") %in% names(curr_spec))) {
+    curr_spec$rgmn_dt <- list(required = TRUE)
   }
 
   args <- list(
     studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
-    randomization_date = list(n, startDate),
+    rgmn_dt = list(n, startDate),
     default = list(n)
   )
 
@@ -41,6 +41,6 @@ Raw_Randomization <- function(data, previous_data, spec, startDate, ...) {
   return(res)
 }
 
-randomization_date <- function(n, startDate, ...) {
+rgmn_dt <- function(n, startDate, ...) {
   as.Date(startDate)
 }

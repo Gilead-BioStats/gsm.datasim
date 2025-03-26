@@ -26,10 +26,10 @@ Raw_OverallResponse <- function(data, previous_data, spec, ...) {
   n <- inps$n - previous_row_num
   if (n == 0) return(dataset)
 
-  if (all(c("response_folder", "response", "response_date") %in% names(curr_spec))) {
+  if (all(c("response_folder", "ovrlesp", "rs_dt") %in% names(curr_spec))) {
     curr_spec$response_folder <- list(required = TRUE)
-    curr_spec$response <- list(required = TRUE)
-    curr_spec$response_date <- list(required = TRUE)
+    curr_spec$ovrlesp <- list(required = TRUE)
+    curr_spec$rs_dt <- list(required = TRUE)
   }
 
   args <- list(
@@ -44,9 +44,9 @@ Raw_OverallResponse <- function(data, previous_data, spec, ...) {
 response_folder <- function(n, ...) {
   rep("final response", n, replace = TRUE)
 }
-response <- function(n, ...) {
+ovrlesp <- function(n, ...) {
   sample(c("NE", "PD", "SD", "PR", "CR"), n, replace = TRUE, prob = c(0.05, 0.65, 0.2, 0.05, 0.05))
 }
-response_date <- function(n, response, ...) {
+rs_dt <- function(n, ovrlesp, ...) {
   rep(Sys.Date(), n)
 }

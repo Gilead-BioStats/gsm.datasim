@@ -25,13 +25,13 @@ Raw_Baseline <- function(data, previous_data, spec, startDate, ...) {
   n <- inps$n - previous_row_num
   if (n == 0) return(dataset)
 
-  if (all(c("baseline_scan_date") %in% names(curr_spec))) {
-    curr_spec$baseline_scan_date <- list(required = TRUE)
+  if (all(c("scan_dt") %in% names(curr_spec))) {
+    curr_spec$scan_dt <- list(required = TRUE)
   }
 
   args <- list(
     subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
-    baseline_scan_date = list(n, startDate),
+    scan_dt = list(n, startDate),
     default = list(n)
   )
 
@@ -40,6 +40,6 @@ Raw_Baseline <- function(data, previous_data, spec, startDate, ...) {
   return(res)
 }
 
-baseline_scan_date <- function(n, startDate, ...) {
+scan_dt <- function(n, startDate, ...) {
   as.Date(startDate + sample(0:2, n, replace = TRUE))
 }
