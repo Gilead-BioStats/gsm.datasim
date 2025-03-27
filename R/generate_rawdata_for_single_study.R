@@ -90,6 +90,11 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
   pd_count <- subject_count * 3
   sdrgcomp_count <- ceiling(subject_count / 2)
   studcomp_count <- ceiling(subject_count / 10)
+  consents_count <- ceiling(subject_count / 75)
+  death_count <- ceiling(subject_count / 85)
+  visit_count <- subject_count * 4
+  anticancer_count <- ceiling(subject_count / 10)
+
 
   # print(subject_count)
   # print(site_count)
@@ -137,6 +142,10 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
         data_type == "Raw_SUBJ" ~ subject_count[snapshot_idx],
         data_type == "Raw_SDRGCOMP" ~ sdrgcomp_count[snapshot_idx],
         data_type == "Raw_STUDCOMP" ~ studcomp_count[snapshot_idx],
+        data_type == "Raw_Consents" ~ consent_count[snapshot_idx],
+        data_type == "Raw_Death" ~ death_count[snapshot_idx],
+        data_type == "Raw_VISIT" ~ visit_count[snapshot_idx],
+        data_type == "Raw_AntiCancer" ~ anticancer_count[snapshot_idx],
         TRUE ~ subject_count[snapshot_idx]
       )
       generator_func <- data_type
