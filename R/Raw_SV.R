@@ -72,7 +72,7 @@ Raw_SV <- function(data, previous_data, spec, startDate, SnapshotWidth,...) {
   subjs <- subjid(n, external_subjid = data$Raw_SUBJ$subjid, replace = FALSE)
   args <- list(
     subjid_repeated = list(nrow(possible_visits), subjs),
-    visit_dt = list(n, subjs, startDate, possible_visits, SnapshotWidth),
+    visit_dt = list(n, startDate, possible_visits, SnapshotWidth),
     default = list(n, subjs, possible_visits)
   )
 

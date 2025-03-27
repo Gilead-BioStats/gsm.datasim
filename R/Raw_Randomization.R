@@ -29,9 +29,15 @@ Raw_Randomization <- function(data, previous_data, spec, startDate, ...) {
     curr_spec$rgmn_dt <- list(required = TRUE)
   }
 
+  if (all(c("subjid", "invid") %in% names(curr_spec))) {
+    curr_spec$subjid_invid <- list(required = TRUE)
+    curr_spec$subjid <- NULL
+    curr_spec$invid <- NULL
+  }
+
   args <- list(
     studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
-    subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
+    subjid_invid = list(n, data$Raw_SUBJ),
     rgmn_dt = list(n, startDate),
     default = list(n)
   )
