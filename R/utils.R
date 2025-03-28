@@ -84,8 +84,8 @@ count_gen <- function(max_n, SnapshotCount) {
 }
 
 load_specs <- function(workflow_path, mappings, package) {
-  wf_mapping <- gsm::MakeWorkflowList(strPath = workflow_path, strNames = mappings, strPackage = package)
-  wf_req <-  gsm::MakeWorkflowList(strPath =  "workflow/1_mappings", strNames = c("SUBJ", "STUDY", "SITE", "ENROLL"), strPackage = "gsm.mapping")
+  wf_mapping <- gsm.core::MakeWorkflowList(strPath = workflow_path, strNames = mappings, strPackage = package)
+  wf_req <-  gsm.core::MakeWorkflowList(strPath =  "workflow/1_mappings", strNames = c("SUBJ", "STUDY", "SITE", "ENROLL"), strPackage = "gsm.mapping")
   wf_all <- modifyList(wf_mapping, wf_req)
   combined_specs <- CombineSpecs(wf_all)
 
