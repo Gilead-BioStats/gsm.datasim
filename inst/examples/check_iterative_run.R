@@ -29,7 +29,7 @@ result2 <- raw_data_generator(template_path = "~/gsm.datasim/inst/small_template
 endpoint_mappings <- c("AntiCancer", "Baseline", "Death", "OverallResponse", "Randomization", "STUDCOMP",
                        "Visit", "Consents", "STUDY", "SUBJ")
 
-basic_sim <- gsm.datasim::generate_rawdata_for_single_study(
+basic_sim <- generate_rawdata_for_single_study(
   SnapshotCount = 1,
   SnapshotWidth = "months",
   ParticipantCount = 100,
