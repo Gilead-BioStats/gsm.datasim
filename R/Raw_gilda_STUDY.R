@@ -40,6 +40,10 @@ raw_gilda_study_data <- function(data, previous_data, spec, ...) {
   return(res)
 }
 
+protocol <- function(studyid) {
+  return(studyid)
+}
+
 act_fpfv <- function(date_min, date_lim, prev_data, ...) {
   generate_random_fpfv(date_min, date_lim, FALSE, prev_data)
 }
