@@ -90,6 +90,11 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
   pd_count <- subject_count * 3
   sdrgcomp_count <- ceiling(subject_count / 2)
   studcomp_count <- ceiling(subject_count / 10)
+  consents_count <- ceiling(subject_count / 75)
+  death_count <- ceiling(subject_count / 85)
+  visit_count <- subject_count * 4
+  anticancer_count <- ceiling(subject_count / 10)
+
 
   # print(subject_count)
   # print(site_count)
@@ -137,6 +142,10 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
         data_type == "Raw_SUBJ" ~ subject_count[snapshot_idx],
         data_type == "Raw_SDRGCOMP" ~ sdrgcomp_count[snapshot_idx],
         data_type == "Raw_STUDCOMP" ~ studcomp_count[snapshot_idx],
+        data_type == "Raw_Consents" ~ consents_count[snapshot_idx],
+        data_type == "Raw_Death" ~ death_count[snapshot_idx],
+        data_type == "Raw_VISIT" ~ visit_count[snapshot_idx],
+        data_type == "Raw_AntiCancer" ~ anticancer_count[snapshot_idx],
         TRUE ~ subject_count[snapshot_idx]
       )
       generator_func <- data_type
@@ -148,7 +157,8 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                                                                           "subjid_subject_nsv",
                                                                           "enrollyn_enrolldt_timeonstudy_firstparticipantdate_firstdosedate_timeontreatment")),
                      Raw_ENROLL = list(data, previous_data, combined_specs, n_enroll = n, split_vars = list("subject_to_enrollment")),
-                     Raw_SV = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated")),
+                     Raw_SV = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated"),
+                                   SnapshotWidth = SnapshotWidth),
                      Raw_LB = list(data, previous_data, combined_specs, n = n, split_vars = list("subj_visit_repeated")),
                      Raw_DATACHG = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
                      Raw_DATAENT = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
@@ -158,13 +168,16 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                      Raw_AntiCancer = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      Raw_Baseline = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      Raw_Consents = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
-                     # Raw_Death is default
+                     Raw_Death = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      # Raw_Overall is default for now
                      Raw_VISIT = list(data, previous_data, combined_specs, n = n,
                                       startDate = start_dates[snapshot_idx],
                                       SnapshotCount = SnapshotCount,
-                                      SnapshotWidth = SnapshotWidth),
-                     Raw_Randomization = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
+                                      SnapshotWidth = SnapshotWidth,
+                                      split_vars = list("subjid_invid")),
+                     Raw_Randomization = list(data, previous_data, combined_specs, n = n,
+                                              startDate = start_dates[snapshot_idx],
+                                              split_vars = list("subjid_invid_country")),
                      Raw_PK = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated")),
                      list(data, previous_data, combined_specs, n = n)  # Default case
       )

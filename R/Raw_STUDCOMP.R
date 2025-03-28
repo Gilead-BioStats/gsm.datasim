@@ -70,8 +70,10 @@ compyn <- function(n, ...) {
          replace = TRUE)
 }
 
-completion_reason <- function(n, ...) {
-  rep("TERMINATION OF MEDICATION", n)
+compreas <- function(n, ...) {
+  sample(c("Lost to Follow-Up", "Death", "Withdrew Consent"),
+         size = n,
+         replace = TRUE)
 }
 
 completion_date <- function(n, ...) {
