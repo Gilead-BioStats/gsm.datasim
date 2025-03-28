@@ -29,15 +29,16 @@ Raw_Randomization <- function(data, previous_data, spec, startDate, ...) {
     curr_spec$rgmn_dt <- list(required = TRUE)
   }
 
-  if (all(c("subjid", "invid") %in% names(curr_spec))) {
-    curr_spec$subjid_invid <- list(required = TRUE)
+  if (all(c("subjid", "invid", "country") %in% names(curr_spec))) {
+    curr_spec$subjid_invid_country <- list(required = TRUE)
     curr_spec$subjid <- NULL
     curr_spec$invid <- NULL
+    curr_spec$country <- NULL
   }
 
   args <- list(
     studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
-    subjid_invid = list(n, data$Raw_SUBJ),
+    subjid_invid_country = list(n, data$Raw_SUBJ),
     rgmn_dt = list(n, startDate),
     default = list(n)
   )
@@ -45,6 +46,14 @@ Raw_Randomization <- function(data, previous_data, spec, startDate, ...) {
   res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_Randomization, ...)
 
   return(res)
+}
+
+subjid_invid_country <- function(n, Raw_SUBJ_data, ...) {
+  res <- Raw_SUBJ_data[sample(nrow(Raw_SUBJ_data), n, replace = TRUE),
+                       c("subjid", "invid", "country")]
+  return(list(subjid = res$subjid,
+              invid = res$invid,
+              country = res$country))
 }
 
 rgmn_dt <- function(n, startDate, ...) {

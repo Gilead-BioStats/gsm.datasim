@@ -168,7 +168,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                      Raw_AntiCancer = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      Raw_Baseline = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      Raw_Consents = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
-                     # Raw_Death is default
+                     Raw_Death = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      # Raw_Overall is default for now
                      Raw_VISIT = list(data, previous_data, combined_specs, n = n,
                                       startDate = start_dates[snapshot_idx],
@@ -177,7 +177,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                                       split_vars = list("subjid_invid")),
                      Raw_Randomization = list(data, previous_data, combined_specs, n = n,
                                               startDate = start_dates[snapshot_idx],
-                                              split_vars = list("subjid_invid")),
+                                              split_vars = list("subjid_invid_country")),
                      Raw_PK = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated")),
                      list(data, previous_data, combined_specs, n = n)  # Default case
       )

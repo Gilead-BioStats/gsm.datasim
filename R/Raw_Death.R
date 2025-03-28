@@ -1,4 +1,4 @@
-Raw_Death <- function(data, previous_data, spec, ...) {
+Raw_Death <- function(data, previous_data, spec, startDate, ...) {
   inps <- list(...)
 
   curr_spec <- spec$Raw_Death
@@ -20,6 +20,7 @@ Raw_Death <- function(data, previous_data, spec, ...) {
 
   args <- list(
     subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
+    death_dt = list(n, startDate),
     default = list(n)
   )
 
@@ -28,6 +29,6 @@ Raw_Death <- function(data, previous_data, spec, ...) {
   return(res)
 }
 
-death_dt <- function(n, ...) {
-  as.Date(sample(c(NA, Sys.Date()), n, replace = TRUE, prob = c(0.9, 0.1)))
+death_dt <- function(n, start_date, ...) {
+  as.Date(sample(seq(from = start_date, to = start_date + 27, by = 1), n, replace = TRUE))
 }
