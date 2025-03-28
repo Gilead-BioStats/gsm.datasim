@@ -26,14 +26,24 @@ Raw_OverallResponse <- function(data, previous_data, spec, ...) {
   n <- inps$n - previous_row_num
   if (n == 0) return(dataset)
 
-  if (all(c("response_folder", "ovrlresp", "rs_dt") %in% names(curr_spec))) {
+  if (all(c("response_folder") %in% names(curr_spec))) {
     curr_spec$response_folder <- list(required = TRUE)
+  }
+
+  if (all(c("ovrlresp") %in% names(curr_spec))) {
     curr_spec$ovrlresp <- list(required = TRUE)
-    curr_spec$rs_dt <- list(required = TRUE)
+  }
+
+  if (all(c("subjid", "rs_dt") %in% names(curr_spec))) {
+    curr_spec$subjid_rs_dt <- list(required = TRUE)
+    curr_spec$subjid <- NULL
+    curr_spec$rs_dt <- NULL
   }
 
   args <- list(
-    subjid = list(n, external_subjid = sample(data$Raw_SUBJ$subjid, n/3, replace = FALSE)),
+    subjid_rs_dt = list(n,
+                        subjids = data$Raw_SUBJ$subjid[sample(nrow(data$Raw_SUBJ), n/3, replace = TRUE)],
+                        Raw_VISIT_data = data$Raw_VISIT),
     default = list(n)
   )
 
@@ -47,6 +57,12 @@ response_folder <- function(n, ...) {
 ovrlresp <- function(n, ...) {
   sample(c("NE", "PD", "SD", "PR", "CR"), n, replace = TRUE, prob = c(0.05, 0.65, 0.2, 0.05, 0.05))
 }
-rs_dt <- function(n, ovrlresp, ...) {
-  rep(Sys.Date(), n)
+
+subjid_rs_dt <- function(n, subjids, Raw_VISIT_data, ...) {
+  filtered_visit_data <- Raw_VISIT_data %>% filter(subjid %in% subjids)
+  res <- filtered_visit_data[sample(nrow(filtered_visit_data), n, replace = TRUE),
+                       c("subjid", "visit_dt")] %>%
+    rename("rs_dt" = "visit_dt")
+  return(list(subjid = res$subjid,
+              rs_dt = res$rs_dt))
 }
