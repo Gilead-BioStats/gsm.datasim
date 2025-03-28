@@ -52,19 +52,6 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                                               package,
                                               desired_specs = NULL) {
 
-  # add a few checks for domain dependencies
-  if("Consents" %in% mappings & !"STUDCOMP" %in% mappings){
-    stop("Consents domain requires the STUDCOMP domain in order to be generated. Please update your mappings vector.")
-  }
-
-  if("Death" %in% mappings & !"STUDCOMP" %in% mappings){
-    stop("Death domain requires the STUDCOMP domain in order to be generated. Please update your mappings vector.")
-  }
-
-  if("OverallResponse" %in% mappings & !"Visit" %in% mappings){
-    stop("OverallResponse domain requires the Visit domain in order to be generated Please update your mappings vector.")
-  }
-
   # Generate start and end dates for snapshots
   start_dates <- seq(as.Date("2012-01-01"), length.out = SnapshotCount, by = SnapshotWidth)
   end_dates <- seq(as.Date("2012-02-01"), length.out = SnapshotCount, by = SnapshotWidth) - 1

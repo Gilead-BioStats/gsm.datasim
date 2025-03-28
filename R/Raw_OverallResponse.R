@@ -42,7 +42,7 @@ Raw_OverallResponse <- function(data, previous_data, spec, ...) {
 
   args <- list(
     subjid_rs_dt = list(n,
-                        subjids = data$Raw_SUBJ$subjid[sample(nrow(data$Raw_SUBJ), n/3, replace = TRUE)],
+                        subjids = unique(data$Raw_VISIT$subjid)[sample(length(unique(data$Raw_VISIT$subjid)), ceiling(n/3), replace = TRUE)],
                         Raw_VISIT_data = data$Raw_VISIT),
     default = list(n)
   )
@@ -59,9 +59,10 @@ ovrlresp <- function(n, ...) {
 }
 
 subjid_rs_dt <- function(n, subjids, Raw_VISIT_data, ...) {
-  filtered_visit_data <- Raw_VISIT_data %>% filter(subjid %in% subjids)
-  res <- filtered_visit_data[sample(nrow(filtered_visit_data), n, replace = TRUE),
-                       c("subjid", "visit_dt")] %>%
+  filtered_visit_data <- Raw_VISIT_data %>%
+    select(subjid, visit_dt) %>%
+    filter(subjid %in% subjids)
+  res <- filtered_visit_data[sample(nrow(filtered_visit_data), n, replace = TRUE),] %>%
     rename("rs_dt" = "visit_dt")
   return(list(subjid = res$subjid,
               rs_dt = res$rs_dt))
