@@ -8,7 +8,7 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(gsm)
+library(gsm.core)
 library(gsm.mapping)
 library(gsm.datasim)
 
