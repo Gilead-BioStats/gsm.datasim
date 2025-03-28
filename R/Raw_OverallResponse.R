@@ -33,7 +33,7 @@ Raw_OverallResponse <- function(data, previous_data, spec, ...) {
   }
 
   args <- list(
-    subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
+    subjid = list(n, external_subjid = data$Raw_SUBJ$subjid, replace = FALSE),
     default = list(n)
   )
 

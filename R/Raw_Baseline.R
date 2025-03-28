@@ -30,7 +30,7 @@ Raw_Baseline <- function(data, previous_data, spec, startDate, ...) {
   }
 
   args <- list(
-    subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
+    subjid = list(n, external_subjid = data$Raw_SUBJ$subjid, replace = FALSE),
     scan_dt = list(n, startDate),
     default = list(n)
   )

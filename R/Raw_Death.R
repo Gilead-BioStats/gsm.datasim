@@ -19,7 +19,7 @@ Raw_Death <- function(data, previous_data, spec, startDate, ...) {
   }
 
   args <- list(
-    subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
+    subjid = list(n, external_subjid = data$Raw_SUBJ$subjid, replace = FALSE),
     death_dt = list(n, startDate),
     default = list(n)
   )
