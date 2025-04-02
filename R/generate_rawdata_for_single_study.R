@@ -129,10 +129,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
       data$Raw_STUDY$act_fpfv <- act_fpfv(start_dates[snapshot_idx],
                                           end_dates[snapshot_idx],
                                           data$Raw_STUDY$act_fpfv)
-      data$raw_gilda_study_data <- snapshots[[1]]$raw_gilda_study_data
-      data$raw_gilda_study_data$act_fpfv <- act_fpfv(start_dates[snapshot_idx],
-                                          end_dates[snapshot_idx],
-                                          data$raw_gilda_study_data$act_fpfv)
+      data$raw_gilda_study_data <-snapshots[[1]]$raw_gilda_study_data
       previous_data <- snapshots[[snapshot_idx - 1]]
 
     }
