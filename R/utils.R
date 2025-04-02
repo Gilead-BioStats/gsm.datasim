@@ -68,7 +68,7 @@ count_gen <- function(max_n, SnapshotCount) {
 
     if (i < SnapshotCount) {
       if ((start < end) & ((floor(end) - start) > 1)) {
-        new_element <- sample(start:floor(end), size = 1)
+        new_element <- sample(floor((start + end)/2):floor(end), size = 1)
       } else {
         new_element <- start
       }

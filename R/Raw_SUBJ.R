@@ -26,17 +26,12 @@ Raw_SUBJ <- function(data, previous_data, spec, startDate, endDate, ...) {
   n <- inps$n_subj - previous_row_num
   if (n == 0) return(dataset)
 
-  if (!("siteid" %in% names(curr_spec))) {
-    curr_spec$siteid <- list(required = TRUE)
-  }
-
   if (!("enrolldt" %in% names(curr_spec))) {
     curr_spec$enrolldt <- list(required = TRUE)
   }
 
-  if (all(c("siteid", "invid", "country") %in% names(curr_spec))) {
+  if (all(c("invid", "country") %in% names(curr_spec))) {
     curr_spec$subject_site_synq <- list(required = TRUE)
-    curr_spec$siteid <- NULL
     curr_spec$invid <- NULL
     curr_spec$country <- NULL
 
@@ -113,40 +108,9 @@ subjid_subject_nsv <- function(n, dataset,...) {
 
 subject_site_synq <- function(n, Raw_SITE_data, ...) {
   Raw_SITE_data[sample(nrow(Raw_SITE_data), n, replace = TRUE),
-                c("siteid", "pi_number", "country")] %>%
+                c("pi_number", "country")] %>%
     dplyr::rename("invid" =  "pi_number")
 
-}
-
-invid <- function(n, isGenerated=FALSE, ...) {
-  # Function body for invid
-  args <- list(...)
-  if ("invid" %in% names(args)) {
-    already_generated <- args$invid
-  } else {
-    already_generated <- c()
-  }
-
-  if (isGenerated) {
-    return(sample(already_generated, n, replace = TRUE))
-  }
-
-  # Generate all possible 4-digit numbers as strings with leading zeros
-  possible_numbers <- sprintf("%04d", 0:9999)
-
-  # Create all possible strings starting with "0X" and ending with the 4-digit numbers
-  possible_strings <- paste0("0X", possible_numbers)
-
-  # Exclude the old strings to avoid duplication
-  new_strings_available <- setdiff(possible_strings, already_generated)
-
-  # Check if there are enough unique strings to generate
-  if (length(new_strings_available) < n) {
-    stop("Not enough unique strings available to generate ", n, " new strings.")
-  }
-
-  # Randomly sample 'n' unique strings from the available strings
-  sample(new_strings_available, n)
 }
 
 enrollyn <- function(n, ...) {
