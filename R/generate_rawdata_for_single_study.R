@@ -61,7 +61,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
     purrr::list_modify("Mapped_SUBJ" = rlang::zap())
 
   # Specify the desired first few elements in order
-  desired_order <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL", "Raw_SV")
+  desired_order <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL", "Raw_SV", "Raw_VISIT", "Raw_STUDCOMP")
   if (!("Raw_SV" %in% names(combined_specs))) {
     combined_specs$Raw_SV <- list(
       subjid = list(required = TRUE),
@@ -92,7 +92,6 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
   studcomp_count <- ceiling(subject_count / 10)
   consents_count <- ceiling(subject_count / 75)
   death_count <- ceiling(subject_count / 85)
-  visit_count <- subject_count * 4
   anticancer_count <- ceiling(subject_count / 10)
 
 
@@ -155,7 +154,6 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
         data_type == "Raw_STUDCOMP" ~ studcomp_count[snapshot_idx],
         data_type == "Raw_Consents" ~ consents_count[snapshot_idx],
         data_type == "Raw_Death" ~ death_count[snapshot_idx],
-        data_type == "Raw_VISIT" ~ visit_count[snapshot_idx],
         data_type == "Raw_AntiCancer" ~ anticancer_count[snapshot_idx],
         TRUE ~ subject_count[snapshot_idx]
       )
@@ -180,7 +178,6 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                      Raw_Baseline = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      Raw_Consents = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      Raw_Death = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
-                     # Raw_Overall is default for now
                      Raw_VISIT = list(data, previous_data, combined_specs, n = n,
                                       startDate = start_dates[snapshot_idx],
                                       SnapshotCount = SnapshotCount,
@@ -189,6 +186,8 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                      Raw_Randomization = list(data, previous_data, combined_specs, n = n,
                                               startDate = start_dates[snapshot_idx],
                                               split_vars = list("subjid_invid_country")),
+                     Raw_OverallResponse = list(data, previous_data, combined_specs, n = n,
+                                                split_vars = list("subjid_rs_dt")),
                      Raw_PK = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated")),
                      list(data, previous_data, combined_specs, n = n)  # Default case
       )
