@@ -1,5 +1,7 @@
 devtools::load_all()
 library(dplyr)
+
+# generate data for KRI reports:
 core_mappings <- c("AE", "COUNTRY", "DATACHG", "DATAENT", "ENROLL", "LB",
                    "PD", "QUERY", "STUDY", "STUDCOMP", "SDRGCOMP", "SITE", "SUBJ")
 
@@ -22,3 +24,19 @@ single_result <- generate_rawdata_for_single_study(SnapshotCount = 3,
 #                              package = "gsm.mapping")
 
 result2 <- raw_data_generator(template_path = "~/gsm.datasim/inst/small_template.csv")
+
+# generate data for endpoint reports:
+endpoint_mappings <- c("AntiCancer", "Baseline", "Death", "OverallResponse", "Randomization", "STUDCOMP",
+                       "Visit", "Consents", "STUDY", "SUBJ")
+
+basic_sim <- generate_rawdata_for_single_study(
+  SnapshotCount = 1,
+  SnapshotWidth = "months",
+  ParticipantCount = 100,
+  SiteCount = 10,
+  StudyID = "ABC",
+  workflow_path = "workflow/1_mappings",
+  mappings = endpoint_mappings,
+  package = "gsm.mapping",
+  desired_specs = NULL
+)

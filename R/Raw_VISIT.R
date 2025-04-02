@@ -22,7 +22,7 @@ Raw_VISIT <- function(data, previous_data, spec, startDate, SnapshotCount, Snaps
   if (n == 0) return(dataset)
 
   possible_Visits <- data.frame(
-    visit = c("Screening", paste0("VISIT ", 1:SnapshotCount), "Follow-up")
+    visit_folder = c("Screening", paste0("VISIT ", 1:SnapshotCount), "Follow-up")
   )
 
   curr_spec <- spec$Raw_VISIT
@@ -32,42 +32,50 @@ Raw_VISIT <- function(data, previous_data, spec, startDate, SnapshotCount, Snaps
     curr_spec$subjid <- list(required = TRUE)
   }
 
-  if (!("visit_date" %in% names(curr_spec))) {
-    curr_spec$visit_date <- list(required = TRUE)
+  if (!("visit_dt" %in% names(curr_spec))) {
+    curr_spec$visit_dt <- list(required = TRUE)
   }
 
-  if (!("visit" %in% names(curr_spec))) {
+  if (!("visit_folder" %in% names(curr_spec))) {
     curr_spec$visit_folder <- list(required = TRUE)
   }
 
-  if (!("invid" %in% names(curr_spec))) {
-    curr_spec$invid <- list(required = TRUE)
-  }
+  # if (!("invid" %in% names(curr_spec))) {
+  #   curr_spec$invid <- list(required = TRUE)
+  # }
 
-  if (all(c("subjid") %in% names(curr_spec))) {
-    curr_spec$subjid_repeated <- list(required = TRUE)
+  if (all(c("subjid", "invid") %in% names(curr_spec))) {
+    curr_spec$subjid_invid <- list(required = TRUE)
     curr_spec$subjid <- NULL
+    curr_spec$invid <- NULL
   }
 
 
-  subjs <- subjid(n, external_subjid = data$Raw_SUBJ$subjid, replace = FALSE)
+  #subjs <- subjid(n, external_subjid = data$Raw_SUBJ$subjid, replace = TRUE)
   args <- list(
-    subjid_repeated = list(nrow(possible_Visits), subjs),
-    visit_date = list(n, subjs, startDate, possible_Visits, SnapshotWidth),
-    invid = list(n = length(subjs)),
-    default = list(n, subjs, possible_Visits)
+    subjid_invid = list(nrow(possible_Visits), data$Raw_SUBJ),
+    visit_dt = list(n, startDate, possible_Visits, SnapshotWidth = SnapshotWidth),
+    #invid = list(n = length(subjs)),
+    default = list(n, possible_Visits)
   )
 
   res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_VISIT, ...)
   return(res)
 }
 
-visit_date <- function(n, subjs, start_date, possible_Visits, SnapshotWidth,...) {
-  rep(generate_consecutive_random_dates(nrow(possible_Visits), start_date, period_to_days(SnapshotWidth)), length(subjs))
+subjid_invid <- function(n, Raw_SUBJ_data, ...) {
+  res <- Raw_SUBJ_data[sample(nrow(Raw_SUBJ_data), n, replace = TRUE),
+                c("subjid", "invid")]
+  return(list(subjid = res$subjid,
+              invid = res$invid))
 }
 
-visit <- function(n, subjs, possible_Visits, ...) {
-  rep(possible_Visits$visit, length(subjs))
+visit_dt <- function(n, start_date, possible_Visits, SnapshotWidth,...) {
+  rep(generate_consecutive_random_dates(nrow(possible_Visits), start_date, period_to_days(SnapshotWidth)), n)
+}
+
+visit_folder <- function(n, possible_Visits, ...) {
+  rep(possible_Visits$visit_folder, n)
 }
 
 
