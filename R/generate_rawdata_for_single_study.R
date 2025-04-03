@@ -117,18 +117,26 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                                                 MinDate = start_dates[snapshot_idx],
                                                 MaxDate = end_dates[snapshot_idx],
                                                 GlobalMaxDate = max(end_dates)))
+      data$raw_gilda_study_data <- as.data.frame(raw_gilda_study_data(data, previous_data, combined_specs,
+                                                StudyID = StudyID,
+                                                SiteCount = SiteCount,
+                                                ParticipantCount = ParticipantCount,
+                                                MinDate = start_dates[snapshot_idx],
+                                                MaxDate = end_dates[snapshot_idx],
+                                                GlobalMaxDate = max(end_dates)))
     } else {
       data$Raw_STUDY <- snapshots[[1]]$Raw_STUDY
       data$Raw_STUDY$act_fpfv <- act_fpfv(start_dates[snapshot_idx],
                                           end_dates[snapshot_idx],
                                           data$Raw_STUDY$act_fpfv)
+      data$raw_gilda_study_data <-snapshots[[1]]$raw_gilda_study_data
       previous_data <- snapshots[[snapshot_idx - 1]]
 
     }
 
     # Loop over each raw data type specified in combined_specs
     for (data_type in names(combined_specs)) {
-      if (data_type == "Raw_STUDY") next
+      if (data_type %in% c("Raw_STUDY", "raw_gilda_study_data")) next
 
       logger::log_info(glue::glue(" ---- Adding dataset {data_type}..."))
 

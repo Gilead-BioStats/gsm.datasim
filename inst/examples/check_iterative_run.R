@@ -40,3 +40,22 @@ basic_sim <- generate_rawdata_for_single_study(
   package = "gsm.mapping",
   desired_specs = NULL
 )
+
+
+# generate gilda data for monitoring visit app:
+gilda_data <- generate_rawdata_for_single_study(
+  SnapshotCount = 1,
+  SnapshotWidth = "months",
+  ParticipantCount = 1000,
+  SiteCount = 10,
+  StudyID = "ABC",
+  workflow_path = "workflow",
+  mappings = "gilda_STUDY",
+  package = "monitoring.visit.app",
+  desired_specs = NULL
+)
+
+gilda_data_template <- raw_data_generator(template_path = "~/gsm.datasim/inst/template.csv",
+                             workflow_path = "workflow/",
+                             mappings = "gilda_STUDY",
+                             package = "monitoring.visit.app")
