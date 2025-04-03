@@ -27,6 +27,7 @@ raw_gilda_study_data <- function(data, previous_data, spec, ...) {
 
   args <- list(
     protocol = list(inps$StudyID),
+    num_plan_subj = list(inps$ParticipantCount),
     num_plan_site = list(inps$SiteCount),
     act_lplv = list(inps$MinDate, inps$MaxDate, dataset$act_lplv),
     act_fpfv = list(inps$MinDate, inps$MaxDate, dataset$act_fpfv),
@@ -53,9 +54,4 @@ status <- function(n, stat = c("Active"), ...) {
   sample(stat,
          n,
          replace = TRUE)
-}
-
-num_plan_site <- function(num_pl_site, ...) {
-  # Function body for num_plan_site
-  unlist(num_pl_site) %>% as.integer()
 }
