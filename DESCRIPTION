@@ -24,8 +24,8 @@ Suggests:
     rmarkdown,
     testthat
 Remotes:
-    gsm.core=Gilead-BioStats/gsm.core@v1.0.0,
-    gsm.mapping=Gilead-BioStats/gsm.mapping@v1.0.0
+    gsm.core=Gilead-BioStats/gsm.core@dev,
+    gsm.mapping=Gilead-BioStats/gsm.mapping@dev
 License: Apache License (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
