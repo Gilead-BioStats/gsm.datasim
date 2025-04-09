@@ -70,6 +70,16 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
       visit_dt = list(required = TRUE)
     )
   }
+  if (!("Visit" %in% names(combined_specs))) {
+    combined_specs$Raw_VISIT <- list(
+      subjid = list(required = TRUE),
+      visit = list(required = TRUE,
+                   source_col = "foldername"),
+      visit_date = list(required = TRUE,
+                        source_col = "visit_dt"),
+      invid = list(required = TRUE)
+    )
+  }
   desired_order <- desired_order[desired_order %in% names(combined_specs)]
 
   # Rearrange the elements
@@ -185,7 +195,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                                               split_vars = list("subjid_invid_country")),
                      Raw_OverallResponse = list(data, previous_data, combined_specs, n = n,
                                                 split_vars = list("subjid_rs_dt")),
-                     Raw_PK = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated")),
+                     Raw_PK = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_visit_pkdat")),
                      list(data, previous_data, combined_specs, n = n)  # Default case
       )
 
