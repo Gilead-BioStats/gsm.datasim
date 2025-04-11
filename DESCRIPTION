@@ -11,7 +11,7 @@ Imports:
     arrow,
     dplyr, 
     glue,
-    gsm.core (>= 1.1.0,
+    gsm.core (>= 1.1.0),
     logger,
     magrittr,
     purrr,
