@@ -19,13 +19,13 @@ Imports:
     tictoc,
     utils
 Suggests:
-    gsm.mapping,
+    gsm.mapping (>= 1.0.1),
     knitr,
     rmarkdown,
     testthat
 Remotes:
     gsm.core=Gilead-BioStats/gsm.core,
-    gsm.mapping=Gilead-BioStats/gsm.mapping@dev
+    gsm.mapping=Gilead-BioStats/gsm.mapping
 License: Apache License (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
