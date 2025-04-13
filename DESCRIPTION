@@ -12,6 +12,7 @@ Imports:
     dplyr, 
     glue,
     gsm.core (>= 1.1.0),
+    gsm.mapping (>= 1.0.1),
     logger,
     magrittr,
     purrr,
@@ -19,12 +20,11 @@ Imports:
     tictoc,
     utils
 Suggests:
-    gsm.mapping (>= 1.0.1),
     knitr,
     rmarkdown,
     testthat
 Remotes:
-    gsm.core=Gilead-BioStats/gsm.core,
+    gsm.core=Gilead-BioStats/gsm.core@main,
     gsm.mapping=Gilead-BioStats/gsm.mapping
 License: Apache License (>= 2)
 Encoding: UTF-8
