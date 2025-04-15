@@ -219,6 +219,9 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
           timeonstudy = dplyr::if_else(enrollyn == "N", NA, timeonstudy)
         )
     }
+    if(!"gilda_STUDY" %in% mappings){
+      data$raw_gilda_study_data <- NULL
+    }
     snapshots[[snapshot_idx]] <- data
     logger::log_info(glue::glue(" -- Snapshot {snapshot_idx} added successfully"))
 
