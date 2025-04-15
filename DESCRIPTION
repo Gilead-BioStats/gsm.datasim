@@ -11,7 +11,8 @@ Imports:
     arrow,
     dplyr, 
     glue,
-    gsm.core,
+    gsm.core (>= 1.1.0),
+    gsm.mapping (>= 1.0.1),
     logger,
     magrittr,
     purrr,
@@ -19,13 +20,12 @@ Imports:
     tictoc,
     utils
 Suggests:
-    gsm.mapping,
     knitr,
     rmarkdown,
     testthat
 Remotes:
-    gsm.core=Gilead-BioStats/gsm.core@v1.0.0,
-    gsm.mapping=Gilead-BioStats/gsm.mapping@dev
+    gsm.core=Gilead-BioStats/gsm.core@v1.1.0,
+    gsm.mapping=Gilead-BioStats/gsm.mapping@v1.0.1
 License: Apache License (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
