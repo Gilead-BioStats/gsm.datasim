@@ -17,6 +17,7 @@ Imports:
     magrittr,
     purrr,
     rlang,
+    stringr,
     tictoc,
     utils
 Suggests:
