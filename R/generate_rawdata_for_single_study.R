@@ -223,7 +223,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
     if(!"gilda_STUDY" %in% mappings){
       data$raw_gilda_study_data <- NULL
     }
-    if(nrow(data$Raw_IE) > 0 | !is.null(data$Raw_IE)){
+    if("Raw_IE" %in% names(data)){
       unenrolled <- data$Raw_SUBJ %>%
         filter(enrollyn == "N") %>%
         pull(subjid)
