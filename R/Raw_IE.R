@@ -14,7 +14,7 @@ Raw_IE <- function(data, previous_data, spec, ...) {
   curr_spec <- spec$Raw_IE
 
   if ("Raw_IE" %in% names(previous_data)) {
-    dataset <- previous_data$Raw_SUBJ %>% filter(enrollyn == "N")
+    dataset <- previous_data$Raw_SUBJ
     previous_row_num <- nrow(dataset)
   } else {
     dataset <- NULL
@@ -33,12 +33,8 @@ Raw_IE <- function(data, previous_data, spec, ...) {
     curr_spec$IECAT_STD <- NULL
   }
 
-  not_enrolled <- data$Raw_SUBJ %>%
-    filter(enrollyn == "N") %>%
-    pull(subjid)
-
   args <- list(
-    subjid = list(n, previous_subjid=not_enrolled, replace = FALSE),
+    subjid = list(n, external_subjid = data$Raw_SUBJ$subjid, replace = FALSE),
     TIVER_STD_IETESTCD_STD_IETEST_STD_IEORRES_STD_IECAT_STD = list(n, ...),
     default = list(n)
   )
