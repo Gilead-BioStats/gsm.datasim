@@ -34,14 +34,16 @@ Raw_SITE <- function(data, previous_data, spec, ...) {
 
   }
 
-  if (!("siteid" %in% names(curr_spec))) {
-    curr_spec$siteid <- list(required = TRUE)
+  if (all(c("invid") %in% names(curr_spec))) {
+    curr_spec$invid <- list(required = TRUE)
+
   }
 
 
   # Function body for Raw_SITE
   args <- list(
     studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
+    invid = list(n, dataset),
     default = list(n)
   )
 
@@ -51,17 +53,14 @@ Raw_SITE <- function(data, previous_data, spec, ...) {
   return(res)
 }
 
-siteid <- function(n, isGenerated = FALSE, ...) {
+invid <- function(n, previous_data, ...) {
   # Function body for invid
   args <- list(...)
-  if ("siteid" %in% names(args)) {
-    already_generated <- args$siteid
-  } else {
-    already_generated <- c()
-  }
 
-  if (isGenerated) {
-    return(sample(already_generated, n, replace = TRUE))
+  if ("invid" %in% names(previous_data)) {
+    already_generated_invids <- previous_data$invid
+  } else {
+    already_generated_invids <- c()
   }
 
 
@@ -69,18 +68,20 @@ siteid <- function(n, isGenerated = FALSE, ...) {
   possible_numbers <- sprintf("%03d", 0:9999)
 
   # Create all possible strings starting with "0X" and ending with the 3-digit numbers
-  possible_strings <- paste0("Site", possible_numbers)
+  possible_strings_invids <- paste0("0X", possible_numbers)
+
 
   # Exclude the old strings to avoid duplication
-  new_strings_available <- setdiff(possible_strings, already_generated)
+  new_strings_invids <- setdiff(possible_strings_invids, already_generated_invids)
 
   # Check if there are enough unique strings to generate
-  if (length(new_strings_available) < n) {
+  if (length(new_strings_invids) < n) {
     stop("Not enough unique strings available to generate ", n, " new strings.")
   }
 
   # Randomly sample 'n' unique strings from the available strings
-  sample(new_strings_available, n)
+  sample(new_strings_invids, n)
+
 
 }
 

@@ -68,7 +68,7 @@ querystatus <- function(n, ...) {
 
 queryage <- function(n, ...) {
   # Function body for queryage
-  sample(clindata::edc_queries$queryage,
+  sample(1:359,
          n,
          replace = T)
 }

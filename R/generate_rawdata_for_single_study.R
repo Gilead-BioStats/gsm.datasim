@@ -61,13 +61,23 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
     purrr::list_modify("Mapped_SUBJ" = rlang::zap())
 
   # Specify the desired first few elements in order
-  desired_order <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL", "Raw_SV")
+  desired_order <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL", "Raw_SV", "Raw_VISIT", "Raw_STUDCOMP")
   if (!("Raw_SV" %in% names(combined_specs))) {
     combined_specs$Raw_SV <- list(
       subjid = list(required = TRUE),
       foldername = list(required = TRUE),
       instancename = list(required = TRUE),
       visit_dt = list(required = TRUE)
+    )
+  }
+  if (!("Visit" %in% names(combined_specs))) {
+    combined_specs$Raw_VISIT <- list(
+      subjid = list(required = TRUE),
+      visit = list(required = TRUE,
+                   source_col = "foldername"),
+      visit_date = list(required = TRUE,
+                        source_col = "visit_dt"),
+      invid = list(required = TRUE)
     )
   }
   desired_order <- desired_order[desired_order %in% names(combined_specs)]
@@ -90,6 +100,10 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
   pd_count <- subject_count * 3
   sdrgcomp_count <- ceiling(subject_count / 2)
   studcomp_count <- ceiling(subject_count / 10)
+  consents_count <- ceiling(subject_count / 75)
+  death_count <- ceiling(subject_count / 85)
+  anticancer_count <- ceiling(subject_count / 10)
+
 
   # print(subject_count)
   # print(site_count)
@@ -113,18 +127,26 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                                                 MinDate = start_dates[snapshot_idx],
                                                 MaxDate = end_dates[snapshot_idx],
                                                 GlobalMaxDate = max(end_dates)))
+      data$raw_gilda_study_data <- as.data.frame(raw_gilda_study_data(data, previous_data, combined_specs,
+                                                StudyID = StudyID,
+                                                SiteCount = SiteCount,
+                                                ParticipantCount = ParticipantCount,
+                                                MinDate = start_dates[snapshot_idx],
+                                                MaxDate = end_dates[snapshot_idx],
+                                                GlobalMaxDate = max(end_dates)))
     } else {
       data$Raw_STUDY <- snapshots[[1]]$Raw_STUDY
       data$Raw_STUDY$act_fpfv <- act_fpfv(start_dates[snapshot_idx],
                                           end_dates[snapshot_idx],
                                           data$Raw_STUDY$act_fpfv)
+      data$raw_gilda_study_data <-snapshots[[1]]$raw_gilda_study_data
       previous_data <- snapshots[[snapshot_idx - 1]]
 
     }
 
     # Loop over each raw data type specified in combined_specs
     for (data_type in names(combined_specs)) {
-      if (data_type == "Raw_STUDY") next
+      if (data_type %in% c("Raw_STUDY", "raw_gilda_study_data")) next
 
       logger::log_info(glue::glue(" ---- Adding dataset {data_type}..."))
 
@@ -137,6 +159,9 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
         data_type == "Raw_SUBJ" ~ subject_count[snapshot_idx],
         data_type == "Raw_SDRGCOMP" ~ sdrgcomp_count[snapshot_idx],
         data_type == "Raw_STUDCOMP" ~ studcomp_count[snapshot_idx],
+        data_type == "Raw_Consents" ~ consents_count[snapshot_idx],
+        data_type == "Raw_Death" ~ death_count[snapshot_idx],
+        data_type == "Raw_AntiCancer" ~ anticancer_count[snapshot_idx],
         TRUE ~ subject_count[snapshot_idx]
       )
       generator_func <- data_type
@@ -148,7 +173,8 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                                                                           "subjid_subject_nsv",
                                                                           "enrollyn_enrolldt_timeonstudy_firstparticipantdate_firstdosedate_timeontreatment")),
                      Raw_ENROLL = list(data, previous_data, combined_specs, n_enroll = n, split_vars = list("subject_to_enrollment")),
-                     Raw_SV = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated")),
+                     Raw_SV = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated"),
+                                   SnapshotWidth = SnapshotWidth),
                      Raw_LB = list(data, previous_data, combined_specs, n = n, split_vars = list("subj_visit_repeated")),
                      Raw_DATACHG = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
                      Raw_DATAENT = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
@@ -158,14 +184,18 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                      Raw_AntiCancer = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      Raw_Baseline = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      Raw_Consents = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
-                     # Raw_Death is default
-                     # Raw_Overall is default for now
+                     Raw_Death = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      Raw_VISIT = list(data, previous_data, combined_specs, n = n,
                                       startDate = start_dates[snapshot_idx],
                                       SnapshotCount = SnapshotCount,
-                                      SnapshotWidth = SnapshotWidth),
-                     Raw_Randomization = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
-                     Raw_PK = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated")),
+                                      SnapshotWidth = SnapshotWidth,
+                                      split_vars = list("subjid_invid")),
+                     Raw_Randomization = list(data, previous_data, combined_specs, n = n,
+                                              startDate = start_dates[snapshot_idx],
+                                              split_vars = list("subjid_invid_country")),
+                     Raw_OverallResponse = list(data, previous_data, combined_specs, n = n,
+                                                split_vars = list("subjid_rs_dt")),
+                     Raw_PK = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_visit_pkdat")),
                      list(data, previous_data, combined_specs, n = n)  # Default case
       )
 
@@ -188,6 +218,9 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
           enrolldt = dplyr::if_else(enrollyn == "N", as.Date(NA), enrolldt),
           timeonstudy = dplyr::if_else(enrollyn == "N", NA, timeonstudy)
         )
+    }
+    if(!"gilda_STUDY" %in% mappings){
+      data$raw_gilda_study_data <- NULL
     }
     snapshots[[snapshot_idx]] <- data
     logger::log_info(glue::glue(" -- Snapshot {snapshot_idx} added successfully"))

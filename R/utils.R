@@ -68,7 +68,7 @@ count_gen <- function(max_n, SnapshotCount) {
 
     if (i < SnapshotCount) {
       if ((start < end) & ((floor(end) - start) > 1)) {
-        new_element <- sample(start:floor(end), size = 1)
+        new_element <- sample(floor((start + end)/2):floor(end), size = 1)
       } else {
         new_element <- start
       }
@@ -84,9 +84,17 @@ count_gen <- function(max_n, SnapshotCount) {
 }
 
 load_specs <- function(workflow_path, mappings, package) {
-  wf_mapping <- gsm::MakeWorkflowList(strPath = workflow_path, strNames = mappings, strPackage = package)
-  wf_req <-  gsm::MakeWorkflowList(strPath =  "workflow/1_mappings", strNames = c("SUBJ", "STUDY", "SITE", "ENROLL"), strPackage = "gsm.mapping")
+  wf_mapping <- gsm.core::MakeWorkflowList(strPath = workflow_path, strNames = mappings, strPackage = package)
+  wf_req <-  gsm.core::MakeWorkflowList(strPath =  "workflow/1_mappings", strNames = c("SUBJ", "STUDY", "SITE", "ENROLL"), strPackage = "gsm.mapping")
   wf_all <- modifyList(wf_mapping, wf_req)
+  if(any(c("OverallResponse") %in% mappings)) {
+    wf_visit <- gsm.core::MakeWorkflowList(strPath =  "workflow/1_mappings", strNames = c("Visit"), strPackage = "gsm.mapping")
+    wf_all <- modifyList(wf_all, wf_visit)
+  }
+  if(any(c("Consents", "Death") %in% mappings)) {
+    wf_studcomp <- gsm.core::MakeWorkflowList(strPath =  "workflow/1_mappings", strNames = c("STUDCOMP"), strPackage = "gsm.mapping")
+    wf_all <- modifyList(wf_all, wf_studcomp)
+  }
   combined_specs <- CombineSpecs(wf_all)
 
   return(combined_specs)
