@@ -12,6 +12,7 @@ Imports:
     dplyr, 
     glue,
     gsm.core,
+    gsm.mapping,
     logger,
     magrittr,
     purrr,
@@ -20,7 +21,6 @@ Imports:
     tictoc,
     utils
 Suggests:
-    gsm.mapping,
     knitr,
     rmarkdown,
     testthat
