@@ -24,18 +24,18 @@ Raw_IE <- function(data, previous_data, spec, ...) {
   n <- inps$n - previous_row_num
   if (n == 0) return(dataset)
 
-  if (all(c("TIVER_STD", "IETESTCD_STD", "IETEST_STD", "IEORRES_STD", "IECAT_STD") %in% names(curr_spec))) {
-    curr_spec$TIVER_STD_IETESTCD_STD_IETEST_STD_IEORRES_STD_IECAT_STD <- list(required = TRUE)
-    curr_spec$TIVER_STD <- NULL
-    curr_spec$IETESTCD_STD <- NULL
-    curr_spec$IETEST_STD <- NULL
-    curr_spec$IEORRES_STD <- NULL
-    curr_spec$IECAT_STD <- NULL
+  if (all(c("TIVER", "IETESTCD", "IETEST", "IEORRES", "IECAT") %in% names(curr_spec))) {
+    curr_spec$TIVER_IETESTCD_IETEST_IEORRES_IECAT <- list(required = TRUE)
+    curr_spec$TIVER <- NULL
+    curr_spec$IETESTCD <- NULL
+    curr_spec$IETEST <- NULL
+    curr_spec$IEORRES <- NULL
+    curr_spec$IECAT <- NULL
   }
 
   args <- list(
     subjid = list(n, external_subjid = data$Raw_SUBJ$subjid, replace = FALSE),
-    TIVER_STD_IETESTCD_STD_IETEST_STD_IEORRES_STD_IECAT_STD = list(n, ...),
+    TIVER_IETESTCD_IETEST_IEORRES_IECAT = list(n, ...),
     default = list(n)
   )
 
@@ -44,34 +44,34 @@ Raw_IE <- function(data, previous_data, spec, ...) {
   return(res)
 }
 
-TIVER_STD_IETESTCD_STD_IETEST_STD_IEORRES_STD_IECAT_STD <- function(n, iecode, ...) {
-  TIVER_STD_dat <- TIVER_STD(n, ...)
-  IETESTCD_STD_dat <- IETESTCD_STD(n, ...)
-  IETEST_STD_dat <- IETEST_STD(n, iecode = IETESTCD_STD_dat, ...)
-  IEORRES_STD_dat <- IEORRES_STD(n, iecode = IETESTCD_STD_dat, ...)
-  IECAT_STD_dat <-  IECAT_STD(n, iecode = IETESTCD_STD_dat, ...)
+TIVER_IETESTCD_IETEST_IEORRES_IECAT <- function(n, iecode, ...) {
+  TIVER_dat <- TIVER(n, ...)
+  IETESTCD_dat <- IETESTCD(n, ...)
+  IETEST_dat <- IETEST(n, iecode = IETESTCD_dat, ...)
+  IEORRES_dat <- IEORRES(n, iecode = IETESTCD_dat, ...)
+  IECAT_dat <-  IECAT(n, iecode = IETESTCD_dat, ...)
 
   return(list(
-    TIVER_STD = TIVER_STD_dat,
-    IETESTCD_STD = IETESTCD_STD_dat,
-    IETEST_STD = IETEST_STD_dat,
-    IEORRES_STD = IEORRES_STD_dat,
-    IECAT_STD_dat = IECAT_STD_dat
+    TIVER = TIVER_dat,
+    IETESTCD = IETESTCD_dat,
+    IETEST = IETEST_dat,
+    IEORRES = IEORRES_dat,
+    IECAT = IECAT_dat
   ))
 }
 
-TIVER_STD <- function(n, ...) {
+TIVER <- function(n, ...) {
   return(rep("A1", n))
 }
-IETESTCD_STD <- function(n, ...) {
+IETESTCD <- function(n, ...) {
   return(sample(c(paste0("INCL", 1:10), paste0("EXCL", 1:10)), n, replace = TRUE))
 }
-IETEST_STD <- function(n, iecode,...) {
+IETEST <- function(n, iecode,...) {
   stringr::str_replace_all(iecode, c("^INCL" = "Inclusion ", "^EXCL" = "Exclusion "))
 }
-IEORRES_STD <- function(n, iecode,...) {
+IEORRES <- function(n, iecode,...) {
   ifelse(stringr::str_detect(iecode, "INCL"), "Y", "N")
 }
-IECAT_STD <- function(n, iecode,...) {
+IECAT <- function(n, iecode,...) {
   ifelse(stringr::str_detect(iecode, "INCL"), "Inclusion", "Exlcusion")
 }

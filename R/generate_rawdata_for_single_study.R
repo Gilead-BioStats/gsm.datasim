@@ -196,7 +196,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                      Raw_OverallResponse = list(data, previous_data, combined_specs, n = n,
                                                 split_vars = list("subjid_rs_dt")),
                      Raw_PK = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_visit_pkdat")),
-                     Raw_IE = list(data, previous_data, combined_specs, n = n), split_vars = list("TIVER_STD_IETESTCD_STD_IETEST_STD_IEORRES_STD_IECAT_STD"),
+                     Raw_IE = list(data, previous_data, combined_specs, n = n), split_vars = list("TIVER_IETESTCD_IETEST_IEORRES_IECAT"),
                      list(data, previous_data, combined_specs, n = n)  # Default case
       )
 
