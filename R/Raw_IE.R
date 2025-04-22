@@ -45,33 +45,33 @@ Raw_IE <- function(data, previous_data, spec, ...) {
 }
 
 tiver_ietestcd_ietest_ieorres_iecat <- function(n, iecode, ...) {
-  TIVER_dat <- TIVER(n, ...)
-  IETESTCD_dat <- IETESTCD(n, ...)
-  IETEST_dat <- IETEST(n, iecode = IETESTCD_dat, ...)
-  IEORRES_dat <- IEORRES(n, iecode = IETESTCD_dat, ...)
-  IECAT_dat <-  IECAT(n, iecode = IETESTCD_dat, ...)
+  tiver_dat <- tiver(n, ...)
+  ietestcd_dat <- ietestcd(n, ...)
+  ietest_dat <- ietest(n, iecode = ietestcd_dat, ...)
+  ieorres_dat <- ieorres(n, iecode = ietestcd_dat, ...)
+  iecat_dat <-  iecat(n, iecode = ietestcd_dat, ...)
 
   return(list(
-    TIVER = TIVER_dat,
-    IETESTCD = IETESTCD_dat,
-    IETEST = IETEST_dat,
-    IEORRES = IEORRES_dat,
-    IECAT = IECAT_dat
+    tiver = tiver_dat,
+    ietestcd = ietestcd_dat,
+    ietest = ietest_dat,
+    ieorres = ieorres_dat,
+    iecat = iecat_dat
   ))
 }
 
-TIVER <- function(n, ...) {
+tiver <- function(n, ...) {
   return(rep("A1", n))
 }
-IETESTCD <- function(n, ...) {
+ietestcd <- function(n, ...) {
   return(sample(c(paste0("INCL", 1:10), paste0("EXCL", 1:10)), n, replace = TRUE))
 }
-IETEST <- function(n, iecode,...) {
+ietest <- function(n, iecode,...) {
   stringr::str_replace_all(iecode, c("^INCL" = "Inclusion ", "^EXCL" = "Exclusion "))
 }
-IEORRES <- function(n, iecode,...) {
+ieorres <- function(n, iecode,...) {
   ifelse(stringr::str_detect(iecode, "INCL"), "Y", "N")
 }
-IECAT <- function(n, iecode,...) {
+iecat <- function(n, iecode,...) {
   ifelse(stringr::str_detect(iecode, "INCL"), "Inclusion", "Exlcusion")
 }
