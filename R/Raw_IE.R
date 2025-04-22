@@ -73,5 +73,5 @@ ieorres <- function(n, iecode,...) {
   ifelse(stringr::str_detect(iecode, "INCL"), "Y", "N")
 }
 iecat <- function(n, iecode,...) {
-  ifelse(stringr::str_detect(iecode, "INCL"), "Inclusion", "Exlcusion")
+  ifelse(stringr::str_detect(iecode, "INCL"), "Inclusion", "Exclusion")
 }
