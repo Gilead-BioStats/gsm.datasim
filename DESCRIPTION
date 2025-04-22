@@ -11,12 +11,13 @@ Imports:
     arrow,
     dplyr, 
     glue,
-    gsm.core (>= 1.1.0),
-    gsm.mapping (>= 1.0.1),
+    gsm.core,
+    gsm.mapping,
     logger,
     magrittr,
     purrr,
     rlang,
+    stringr,
     tictoc,
     utils
 Suggests:

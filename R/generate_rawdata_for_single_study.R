@@ -196,6 +196,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                      Raw_OverallResponse = list(data, previous_data, combined_specs, n = n,
                                                 split_vars = list("subjid_rs_dt")),
                      Raw_PK = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_visit_pkdat")),
+                     Raw_IE = list(data, previous_data, combined_specs, n = n, split_vars = list("tiver_ietestcd_ietest_ieorres_iecat")),
                      list(data, previous_data, combined_specs, n = n)  # Default case
       )
 
@@ -221,6 +222,13 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
     }
     if(!"gilda_STUDY" %in% mappings){
       data$raw_gilda_study_data <- NULL
+    }
+    if("Raw_IE" %in% names(data)){
+      unenrolled <- data$Raw_SUBJ %>%
+        filter(enrollyn == "N") %>%
+        pull(subjid)
+      data$Raw_IE <- data$Raw_IE %>%
+        filter(subjid %in% unenrolled)
     }
     snapshots[[snapshot_idx]] <- data
     logger::log_info(glue::glue(" -- Snapshot {snapshot_idx} added successfully"))
