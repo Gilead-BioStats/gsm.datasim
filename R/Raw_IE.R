@@ -24,18 +24,18 @@ Raw_IE <- function(data, previous_data, spec, ...) {
   n <- inps$n - previous_row_num
   if (n == 0) return(dataset)
 
-  if (all(c("TIVER", "IETESTCD", "IETEST", "IEORRES", "IECAT") %in% names(curr_spec))) {
-    curr_spec$TIVER_IETESTCD_IETEST_IEORRES_IECAT <- list(required = TRUE)
-    curr_spec$TIVER <- NULL
-    curr_spec$IETESTCD <- NULL
-    curr_spec$IETEST <- NULL
-    curr_spec$IEORRES <- NULL
-    curr_spec$IECAT <- NULL
+  if (all(c("tiver", "ietestcd", "ietest", "ieorres", "iecat") %in% names(curr_spec))) {
+    curr_spec$tiver_ietestcd_ietest_ieorres_iecat <- list(required = TRUE)
+    curr_spec$tiver <- NULL
+    curr_spec$ietestcd <- NULL
+    curr_spec$ietest <- NULL
+    curr_spec$ieorres <- NULL
+    curr_spec$iecat <- NULL
   }
 
   args <- list(
     subjid = list(n, external_subjid = data$Raw_SUBJ$subjid, replace = FALSE),
-    TIVER_IETESTCD_IETEST_IEORRES_IECAT = list(n, ...),
+    tiver_ietestcd_ietest_ieorres_iecat = list(n, ...),
     default = list(n)
   )
 
@@ -44,7 +44,7 @@ Raw_IE <- function(data, previous_data, spec, ...) {
   return(res)
 }
 
-TIVER_IETESTCD_IETEST_IEORRES_IECAT <- function(n, iecode, ...) {
+tiver_ietestcd_ietest_ieorres_iecat <- function(n, iecode, ...) {
   TIVER_dat <- TIVER(n, ...)
   IETESTCD_dat <- IETESTCD(n, ...)
   IETEST_dat <- IETEST(n, iecode = IETESTCD_dat, ...)
