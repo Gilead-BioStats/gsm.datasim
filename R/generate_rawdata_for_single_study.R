@@ -162,6 +162,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
         data_type == "Raw_Consents" ~ consents_count[snapshot_idx],
         data_type == "Raw_Death" ~ death_count[snapshot_idx],
         data_type == "Raw_AntiCancer" ~ anticancer_count[snapshot_idx],
+        data_type == "Raw_IE" ~ unlist(enrollment_count[snapshot_idx]),
         TRUE ~ subject_count[snapshot_idx]
       )
       generator_func <- data_type
@@ -173,6 +174,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                                                                           "subjid_subject_nsv",
                                                                           "enrollyn_enrolldt_timeonstudy_firstparticipantdate_firstdosedate_timeontreatment")),
                      Raw_ENROLL = list(data, previous_data, combined_specs, n_enroll = n, split_vars = list("subject_to_enrollment")),
+                     Raw_IE =  list(data, previous_data, combined_specs, n_IE = n, split_vars = list("subject_to_ie", "tiver_ietestcd_ietest_ieorres_iecat")),
                      Raw_SV = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated"),
                                    SnapshotWidth = SnapshotWidth),
                      Raw_LB = list(data, previous_data, combined_specs, n = n, split_vars = list("subj_visit_repeated")),

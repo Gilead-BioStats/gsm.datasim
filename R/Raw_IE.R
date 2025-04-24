@@ -1,29 +1,32 @@
-#' Generate Raw IE Data
+#' Generate Raw ENROLL Data
 #'
-#' Generate Raw IE based on `IE.yaml` from `gsm.mapping`.
+#' Generate Raw ENROLL based on `ENROLL.yaml` from `gsm.mapping`.
 #'
 #' @inheritParams Raw_STUDY
-#' @returns a data.frame pertaining to the raw dataset plugged into `IE.yaml`
+#' @returns a data.frame pertaining to the raw dataset plugged into `ENROLL.yaml`
 #' @family internal
 #' @keywords internal
 #' @noRd
-
 Raw_IE <- function(data, previous_data, spec, ...) {
   inps <- list(...)
 
   curr_spec <- spec$Raw_IE
 
   if ("Raw_IE" %in% names(previous_data)) {
-    dataset <- previous_data$Raw_SUBJ
+    dataset <- previous_data$Raw_IE
     previous_row_num <- nrow(dataset)
   } else {
     dataset <- NULL
     previous_row_num <- 0
   }
 
-  n <- inps$n - previous_row_num
+  n <- inps$n_IE - previous_row_num
   if (n == 0) return(dataset)
 
+  if (all(c("subjid") %in% names(curr_spec))) {
+    curr_spec$subject_to_ie <- list(required = TRUE)
+    curr_spec$subjid <- NULL
+  }
   if (all(c("tiver", "ietestcd", "ietest", "ieorres", "iecat") %in% names(curr_spec))) {
     curr_spec$tiver_ietestcd_ietest_ieorres_iecat <- list(required = TRUE)
     curr_spec$tiver <- NULL
@@ -34,13 +37,26 @@ Raw_IE <- function(data, previous_data, spec, ...) {
   }
 
   args <- list(
-    subjid = list(n, external_subjid = data$Raw_SUBJ$subjid, replace = FALSE),
+    subject_to_ie = list(n, data, previous_data$Raw_IE$subjid),
     tiver_ietestcd_ietest_ieorres_iecat = list(n, ...),
     default = list(n)
   )
 
   res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_IE, ...)
 
+  return(res)
+}
+
+subject_to_ie <- function(n, data, previous_data, ...) {
+  if (length(previous_data) != 0) {
+    data_pool <- data$Raw_SUBJ[!(data$Raw_SUBJ$subjid %in% previous_data), ]
+  } else {
+    data_pool <- data$Raw_SUBJ
+  }
+
+  res <- data_pool %>%
+    #filter(enrollyn == "N") %>%
+    select(subjid)
   return(res)
 }
 
