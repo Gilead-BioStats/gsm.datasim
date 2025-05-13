@@ -38,3 +38,13 @@ deemedimportant <- function(n, ...) {
   # Function body for deemedimportant
   sample(c("Yes", "No"), n, replace = TRUE)
 }
+
+dvdecod <- function(n, ...) {
+  # Function body for deemedimportant
+  sample(c("Informed Consent", "Missing Data", "Study Procedures", "Eligibility Crtieria"), n, replace = TRUE)
+}
+
+dvterm <- function(n, ...) {
+  # Function body for deemedimportant
+  sample(c("Inc X not met", "Exclusion Y not met"), n, replace = TRUE)
+}
