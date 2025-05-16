@@ -168,19 +168,19 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
       generator_func <- data_type
       # Determine arguments based on variable name
       args <- switch(data_type,
-                     Raw_SITE = list(data, previous_data, combined_specs, n_sites = n, split_vars = list("Country_State_City")),
+                     Raw_SITE = list(data, previous_data, combined_specs, n_sites = n, startDate = start_dates[snapshot_idx], split_vars = list("Country_State_City")),
                      Raw_SUBJ = list(data, previous_data, combined_specs, n_subj = n, startDate = start_dates[snapshot_idx],
                                      endDate = end_dates[snapshot_idx], split_vars = list("subject_site_synq",
                                                                           "subjid_subject_nsv",
                                                                           "enrollyn_enrolldt_timeonstudy_firstparticipantdate_firstdosedate_timeontreatment")),
-                     Raw_ENROLL = list(data, previous_data, combined_specs, n_enroll = n, split_vars = list("subject_to_enrollment")),
+                     Raw_ENROLL = list(data, previous_data, combined_specs, n_enroll = n, startDate = start_dates[snapshot_idx], split_vars = list("subject_to_enrollment")),
                      Raw_IE =  list(data, previous_data, combined_specs, n_IE = n, split_vars = list("subject_to_ie", "tiver_ietestcd_ietest_ieorres_iecat")),
                      Raw_SV = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated"),
                                    SnapshotWidth = SnapshotWidth),
-                     Raw_LB = list(data, previous_data, combined_specs, n = n, split_vars = list("subj_visit_repeated")),
-                     Raw_DATACHG = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
-                     Raw_DATAENT = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
-                     Raw_QUERY = list(data, previous_data, combined_specs, n = n, split_vars = list("subject_nsv_visit_repeated")),
+                     Raw_LB = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subj_visit_repeated")),
+                     Raw_DATACHG = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subject_nsv_visit_repeated")),
+                     Raw_DATAENT = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subject_nsv_visit_repeated")),
+                     Raw_QUERY = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subject_nsv_visit_repeated")),
                      Raw_AE = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx],
                                    endDate = end_dates[snapshot_idx], split_vars = list("aest_dt_aeen_dt")),
                      Raw_AntiCancer = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
@@ -199,7 +199,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                                                 split_vars = list("subjid_rs_dt")),
                      Raw_PK = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_visit_pkdat")),
                      Raw_IE = list(data, previous_data, combined_specs, n = n, split_vars = list("tiver_ietestcd_ietest_ieorres_iecat")),
-                     list(data, previous_data, combined_specs, n = n)  # Default case
+                     list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx])  # Default case
       )
 
 

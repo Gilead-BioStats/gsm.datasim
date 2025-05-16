@@ -1,9 +1,9 @@
-generic_timestamp <- function(n, ...) {
-  rep(as.POSIXlt(Sys.time()), n)
+generic_timestamp <- function(n, startDate,...) {
+  rep(as.POSIXlt(startDate), n)
 }
 
-generic_date <- function(n, ...) {
-  rep(as.Date(Sys.time()), n)
+generic_date <- function(n, startDate,...) {
+  rep(as.Date(startDate), n)
 }
 
 enroll_dt <- generic_date

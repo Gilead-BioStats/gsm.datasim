@@ -8,7 +8,7 @@
 #' @keywords internal
 #' @noRd
 
-Raw_SITE <- function(data, previous_data, spec, ...) {
+Raw_SITE <- function(data, previous_data, spec, startDate, ...) {
 
   inps <- list(...)
 
@@ -44,7 +44,7 @@ Raw_SITE <- function(data, previous_data, spec, ...) {
   args <- list(
     studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     invid = list(n, dataset),
-    default = list(n)
+    default = list(n, startDate)
   )
 
   res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_SITE, ...)

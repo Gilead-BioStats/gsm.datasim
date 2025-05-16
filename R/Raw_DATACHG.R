@@ -8,7 +8,7 @@
 #' @keywords internal
 #' @noRd
 
-Raw_DATACHG <- function(data, previous_data, spec, ...) {
+Raw_DATACHG <- function(data, previous_data, spec, startDate, ...) {
   # Function body for Raw_DATACHG
   # Function body for Raw_SDRGCOMP
   inps <- list(...)
@@ -58,6 +58,7 @@ Raw_DATACHG <- function(data, previous_data, spec, ...) {
 
   args <- list(
     subject_nsv_visit_repeated = list(nrow(forms), subject_nsv_visits),
+    visit_date = list(all_n, startDate),
     default = list(all_n, subject_nsv_visits, forms)
   )
 

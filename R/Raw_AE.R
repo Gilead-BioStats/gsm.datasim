@@ -39,7 +39,7 @@ Raw_AE <- function(data, previous_data, spec, startDate, endDate, ...) {
   args <- list(
     subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
     aest_dt_aeen_dt = list(n, startDate, endDate),
-    default = list(n)
+    default = list(n, startDate)
   )
 
   res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_AE, ...)
