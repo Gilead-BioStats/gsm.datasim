@@ -52,6 +52,16 @@ aeser <- function(n, ...) {
   sample(c("Y", "N"), n, replace = TRUE)
 }
 
+aeongo <- function(n, ...) {
+  # Function body for aeser
+  sample(c("Y", "N"), n, replace = TRUE)
+}
+
+aerel <- function(n, ...) {
+  # Function body for aeser
+  sample(c("Y", "N"), n, replace = TRUE)
+}
+
 aest_dt <- function(n, startDate, endDate, ...) {
   sample(seq(as.Date(startDate), as.Date(endDate), by = "day"), n, replace = TRUE)
 }
@@ -67,7 +77,6 @@ mdrsoc_nsv <- function(n, ...) {
 aetoxgr <- function(n, ...) {
   sample(1:5, n, replace = TRUE)
 }
-
 
 aest_dt_aeen_dt <- function(n, startDate, endDate, ...) {
   aest_dat <- aest_dt(n, startDate, endDate, ...)

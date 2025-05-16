@@ -70,9 +70,9 @@ subjid_invid <- function(n, Raw_SUBJ_data, ...) {
               invid = res$invid))
 }
 
-visit_date <- function(n, start_date, possible_Visits, SnapshotWidth,...) {
-  rep(generate_consecutive_random_dates(nrow(possible_Visits), start_date, period_to_days(SnapshotWidth)), n)
-}
+# visit_date <- function(n, start_date, possible_Visits, SnapshotWidth,...) {
+#   rep(generate_consecutive_random_dates(nrow(possible_Visits), start_date, period_to_days(SnapshotWidth)), n)
+# }
 
 visit_dt <- function(n, start_date, possible_Visits, SnapshotWidth,...) {
   rep(generate_consecutive_random_dates(nrow(possible_Visits), start_date, period_to_days(SnapshotWidth)), n)
