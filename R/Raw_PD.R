@@ -38,3 +38,7 @@ deemedimportant <- function(n, ...) {
   # Function body for deemedimportant
   sample(c("Yes", "No"), n, replace = TRUE)
 }
+
+category <- function(n, ...){
+  sample(c("cat 1", "cat 2"), n, replace = TRUE)
+}
