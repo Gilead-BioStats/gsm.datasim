@@ -3,7 +3,7 @@ library(dplyr)
 
 # generate data for KRI reports:
 core_mappings <- c("AE", "COUNTRY", "DATACHG", "DATAENT", "ENROLL", "LB", "PK",
-                   "PD", "QUERY", "STUDY", "STUDCOMP", "SDRGCOMP", "SITE", "SUBJ")
+                   "PD", "QUERY", "STUDY", "STUDCOMP", "SDRGCOMP", "SITE", "SUBJ", "VISIT")
 
 single_result <- generate_rawdata_for_single_study(SnapshotCount = 3,
                                                    SnapshotWidth = "months",
@@ -14,6 +14,11 @@ single_result <- generate_rawdata_for_single_study(SnapshotCount = 3,
                                                    mappings = core_mappings,
                                                    package = "gsm.mapping",
                                                    desired_specs = NULL)
+# Step 1 - Create Mapped Data Layer - filter, aggregate and join raw data to create mapped data layer
+mappings_wf <- MakeWorkflowList(strNames = core_mappings, strPath = "workflow/1_mappings", strPackage = "gsm.mapping")
+mappings_spec <- CombineSpecs(mappings_wf)
+lRaw <- Ingest(lSource, mappings_spec)
+mapped <- RunWorkflows(mappings_wf, lRaw)
 
 # Below is the code to run multiple snapshots for multiple studies
 # Highly memory intensive, make sure hardware can handle
