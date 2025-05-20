@@ -169,7 +169,7 @@ enrollyn_enrolldt_timeonstudy_firstparticipantdate_firstdosedate_timeontreatment
     enrollyn = enrollyn_dat,
     enrolldt = enrolldt_dat,
     timeonstudy = timeonstudy_dat,
-    firstparticipant = firstparticipantdate_dat,
+    firstparticipantdate = firstparticipantdate_dat,
     firstdosedate = firstdosedate_dat,
     timeontreatment = timeontreatment_dat
   ))
