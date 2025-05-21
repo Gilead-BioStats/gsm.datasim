@@ -17,7 +17,7 @@ single_result <- generate_rawdata_for_single_study(SnapshotCount = 3,
 # Step 1 - Create Mapped Data Layer - filter, aggregate and join raw data to create mapped data layer
 mappings_wf <- MakeWorkflowList(strNames = core_mappings, strPath = "workflow/1_mappings", strPackage = "gsm.mapping")
 mappings_spec <- CombineSpecs(mappings_wf)
-lRaw <- Ingest(lSource, mappings_spec)
+lRaw <- Ingest(single_result[[1]], mappings_spec)
 mapped <- RunWorkflows(mappings_wf, lRaw)
 
 # Below is the code to run multiple snapshots for multiple studies
