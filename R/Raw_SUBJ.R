@@ -59,7 +59,7 @@ Raw_SUBJ <- function(data, previous_data, spec, startDate, endDate, ...) {
     subjid_subject_nsv = list(n, previous_data$Raw_SUBJ$subjid),
     subject_site_synq = list(n, data$Raw_SITE),
     enrollyn_enrolldt_timeonstudy_firstparticipantdate_firstdosedate_timeontreatment = list(n, startDate, endDate),
-    default = list(n)
+    default = list(n, startDate)
   )
 
   res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_SUBJ, ...)
@@ -169,7 +169,7 @@ enrollyn_enrolldt_timeonstudy_firstparticipantdate_firstdosedate_timeontreatment
     enrollyn = enrollyn_dat,
     enrolldt = enrolldt_dat,
     timeonstudy = timeonstudy_dat,
-    firstparticipant = firstparticipantdate_dat,
+    firstparticipantdate = firstparticipantdate_dat,
     firstdosedate = firstdosedate_dat,
     timeontreatment = timeontreatment_dat
   ))

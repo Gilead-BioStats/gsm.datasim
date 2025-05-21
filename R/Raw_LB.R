@@ -8,7 +8,7 @@
 #' @keywords internal
 #' @noRd
 
-Raw_LB <- function(data, previous_data, spec, ...) {
+Raw_LB <- function(data, previous_data, spec, startDate,...) {
   # Function body for Raw_LB
   inps <- list(...)
 
@@ -83,6 +83,7 @@ Raw_LB <- function(data, previous_data, spec, ...) {
 
   args <- list(
     subj_visit_repeated = list(nrow(tests), subj_visits),
+    lb_dt = list(all_n, startDate),
     default = list(all_n, subj_visits, tests)
   )
 

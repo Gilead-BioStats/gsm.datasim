@@ -8,7 +8,7 @@
 #' @keywords internal
 #' @noRd
 
-Raw_QUERY <- function(data, previous_data, spec, ...) {
+Raw_QUERY <- function(data, previous_data, spec, startDate, ...) {
   inps <- list(...)
 
   curr_spec <- spec$Raw_QUERY
@@ -49,7 +49,7 @@ Raw_QUERY <- function(data, previous_data, spec, ...) {
 
   args <- list(
     subject_nsv_visit_repeated = list(entries_per_subj_visit, subject_nsv_visits),
-    default = list(all_n)
+    default = list(all_n, startDate)
   )
 
   res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_QUERY, ...)
