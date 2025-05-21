@@ -8,7 +8,7 @@
 #' @keywords internal
 #' @noRd
 
-Raw_DATAENT <- function(data, previous_data, spec, ...) {
+Raw_DATAENT <- function(data, previous_data, spec, startDate, ...) {
 
   inps <- list(...)
 
@@ -56,7 +56,8 @@ Raw_DATAENT <- function(data, previous_data, spec, ...) {
 
   args <- list(
     subject_nsv_visit_repeated = list(nrow(forms), subject_nsv_visits),
-    default = list(all_n, subject_nsv_visits, forms)
+    visit_date = list(all_n, startDate),
+    default = list(all_n, subject_nsv_visits, forms, startDate)
   )
 
 

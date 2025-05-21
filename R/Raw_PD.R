@@ -8,7 +8,7 @@
 #' @keywords internal
 #' @noRd
 
-Raw_PD <- function(data, previous_data, spec, ...) {
+Raw_PD <- function(data, previous_data, spec, startDate, ...) {
   inps <- list(...)
 
   curr_spec <- spec$Raw_PD
@@ -26,7 +26,7 @@ Raw_PD <- function(data, previous_data, spec, ...) {
 
   args <- list(
     subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
-    default = list(n)
+    default = list(n, startDate)
   )
 
   res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_PD, ...)
@@ -37,4 +37,8 @@ Raw_PD <- function(data, previous_data, spec, ...) {
 deemedimportant <- function(n, ...) {
   # Function body for deemedimportant
   sample(c("Yes", "No"), n, replace = TRUE)
+}
+
+category <- function(n, ...){
+  sample(c("cat 1", "cat 2"), n, replace = TRUE)
 }

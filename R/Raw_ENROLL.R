@@ -7,7 +7,7 @@
 #' @family internal
 #' @keywords internal
 #' @noRd
-Raw_ENROLL <- function(data, previous_data, spec, ...) {
+Raw_ENROLL <- function(data, previous_data, spec, startDate, ...) {
   inps <- list(...)
 
   curr_spec <- spec$Raw_ENROLL
@@ -35,7 +35,7 @@ Raw_ENROLL <- function(data, previous_data, spec, ...) {
   args <- list(
     studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     subject_to_enrollment = list(n, data, previous_data$Raw_ENROLL$subjid),
-    default = list(n)
+    default = list(n, startDate)
   )
 
   res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_ENROLL, ...)

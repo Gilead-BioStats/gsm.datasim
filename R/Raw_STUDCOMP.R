@@ -8,7 +8,7 @@
 #' @keywords internal
 #' @noRd
 
-Raw_STUDCOMP <- function(data, previous_data, spec, ...) {
+Raw_STUDCOMP <- function(data, previous_data, spec, startDate, ...) {
   # Function body for Raw_SDRGCOMP
   inps <- list(...)
 
@@ -27,7 +27,7 @@ Raw_STUDCOMP <- function(data, previous_data, spec, ...) {
 
   args <- list(
     subjid = list(n, data$Raw_SUBJ$subjid, replace = FALSE),
-    default = list(n)
+    default = list(n, startDate)
   )
 
   res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_STUDCOMP, ...)
@@ -54,7 +54,7 @@ Raw_StudyCompletion <- function(data, previous_data, spec, ...) {
 
   args <- list(
     subjid = list(n, data$Raw_SUBJ$subjid, replace = FALSE),
-    default = list(n)
+    default = list(n, startDate)
   )
 
   res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_StudyCompletion, ...)
