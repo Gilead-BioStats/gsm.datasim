@@ -230,7 +230,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
         filter(enrollyn == "N") %>%
         pull(subjid)
       data$Raw_IE <- data$Raw_IE %>%
-        slice_sample(n = round(ParticipantCount/5)) %>%
+        slice_sample(n = round(ParticipantCount/3)) %>%
         filter(!(subjid %in% unenrolled))
     }
     snapshots[[snapshot_idx]] <- data

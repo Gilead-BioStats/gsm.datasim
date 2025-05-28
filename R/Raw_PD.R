@@ -42,12 +42,12 @@ deemedimportant <- function(n, ...) {
 
 dvdecod <- function(n, ...) {
   # Function body for deemedimportant
-  sample(c("Informed Consent", "Missing Data", "Study Procedures", "Eligibility Criteria"), n, replace = TRUE)
+  sample(c("Informed Consent", "Missing Data", "Study Procedures", "Inclusion Criteria", "Exclusion Criteria"), n, replace = TRUE, prob = c(0.3, 0.3, 0.3, 0.05, 0.05))
 }
 
 dvterm <- function(n, ...) {
   # Function body for deemedimportant
-  sample(c("Inclusion XX not met", "Exclusion YY not met"), n, replace = TRUE)
+  sample(c("Inclusion/Exclusion description"), n, replace = TRUE)
 }
 
 category <- function(n, ...){

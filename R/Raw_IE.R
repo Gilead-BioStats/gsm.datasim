@@ -37,6 +37,7 @@ Raw_IE <- function(data, previous_data, spec, ...) {
   }
 
   args <- list(
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     subject_to_ie = list(n, data, previous_data$Raw_IE$subjid),
     tiver_ietestcd_ietest_ieorres_iecat = list(n, ...),
     default = list(n)
@@ -68,7 +69,6 @@ tiver_ietestcd_ietest_ieorres_iecat <- function(n, iecode, ...) {
   iecat_dat <-  iecat(n, iecode = ietestcd_dat, ...)
 
   return(list(
-    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     tiver = tiver_dat,
     ietestcd = ietestcd_dat,
     ietest = ietest_dat,
@@ -81,14 +81,14 @@ tiver <- function(n, ...) {
   return(rep("A1", n))
 }
 ietestcd <- function(n, ...) {
-  return(sample(c(paste0("INCL", 1:10), paste0("EXCL", 1:10)), n, replace = TRUE))
+  return(sample(c(paste0("incl", 1:10), paste0("excl", 1:10)), n, replace = TRUE))
 }
 ietest <- function(n, iecode,...) {
-  stringr::str_replace_all(iecode, c("^INCL" = "Inclusion ", "^EXCL" = "Exclusion "))
+  stringr::str_replace_all(iecode, c("^INC" = "Inclusion ", "^EXC" = "Exclusion "))
 }
 ieorres <- function(n, iecode,...) {
-  ifelse(stringr::str_detect(iecode, "INCL"), "Y", "N")
+  sample(c("Yes", "No"), n, replace = TRUE)
 }
 iecat <- function(n, iecode,...) {
-  ifelse(stringr::str_detect(iecode, "INCL"), "Inclusion", "Exclusion")
+  ifelse(stringr::str_detect(iecode, "INC"), "Inclusion", "Exclusion")
 }
