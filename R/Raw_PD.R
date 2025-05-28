@@ -25,6 +25,7 @@ Raw_PD <- function(data, previous_data, spec, startDate, ...) {
   if (n == 0) return(dataset)
 
   args <- list(
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
     default = list(n, startDate)
   )

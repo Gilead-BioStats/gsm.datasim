@@ -230,7 +230,8 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
         filter(enrollyn == "N") %>%
         pull(subjid)
       data$Raw_IE <- data$Raw_IE %>%
-        filter(subjid %in% unenrolled)
+        slice_sample(n = round(ParticipantCount/5)) %>%
+        filter(!(subjid %in% unenrolled))
     }
     snapshots[[snapshot_idx]] <- data
     logger::log_info(glue::glue(" -- Snapshot {snapshot_idx} added successfully"))

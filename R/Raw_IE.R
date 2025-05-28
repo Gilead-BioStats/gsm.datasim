@@ -68,6 +68,7 @@ tiver_ietestcd_ietest_ieorres_iecat <- function(n, iecode, ...) {
   iecat_dat <-  iecat(n, iecode = ietestcd_dat, ...)
 
   return(list(
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     tiver = tiver_dat,
     ietestcd = ietestcd_dat,
     ietest = ietest_dat,
