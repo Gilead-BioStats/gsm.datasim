@@ -25,6 +25,7 @@ Raw_PD <- function(data, previous_data, spec, startDate, ...) {
   if (n == 0) return(dataset)
 
   args <- list(
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
     default = list(n, startDate)
   )
@@ -37,6 +38,16 @@ Raw_PD <- function(data, previous_data, spec, startDate, ...) {
 deemedimportant <- function(n, ...) {
   # Function body for deemedimportant
   sample(c("Yes", "No"), n, replace = TRUE)
+}
+
+dvdecod <- function(n, ...) {
+  # Function body for deemedimportant
+  sample(c("Informed Consent", "Missing Data", "Study Procedures", "Inclusion Criteria", "Exclusion Criteria"), n, replace = TRUE, prob = c(0.3, 0.3, 0.3, 0.05, 0.05))
+}
+
+dvterm <- function(n, ...) {
+  # Function body for deemedimportant
+  sample(c("Inclusion/Exclusion description"), n, replace = TRUE)
 }
 
 category <- function(n, ...){
