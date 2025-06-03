@@ -1,3 +1,10 @@
+# gsm.datasim v1.1.0\
+
+## Notable Changes:
+**New Mapping Workflows Support:**
+- Additional workflow support for "IE" domain
+- dates/timestamp support for many domains now available.
+
 # gsm.datasim v1.0.0
 
 We are excited to announce the first major release of the `gsm.datasim` package, 
