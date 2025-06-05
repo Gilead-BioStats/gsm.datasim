@@ -1,4 +1,4 @@
-# gsm.datasim v1.1.0\
+# gsm.datasim v1.1.0
 
 ## Notable Changes:
 **New Mapping Workflows Support:**
