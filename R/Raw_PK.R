@@ -55,6 +55,7 @@ Raw_PK <- function(data, previous_data, spec,...) {
   subjs <- subjid(n, external_subjid = data$Raw_SUBJ$subjid, replace = FALSE)
   args <- list(
     subjid_visit_pkdat = list(nrow(possible_visits), subjs, data$Raw_VISIT),
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     default = list(n, subjs, possible_visits)
   )
 

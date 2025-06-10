@@ -83,6 +83,7 @@ Raw_LB <- function(data, previous_data, spec, startDate,...) {
 
   args <- list(
     subj_visit_repeated = list(nrow(tests), subj_visits),
+    studyid = list(all_n, data$Raw_STUDY$protocol_number[[1]]),
     lb_dt = list(all_n, startDate),
     default = list(all_n, subj_visits, tests)
   )

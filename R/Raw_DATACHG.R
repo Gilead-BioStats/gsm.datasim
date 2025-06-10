@@ -59,6 +59,7 @@ Raw_DATACHG <- function(data, previous_data, spec, startDate, ...) {
   args <- list(
     subject_nsv_visit_repeated = list(nrow(forms), subject_nsv_visits),
     visit_date = list(all_n, startDate),
+    studyid = list(all_n, data$Raw_STUDY$protocol_number[[1]]),
     default = list(all_n, subject_nsv_visits, forms)
   )
 

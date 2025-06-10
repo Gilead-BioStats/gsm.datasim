@@ -39,6 +39,7 @@ Raw_AE <- function(data, previous_data, spec, startDate, endDate, ...) {
   args <- list(
     subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
     aest_dt_aeen_dt = list(n, startDate, endDate),
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     default = list(n, startDate)
   )
 

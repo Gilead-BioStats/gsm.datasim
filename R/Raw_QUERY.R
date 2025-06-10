@@ -49,6 +49,7 @@ Raw_QUERY <- function(data, previous_data, spec, startDate, ...) {
 
   args <- list(
     subject_nsv_visit_repeated = list(entries_per_subj_visit, subject_nsv_visits),
+    studyid = list(all_n, data$Raw_STUDY$protocol_number[[1]]),
     default = list(all_n, startDate)
   )
 

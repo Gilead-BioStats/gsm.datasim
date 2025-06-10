@@ -27,6 +27,7 @@ Raw_SDRGCOMP <- function(data, previous_data, spec, startDate, ...) {
 
   args <- list(
     subjid = list(n, data$Raw_SUBJ$subjid, replace = FALSE),
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     default = list(n, startDate)
   )
 
