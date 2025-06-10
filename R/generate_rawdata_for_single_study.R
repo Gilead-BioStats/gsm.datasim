@@ -77,6 +77,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                    source_col = "foldername"),
       visit_date = list(required = TRUE,
                         source_col = "visit_dt"),
+      studyid = list(require = TRUE),
       invid = list(required = TRUE)
     )
   }
