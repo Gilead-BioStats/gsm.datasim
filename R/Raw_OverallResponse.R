@@ -44,6 +44,7 @@ Raw_OverallResponse <- function(data, previous_data, spec, ...) {
     subjid_rs_dt = list(n,
                         subjids = unique(data$Raw_VISIT$subjid)[sample(length(unique(data$Raw_VISIT$subjid)), ceiling(n/3), replace = TRUE)],
                         Raw_VISIT_data = data$Raw_VISIT),
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     default = list(n)
   )
 
