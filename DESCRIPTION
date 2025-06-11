@@ -34,3 +34,5 @@ RoxygenNote: 7.3.2
 VignetteBuilder: knitr
 URL: https://github.com/Gilead-BioStats/gsm.datasim, https://gilead-biostats.github.io/gsm.datasim
 BugReports: https://github.com/Gilead-BioStats/gsm.datasim/issues
+Depends: 
+    R (>= 4.0)

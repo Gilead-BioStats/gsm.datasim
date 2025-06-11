@@ -97,7 +97,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
   }
   enrollment_count <- subject_count
 
-  ae_count <- subject_count * 3
+  ae_count <- subject_count * 2
   pd_count <- subject_count * 3
   sdrgcomp_count <- ceiling(subject_count / 2)
   studcomp_count <- ceiling(subject_count / 10)
@@ -183,7 +183,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
                      Raw_DATAENT = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subject_nsv_visit_repeated")),
                      Raw_QUERY = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subject_nsv_visit_repeated")),
                      Raw_AE = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx],
-                                   endDate = end_dates[snapshot_idx], split_vars = list("aest_dt_aeen_dt")),
+                                   endDate = end_dates[snapshot_idx], split_vars = list("aest_dt_aeen_dt", "mdrpt_nsv_mdrsoc_nsv")),
                      Raw_AntiCancer = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      Raw_Baseline = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
                      Raw_Consents = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),

@@ -31,14 +31,19 @@ Raw_AE <- function(data, previous_data, spec, startDate, endDate, ...) {
     curr_spec$aest_dt_aeen_dt <- list(required = TRUE)
     curr_spec$aest_dt <- NULL
     curr_spec$aeen_dt <- NULL
-    curr_spec$mdrpt_nsv <- list(required = TRUE)
-    curr_spec$mdrsoc_nsv <- list(required = TRUE)
+    curr_spec$mdrpt_nsv_mdrsoc_nsv <- list(required = TRUE)
+    curr_spec$mdrpt_nsv <- NULL
+    curr_spec$mdrsoc_nsv <- NULL
     curr_spec$aetoxgr <- list(required = TRUE)
   }
 
+  subjs <- data$Raw_SUBJ$subjid
+
+
   args <- list(
-    subjid = list(n, external_subjid = data$Raw_SUBJ$subjid),
+    subjid = list(n, external_subjid = sample(subjs, round(length(unique(subjs))/5))),
     aest_dt_aeen_dt = list(n, startDate, endDate),
+    mdrpt_nsv_mdrsoc_nsv = list(n),
     studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     default = list(n, startDate)
   )
@@ -69,11 +74,19 @@ aest_dt <- function(n, startDate, endDate, ...) {
 aeen_dt <- function(n, aestartDate, ... ) {
   as.Date(aestartDate) + sample(1:3, n, replace = TRUE)
 }
-mdrpt_nsv <- function(n, ...) {
-  sample(c("term1", "term2"), n, replace = TRUE)
+mdrpt_nsv <- function(x){
+  return(x$mdrpt_nsv)
 }
-mdrsoc_nsv <- function(n, ...) {
-  sample(c("soc1", "soc2"), n, replace = TRUE)
+mdrsoc_nsv <- function(x){
+  return(x$mdrsoc_nsv)
+}
+
+mdrpt_nsv_mdrsoc_nsv <- function(n, ...) {
+   joined_term <- clindata_ae %>% slice_sample(n = n, replace = TRUE)
+   return(list(
+     mdrpt_nsv = mdrpt_nsv(joined_term),
+     mdrsoc_nsv = mdrsoc_nsv(joined_term)
+   ))
 }
 aetoxgr <- function(n, ...) {
   sample(1:5, n, replace = TRUE)
