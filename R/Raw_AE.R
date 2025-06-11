@@ -39,7 +39,6 @@ Raw_AE <- function(data, previous_data, spec, startDate, endDate, ...) {
 
   subjs <- data$Raw_SUBJ$subjid
 
-
   args <- list(
     subjid = list(n, external_subjid = sample(subjs, round(length(unique(subjs))/5))),
     aest_dt_aeen_dt = list(n, startDate, endDate),
