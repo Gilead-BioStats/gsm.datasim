@@ -37,10 +37,15 @@ Raw_AE <- function(data, previous_data, spec, startDate, endDate, ...) {
     curr_spec$aetoxgr <- list(required = TRUE)
   }
 
-  subjs <- data$Raw_SUBJ$subjid
+  sites <- data$Raw_SUBJ$invid %>% unique
+  subjs <- c(
+    (data$Raw_SUBJ %>%
+    filter(invid %in% sites[1:ceiling(length(sites)/3)]) %>%
+    pull(subjid)),
+    sample(data$Raw_SUBJ$subjid, ceiling(length(data$Raw_SUBJ$subjid)/5)))
 
   args <- list(
-    subjid = list(n, external_subjid = sample(subjs, round(length(unique(subjs))/5))),
+    subjid = list(n, external_subjid = unique(subjs)),
     aest_dt_aeen_dt = list(n, startDate, endDate),
     mdrpt_nsv_mdrsoc_nsv = list(n),
     studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
