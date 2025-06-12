@@ -57,8 +57,14 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
   end_dates <- seq(as.Date("2012-02-01"), length.out = SnapshotCount, by = SnapshotWidth) - 1
 
   # Load workflow mappings and combine specifications
-  combined_specs <- load_specs(workflow_path, mappings, package) |>
-    purrr::list_modify("Mapped_SUBJ" = rlang::zap())
+  combined_specs <- load_specs(workflow_path, mappings, package)
+  combined_specs <- purrr::list_modify(
+    combined_specs,
+    !!!rlang::set_names(
+      rep(list(rlang::zap()), sum(startsWith(names(combined_specs), "Mapped_"))),
+      names(combined_specs)[startsWith(names(combined_specs), "Mapped_")]
+      )
+    )
 
   # Specify the desired first few elements in order
   desired_order <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL", "Raw_SV", "Raw_VISIT", "Raw_STUDCOMP")
