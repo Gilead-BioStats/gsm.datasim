@@ -2,7 +2,7 @@ library(gsm.core)
 library(gsm.mapping)
 library(gsm.kri)
 library(gsm.reporting)
-library(gsm.endpoints)
+library(gsm.endpoints) # fix-141-workflow-tweaks
 devtools::load_all()
 
 data <- generate_rawdata_for_single_study(
@@ -49,9 +49,8 @@ lReports <- RunWorkflows(module_wf, reporting)
 # ----
 
 #Step 1- Create mapped data layer for endpoints
-load_all('../gsm.endpoints')
-mappings_wf_ep <- MakeWorkflowList(strPath = "inst/workflow/1_mappings", strPackage = "gsm.endpoints")
 options("yaml.eval.expr" = TRUE)
+mappings_wf_ep <- MakeWorkflowList(strPath = "inst/workflow/1_mappings", strPackage = "gsm.endpoints")
 mapped_ep <- RunWorkflows(mappings_wf_ep, mapped)
 
 # Step 2 - Create Metrics - calculate metrics using mapped data
