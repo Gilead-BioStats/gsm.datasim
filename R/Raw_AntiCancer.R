@@ -32,6 +32,7 @@ Raw_AntiCancer <- function(data, previous_data, spec, startDate, ...) {
 
   args <- list(
     subjid = list(n, external_subjid = data$Raw_SUBJ$subjid, replace = FALSE),
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     cmst_dt = list(n, startDate),
     default = list(n)
   )
