@@ -50,11 +50,11 @@ lReports <- RunWorkflows(module_wf, reporting)
 
 #Step 1- Create mapped data layer for endpoints
 options("yaml.eval.expr" = TRUE)
-mappings_wf_ep <- MakeWorkflowList(strPath = "inst/workflow/1_mappings", strPackage = "gsm.endpoints")
+mappings_wf_ep <- MakeWorkflowList(strPath = "workflow/1_mappings", strPackage = "gsm.endpoints")
 mapped_ep <- RunWorkflows(mappings_wf_ep, mapped)
 
 # Step 2 - Create Metrics - calculate metrics using mapped data
-endpoints_wf <- MakeWorkflowList(strPath = "inst/workflow/2_metrics", strPackage = 'gsm.endpoints')
+endpoints_wf <- MakeWorkflowList(strPath = "workflow/2_metrics", strPackage = 'gsm.endpoints')
 analyzed_ep <- RunWorkflows(endpoints_wf, mapped_ep)
 
 # Step 3 - Create Reporting Layer - create reports using metrics data
@@ -62,6 +62,6 @@ analyzed_ep <- RunWorkflows(endpoints_wf, mapped_ep)
 #reporting <- RunWorkflows(reporting_wf, c(mapped, list(lAnalyzed = analyzed, lWorkflows = metrics_wf)))
 
 # Step 4 - Create KRI Reports - create KRI report using reporting data
-module_wf <- MakeWorkflowList(strPath = "inst/workflow/4_modules", strPackage = 'gsm.endpoints')
+module_wf <- MakeWorkflowList(strPath = "workflow/4_modules", strPackage = 'gsm.endpoints')
 lReports <- RunWorkflows(module_wf, c(mapped_ep, analyzed_ep))
 
