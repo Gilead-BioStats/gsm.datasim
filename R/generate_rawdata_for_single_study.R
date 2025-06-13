@@ -240,9 +240,9 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
         slice_sample(n = round(ParticipantCount/3)) %>%
         filter(!(subjid %in% unenrolled))
     }
-    if("Raw_STUDCOMP" %in% names(data)){
-      data$STUDCOMP <- left_join(data$STUDCOMP, select(data$RAW_SUBJ, subjid, invid), by = "subjid")
-    }
+    # if("Raw_STUDCOMP" %in% names(data)){
+    #   data$STUDCOMP <- left_join(data$STUDCOMP, select(data$RAW_SUBJ, subjid, invid), by = "subjid")
+    # }
     snapshots[[snapshot_idx]] <- data
     logger::log_info(glue::glue(" -- Snapshot {snapshot_idx} added successfully"))
 
