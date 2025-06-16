@@ -12,7 +12,7 @@ Imports:
     dplyr, 
     glue,
     gsm.core (>= 1.1.0),
-    gsm.mapping (>= 1.0.1),
+    gsm.mapping (>= 1.0.2),
     logger,
     magrittr,
     purrr,
