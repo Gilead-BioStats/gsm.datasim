@@ -26,7 +26,7 @@ Suggests:
     testthat
 Remotes:
     gsm.core=Gilead-BioStats/gsm.core@main,
-    gsm.mapping=Gilead-BioStats/gsm.mapping@main
+    gsm.mapping=Gilead-BioStats/gsm.mapping@fix-72
 License: Apache License (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
