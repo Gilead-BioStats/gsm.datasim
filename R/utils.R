@@ -87,7 +87,7 @@ load_specs <- function(workflow_path, mappings, package) {
   wf_req <- gsm.core::MakeWorkflowList(strPath = "workflow/1_mappings", strNames = c("SUBJ", "STUDY", "SITE", "ENROLL"), strPackage = "gsm.mapping")
   wf_all <- modifyList(wf_mapping, wf_req)
   if (any(c("OverallResponse") %in% mappings)) {
-    wf_visit <- gsm.core::MakeWorkflowList(strPath = "workflow/1_mappings", strNames = c("Visit"), strPackage = "gsm.mapping")
+    wf_visit <- gsm.core::MakeWorkflowList(strPath = "workflow/1_mappings", strNames = c("VISIT"), strPackage = "gsm.mapping")
     wf_all <- modifyList(wf_all, wf_visit)
   }
   if (any(c("Consents", "Death") %in% mappings)) {
