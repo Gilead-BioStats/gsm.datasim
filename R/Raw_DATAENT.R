@@ -9,7 +9,6 @@
 #' @noRd
 
 Raw_DATAENT <- function(data, previous_data, spec, startDate, ...) {
-
   inps <- list(...)
 
   curr_spec <- spec$Raw_DATAENT
@@ -23,7 +22,9 @@ Raw_DATAENT <- function(data, previous_data, spec, startDate, ...) {
   }
 
   n <- inps$n - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
   if (!("visnam" %in% names(curr_spec))) {
     curr_spec$visnam <- list(required = TRUE)
@@ -46,9 +47,10 @@ Raw_DATAENT <- function(data, previous_data, spec, startDate, ...) {
 
 
   subject_nsvs <- subject_nsv(n, data$Raw_SUBJ$subjid,
-                              subject_nsv = data$Raw_SUBJ$subject_nsv, replace = FALSE)
+    subject_nsv = data$Raw_SUBJ$subject_nsv, replace = FALSE
+  )
   subject_nsv_visits <- data$Raw_SV %>%
-    dplyr::left_join((data$Raw_SUBJ %>% dplyr::select(subjid, subject_nsv)), by =  dplyr::join_by(subjid)) %>%
+    dplyr::left_join((data$Raw_SUBJ %>% dplyr::select(subjid, subject_nsv)), by = dplyr::join_by(subjid)) %>%
     dplyr::filter(subject_nsv %in% subject_nsvs) %>%
     dplyr::select(subject_nsv, instancename)
 
@@ -70,8 +72,11 @@ Raw_DATAENT <- function(data, previous_data, spec, startDate, ...) {
 data_entry_lag <- function(n, ...) {
   # Function body for data_entry_lag
   sample(0:20,
-         prob = c(0.25, 0.18, 0.14, 0.10, 0.07, 0.05, 0.05, 0.04, 0.03, 0.02, 0.02,
-                  rep(0.005, 10)),
-         n,
-         replace = TRUE)
+    prob = c(
+      0.25, 0.18, 0.14, 0.10, 0.07, 0.05, 0.05, 0.04, 0.03, 0.02, 0.02,
+      rep(0.005, 10)
+    ),
+    n,
+    replace = TRUE
+  )
 }

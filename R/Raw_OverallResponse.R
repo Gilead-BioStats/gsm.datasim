@@ -24,7 +24,9 @@ Raw_OverallResponse <- function(data, previous_data, spec, ...) {
     previous_row_num <- 0
   }
   n <- inps$n - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
   if (all(c("response_folder") %in% names(curr_spec))) {
     curr_spec$response_folder <- list(required = TRUE)
@@ -42,8 +44,9 @@ Raw_OverallResponse <- function(data, previous_data, spec, ...) {
 
   args <- list(
     subjid_rs_dt = list(n,
-                        subjids = unique(data$Raw_VISIT$subjid)[sample(length(unique(data$Raw_VISIT$subjid)), ceiling(n/3), replace = TRUE)],
-                        Raw_VISIT_data = data$Raw_VISIT),
+      subjids = unique(data$Raw_VISIT$subjid)[sample(length(unique(data$Raw_VISIT$subjid)), ceiling(n / 3), replace = TRUE)],
+      Raw_VISIT_data = data$Raw_VISIT
+    ),
     studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     default = list(n)
   )
@@ -63,8 +66,10 @@ subjid_rs_dt <- function(n, subjids, Raw_VISIT_data, ...) {
   filtered_visit_data <- Raw_VISIT_data %>%
     select(subjid, visit_dt) %>%
     filter(subjid %in% subjids)
-  res <- filtered_visit_data[sample(nrow(filtered_visit_data), n, replace = TRUE),] %>%
+  res <- filtered_visit_data[sample(nrow(filtered_visit_data), n, replace = TRUE), ] %>%
     rename("rs_dt" = "visit_dt")
-  return(list(subjid = res$subjid,
-              rs_dt = res$rs_dt))
+  return(list(
+    subjid = res$subjid,
+    rs_dt = res$rs_dt
+  ))
 }

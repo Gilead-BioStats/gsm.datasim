@@ -24,7 +24,9 @@ Raw_AE <- function(data, previous_data, spec, startDate, endDate, ...) {
   }
 
   n <- inps$n - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
   if (all(c("aeser", "aest_dt", "aeen_dt", "mdrpt_nsv", "mdrsoc_nsv", "aetoxgr") %in% names(curr_spec))) {
     curr_spec$aeser <- list(required = TRUE)
@@ -66,7 +68,7 @@ aerel <- function(n, ...) {
 aest_dt <- function(n, startDate, endDate, ...) {
   sample(seq(as.Date(startDate), as.Date(endDate), by = "day"), n, replace = TRUE)
 }
-aeen_dt <- function(n, aestartDate, ... ) {
+aeen_dt <- function(n, aestartDate, ...) {
   as.Date(aestartDate) + sample(1:3, n, replace = TRUE)
 }
 mdrpt_nsv <- function(n, ...) {

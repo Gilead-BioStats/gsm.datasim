@@ -24,7 +24,9 @@ Raw_DATACHG <- function(data, previous_data, spec, startDate, ...) {
   }
 
   n <- inps$n - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
   if (!("visnam" %in% names(curr_spec))) {
     curr_spec$visnam <- list(required = TRUE)
@@ -48,9 +50,10 @@ Raw_DATACHG <- function(data, previous_data, spec, startDate, ...) {
 
 
   subject_nsvs <- subject_nsv(n, data$Raw_SUBJ$subjid,
-                              subject_nsv = data$Raw_SUBJ$subject_nsv, replace = FALSE)
+    subject_nsv = data$Raw_SUBJ$subject_nsv, replace = FALSE
+  )
   subject_nsv_visits <- data$Raw_SV %>%
-    dplyr::left_join((data$Raw_SUBJ %>% dplyr::select(subjid, subject_nsv)), by =  dplyr::join_by(subjid)) %>%
+    dplyr::left_join((data$Raw_SUBJ %>% dplyr::select(subjid, subject_nsv)), by = dplyr::join_by(subjid)) %>%
     dplyr::filter(subject_nsv %in% subject_nsvs) %>%
     dplyr::select(subject_nsv, instancename)
 
@@ -79,19 +82,17 @@ subject_nsv_visit_repeated <- function(n, data, ...) {
 
 form <- function(n, subject_nsv_visits, forms, ...) {
   rep(forms$form, nrow(subject_nsv_visits))
-
 }
 
 field <- function(n, subject_nsv_visits, forms, ...) {
   rep(forms$field, nrow(subject_nsv_visits))
-
 }
 
 n_changes <- function(n, ...) {
-
   # Function body for n_changes
   sample(0:6,
-         prob = c(0.74, 0.22, 0.03, 0.005, 0.003, 0.0019, 0.0001),
-         n,
-         replace = TRUE)
+    prob = c(0.74, 0.22, 0.03, 0.005, 0.003, 0.0019, 0.0001),
+    n,
+    replace = TRUE
+  )
 }

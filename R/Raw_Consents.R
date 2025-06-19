@@ -22,7 +22,9 @@ Raw_Consents <- function(data, previous_data, spec, startDate, ...) {
   }
 
   n <- inps$n - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
   if (all(c("cons_dt", "constype", "conscat") %in% names(curr_spec))) {
     curr_spec$cons_dt <- list(required = TRUE)

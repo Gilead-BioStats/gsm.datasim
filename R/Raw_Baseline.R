@@ -23,7 +23,9 @@ Raw_Baseline <- function(data, previous_data, spec, startDate, ...) {
   }
 
   n <- inps$n - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
   if (all(c("scan_dt") %in% names(curr_spec))) {
     curr_spec$scan_dt <- list(required = TRUE)

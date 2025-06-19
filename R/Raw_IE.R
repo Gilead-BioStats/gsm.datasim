@@ -21,7 +21,9 @@ Raw_IE <- function(data, previous_data, spec, ...) {
   }
 
   n <- inps$n_IE - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
   if (all(c("subjid") %in% names(curr_spec))) {
     curr_spec$subject_to_ie <- list(required = TRUE)
@@ -56,7 +58,7 @@ subject_to_ie <- function(n, data, previous_data, ...) {
   }
 
   res <- data_pool %>%
-    #filter(enrollyn == "N") %>%
+    # filter(enrollyn == "N") %>%
     select(subjid)
   return(res)
 }
@@ -66,7 +68,7 @@ tiver_ietestcd_ietest_ieorres_iecat <- function(n, iecode, ...) {
   ietestcd_dat <- ietestcd(n, ...)
   ietest_dat <- ietest(n, iecode = ietestcd_dat, ...)
   ieorres_dat <- ieorres(n, iecode = ietestcd_dat, ...)
-  iecat_dat <-  iecat(n, iecode = ietestcd_dat, ...)
+  iecat_dat <- iecat(n, iecode = ietestcd_dat, ...)
 
   return(list(
     tiver = tiver_dat,
@@ -83,12 +85,12 @@ tiver <- function(n, ...) {
 ietestcd <- function(n, ...) {
   return(sample(c(paste0("incl", 1:10), paste0("excl", 1:10)), n, replace = TRUE))
 }
-ietest <- function(n, iecode,...) {
+ietest <- function(n, iecode, ...) {
   stringr::str_replace_all(iecode, c("^INC" = "Inclusion ", "^EXC" = "Exclusion "))
 }
-ieorres <- function(n, iecode,...) {
+ieorres <- function(n, iecode, ...) {
   sample(c("Yes", "No"), n, replace = TRUE)
 }
-iecat <- function(n, iecode,...) {
+iecat <- function(n, iecode, ...) {
   ifelse(stringr::str_detect(iecode, "INC"), "Inclusion", "Exclusion")
 }

@@ -23,7 +23,9 @@ Raw_STUDCOMP <- function(data, previous_data, spec, startDate, ...) {
   }
 
   n <- inps$n - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
   args <- list(
     subjid = list(n, data$Raw_SUBJ$subjid, replace = FALSE),
@@ -51,7 +53,9 @@ Raw_StudyCompletion <- function(data, previous_data, spec, ...) {
   }
 
   n <- inps$n - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
   args <- list(
     subjid = list(n, data$Raw_SUBJ$subjid, replace = FALSE),
@@ -66,15 +70,17 @@ Raw_StudyCompletion <- function(data, previous_data, spec, ...) {
 compyn <- function(n, ...) {
   # Function body for compyn
   sample(c("", "N"),
-         prob = c(0.1, 0.9),
-         n,
-         replace = TRUE)
+    prob = c(0.1, 0.9),
+    n,
+    replace = TRUE
+  )
 }
 
 compreas <- function(n, ...) {
   sample(c("Lost to Follow-Up", "Death", "Withdrew Consent"),
-         size = n,
-         replace = TRUE)
+    size = n,
+    replace = TRUE
+  )
 }
 
 completion_date <- function(n, ...) {

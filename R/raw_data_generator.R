@@ -47,17 +47,17 @@
 #'
 #' @export
 raw_data_generator <- function(
-    ParticipantCount = NULL,
-    SiteCount = NULL,
-    StudyID = NULL,
-    SnapshotCount = NULL,
-    SnapshotWidth = NULL,
-    template_path = system.file("template.csv", package = "gsm.datasim"),
-    workflow_path = "workflow/1_mappings",
-    generate_reports = FALSE,
-    mappings = NULL,
-    package = "gsm.mapping",
-    save = FALSE
+  ParticipantCount = NULL,
+  SiteCount = NULL,
+  StudyID = NULL,
+  SnapshotCount = NULL,
+  SnapshotWidth = NULL,
+  template_path = system.file("template.csv", package = "gsm.datasim"),
+  workflow_path = "workflow/1_mappings",
+  generate_reports = FALSE,
+  mappings = NULL,
+  package = "gsm.mapping",
+  save = FALSE
 ) {
   # Initialize the list to store raw data
   raw_data_list <- list()
@@ -69,7 +69,6 @@ raw_data_generator <- function(
 
     # Generate raw data for each study configuration in the template
     raw_data_list <- lapply(seq_len(nrow(template)), function(i) {
-
       curr_vars <- template[i, ]
       logger::log_info(glue::glue("Adding {curr_vars$StudyID}..."))
       tictoc::tic()
@@ -92,7 +91,6 @@ raw_data_generator <- function(
 
     # Assign study IDs as names to the list elements
     names(raw_data_list) <- template$StudyID
-
   } else {
     # Generate raw data for the single study configuration provided
     raw_data_list[[StudyID]] <- generate_rawdata_for_single_study(
@@ -114,7 +112,7 @@ raw_data_generator <- function(
   }
 
   # Save the raw data list to an RDS file
-  if(save) {
+  if (save) {
     save_data_on_disk(raw_data_list)
 
     logger::log_info(glue::glue("Dataset saved successfully!"))

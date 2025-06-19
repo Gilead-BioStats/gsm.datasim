@@ -7,7 +7,7 @@
 #' @family internal
 #' @keywords internal
 #' @noRd
-Raw_PK <- function(data, previous_data, spec,...) {
+Raw_PK <- function(data, previous_data, spec, ...) {
   inps <- list(...)
   if ("Raw_PK" %in% names(previous_data)) {
     dataset <- previous_data$Raw_PK
@@ -18,7 +18,9 @@ Raw_PK <- function(data, previous_data, spec,...) {
   }
 
   n <- inps$n - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
   possible_visits <- data.frame(
     pktpt = c(
@@ -73,10 +75,10 @@ pkperf <- function(n, subjs, possible_visits, ...) {
 }
 
 subjid_visit_pkdat <- function(n, subjs, visit_data, ...) {
-  df <- visit_data[which(visit_data$subjid %in% subjs),] %>%
+  df <- visit_data[which(visit_data$subjid %in% subjs), ] %>%
     dplyr::select(subjid, foldername, visit_dt)
   total_n <- n * length(subjs)
-  df <- df[sample(nrow(df), total_n, replace = TRUE),]
+  df <- df[sample(nrow(df), total_n, replace = TRUE), ]
   return(list(
     subjid = df$subjid,
     visit = df$foldername,

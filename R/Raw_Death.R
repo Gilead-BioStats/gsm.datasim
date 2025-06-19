@@ -12,7 +12,9 @@ Raw_Death <- function(data, previous_data, spec, startDate, ...) {
   }
 
   n <- inps$n - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
   if (all(c("death_dt") %in% names(curr_spec))) {
     curr_spec$death_dt <- list(required = TRUE)

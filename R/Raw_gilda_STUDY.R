@@ -31,7 +31,7 @@ raw_gilda_study_data <- function(data, previous_data, spec, ...) {
     num_plan_site = list(inps$SiteCount),
     act_lplv = list(inps$MinDate, inps$MaxDate, dataset$act_lplv),
     act_fpfv = list(inps$MinDate, inps$MaxDate, dataset$act_fpfv),
-    est_fpfv = list(inps$GlobalMaxDate -30, inps$GlobalMaxDate, dataset$est_fpfv),
+    est_fpfv = list(inps$GlobalMaxDate - 30, inps$GlobalMaxDate, dataset$est_fpfv),
     est_lplv = list(inps$GlobalMaxDate + 30, inps$GlobalMaxDate + 120, dataset$est_lplv),
     phase = list(1, external_phase = c("P1", "P2", "P3", "P4")),
     default = list(1)
@@ -52,6 +52,7 @@ act_lplv <- function(date_min, date_lim, prev_data, ...) {
 status <- function(n, stat = c("Active"), ...) {
   # Function body for status
   sample(stat,
-         n,
-         replace = TRUE)
+    n,
+    replace = TRUE
+  )
 }

@@ -22,7 +22,9 @@ Raw_PD <- function(data, previous_data, spec, startDate, ...) {
   }
 
   n <- inps$n - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
   args <- list(
     studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
@@ -50,6 +52,6 @@ dvterm <- function(n, ...) {
   sample(c("Inclusion/Exclusion description"), n, replace = TRUE)
 }
 
-category <- function(n, ...){
+category <- function(n, ...) {
   sample(c("cat 1", "cat 2"), n, replace = TRUE)
 }
