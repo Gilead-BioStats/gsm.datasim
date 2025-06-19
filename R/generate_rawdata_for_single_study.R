@@ -86,7 +86,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
         required = TRUE,
         source_col = "visit_dt"
       ),
-      studyid = list(require = TRUE),
+      studyid = list(required = TRUE),
       invid = list(required = TRUE)
     )
   }
