@@ -66,9 +66,9 @@ Raw_VISIT <- function(data, previous_data, spec, startDate, SnapshotCount, Snaps
   return(res)
 }
 
-subjid_invid <- function(n, Raw_SUBJ_data, ...) {
+subjid_invid <- function(n, Raw_SUBJ_data, replace = TRUE, ...) {
   res <- Raw_SUBJ_data[
-    sample(nrow(Raw_SUBJ_data), n, replace = TRUE),
+    sample(nrow(Raw_SUBJ_data), n, replace = replace),
     c("subjid", "invid")
   ]
   return(list(
