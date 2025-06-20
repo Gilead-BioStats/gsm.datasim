@@ -27,8 +27,14 @@ Raw_STUDCOMP <- function(data, previous_data, spec, startDate, ...) {
     return(dataset)
   }
 
+  if (all(c("subjid", "invid") %in% names(curr_spec))) {
+    curr_spec$subjid_invid <- list(required = TRUE)
+    curr_spec$subjid <- NULL
+    curr_spec$invid <- NULL
+  }
+
   args <- list(
-    subjid = list(n, data$Raw_SUBJ$subjid, replace = FALSE),
+    subjid_invid = list(n, data$Raw_SUBJ$subjid, replace = FALSE),
     studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     default = list(n, startDate)
   )
