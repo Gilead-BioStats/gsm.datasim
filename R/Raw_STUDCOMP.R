@@ -28,13 +28,13 @@ Raw_STUDCOMP <- function(data, previous_data, spec, startDate, ...) {
   }
 
   if (all(c("subjid", "invid") %in% names(curr_spec))) {
-    curr_spec$subjid_invid <- list(required = TRUE)
+    curr_spec$subjid_invid_unique <- list(required = TRUE)
     curr_spec$subjid <- NULL
     curr_spec$invid <- NULL
   }
 
   args <- list(
-    subjid_invid = list(n, data$Raw_SUBJ, replace = FALSE),
+    subjid_invid_unique = list(n, data$Raw_SUBJ, previous_data$Raw_STUDCOMP, replace = FALSE),
     studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     default = list(n, startDate)
   )
@@ -71,6 +71,21 @@ Raw_StudyCompletion <- function(data, previous_data, spec, ...) {
   res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_StudyCompletion, ...)
 
   return(res)
+}
+
+subjid_invid_unique <- function(n, Raw_SUBJ_data, previous_STUDCOMP_data, replace = TRUE, ...) {
+  eligible_subj_data <- Raw_SUBJ_data[
+    !(Raw_SUBJ_data$subjid %in% previous_STUDCOMP_data$subjid),
+    c("subjid", "invid")
+  ]
+  res <- eligible_subj_data[
+    sample(nrow(eligible_subj_data), n, replace = replace),
+    c("subjid", "invid")
+  ]
+  return(list(
+    subjid = res$subjid,
+    invid = res$invid
+  ))
 }
 
 compyn <- function(n, ...) {
