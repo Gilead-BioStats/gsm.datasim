@@ -34,7 +34,7 @@ Raw_STUDCOMP <- function(data, previous_data, spec, startDate, ...) {
   }
 
   args <- list(
-    subjid_invid = list(n, data$Raw_SUBJ$subjid, replace = FALSE),
+    subjid_invid = list(n, data$Raw_SUBJ),
     studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     default = list(n, startDate)
   )
