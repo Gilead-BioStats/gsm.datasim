@@ -22,7 +22,9 @@ Raw_Consents <- function(data, previous_data, spec, startDate, ...) {
   }
 
   n <- inps$n - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
   if (all(c("cons_dt", "constype", "conscat") %in% names(curr_spec))) {
     curr_spec$cons_dt <- list(required = TRUE)
@@ -32,6 +34,7 @@ Raw_Consents <- function(data, previous_data, spec, startDate, ...) {
 
   args <- list(
     subjid = list(n, external_subjid = data$Raw_SUBJ$subjid, replace = FALSE),
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     cons_dt = list(n, startDate),
     default = list(n)
   )

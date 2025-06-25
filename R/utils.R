@@ -68,13 +68,12 @@ count_gen <- function(max_n, SnapshotCount) {
 
     if (i < SnapshotCount) {
       if ((start < end) & ((floor(end) - start) > 1)) {
-        new_element <- sample(floor((start + end)/2):floor(end), size = 1)
+        new_element <- sample(floor((start + end) / 2):floor(end), size = 1)
       } else {
         new_element <- start
       }
     } else {
       new_element <- max_n
-
     }
 
     counts <- c(counts, new_element)
@@ -85,14 +84,14 @@ count_gen <- function(max_n, SnapshotCount) {
 
 load_specs <- function(workflow_path, mappings, package) {
   wf_mapping <- gsm.core::MakeWorkflowList(strPath = workflow_path, strNames = mappings, strPackage = package)
-  wf_req <-  gsm.core::MakeWorkflowList(strPath =  "workflow/1_mappings", strNames = c("SUBJ", "STUDY", "SITE", "ENROLL"), strPackage = "gsm.mapping")
+  wf_req <- gsm.core::MakeWorkflowList(strPath = "workflow/1_mappings", strNames = c("SUBJ", "STUDY", "SITE", "ENROLL"), strPackage = "gsm.mapping")
   wf_all <- modifyList(wf_mapping, wf_req)
-  if(any(c("OverallResponse") %in% mappings)) {
-    wf_visit <- gsm.core::MakeWorkflowList(strPath =  "workflow/1_mappings", strNames = c("Visit"), strPackage = "gsm.mapping")
+  if (any(c("OverallResponse") %in% mappings)) {
+    wf_visit <- gsm.core::MakeWorkflowList(strPath = "workflow/1_mappings", strNames = c("VISIT"), strPackage = "gsm.mapping")
     wf_all <- modifyList(wf_all, wf_visit)
   }
-  if(any(c("Consents", "Death") %in% mappings)) {
-    wf_studcomp <- gsm.core::MakeWorkflowList(strPath =  "workflow/1_mappings", strNames = c("STUDCOMP"), strPackage = "gsm.mapping")
+  if (any(c("Consents", "Death") %in% mappings)) {
+    wf_studcomp <- gsm.core::MakeWorkflowList(strPath = "workflow/1_mappings", strNames = c("STUDCOMP"), strPackage = "gsm.mapping")
     wf_all <- modifyList(wf_all, wf_studcomp)
   }
   combined_specs <- CombineSpecs(wf_all)
@@ -115,7 +114,7 @@ rename_raw_data_vars_per_spec <- function(variable_data, spec) {
   return(variable_data)
 }
 
-generate_unique_combinations_code <- function(data, vars, run_code=FALSE) {
+generate_unique_combinations_code <- function(data, vars, run_code = FALSE) {
   # Extract unique combinations
   unique_combinations <- unique(data[, vars, drop = FALSE])
 
@@ -225,20 +224,24 @@ save_data_on_disk <- function(data, base_path = NULL) {
 
   # Calculate the total number of dataframes to process
   total_dfs <- sum(
-    sapply(data,
-           function(study_data) {
-             sum(
-               sapply(study_data,
-                      function(snapshot_data) {
-                        length(snapshot_data)
-                        })
-             )
-           })
+    sapply(
+      data,
+      function(study_data) {
+        sum(
+          sapply(
+            study_data,
+            function(snapshot_data) {
+              length(snapshot_data)
+            }
+          )
+        )
+      }
+    )
   )
 
   # Initialize the progress bar
   pb <- txtProgressBar(min = 0, max = total_dfs, style = 3)
-  counter <- 0  # Initialize a counter
+  counter <- 0 # Initialize a counter
 
   tictoc::tic()
   for (study_name in names(data)) {
@@ -266,7 +269,6 @@ save_data_on_disk <- function(data, base_path = NULL) {
 
         counter <- counter + 1
         setTxtProgressBar(pb, counter)
-
       }
     }
   }
@@ -275,7 +277,6 @@ save_data_on_disk <- function(data, base_path = NULL) {
 
   logger::log_info(glue::glue("Saved all data successfully"))
   tictoc::toc()
-
 }
 
 generate_random_fpfv <- function(min_date, max_date, canBeEmpty = FALSE, previous_date = NULL) {
@@ -285,12 +286,12 @@ generate_random_fpfv <- function(min_date, max_date, canBeEmpty = FALSE, previou
 
   # If canBeEmpty is TRUE, there is a chance that the result can be NA
   if (canBeEmpty && stats::runif(1) < 0.2 && (is.null(previous_date) || is.na(previous_date))) {
-    return(NA)  # Randomly decide to return NA with 20% chance
+    return(NA) # Randomly decide to return NA with 20% chance
   }
 
 
   if (is.null(previous_date) || is.na(previous_date)) {
-    random_date <-sample(seq(from = min_date, to = max_date, by = "day"), 1)
+    random_date <- sample(seq(from = min_date, to = max_date, by = "day"), 1)
   } else {
     random_date <- previous_date
   }
@@ -307,21 +308,21 @@ period_to_days <- function(period) {
   #    For example: "4 weeks" -> c("4", "weeks")
   if (grepl("^\\d+\\s+\\w+$", p)) {
     parts <- strsplit(p, "\\s+")[[1]]
-    num   <- as.numeric(parts[1])
-    unit  <- parts[2]
+    num <- as.numeric(parts[1])
+    unit <- parts[2]
 
     # Map the unit to a multiplier (rough or exact, as needed)
     # Adjust as you see fit; for instance, "months" can be ~30, but is an approximation.
     day_equiv <- switch(unit,
-                        "day"    = 1,
-                        "days"   = 1,
-                        "week"   = 7,
-                        "weeks"  = 7,
-                        "month"  = 30,
-                        "months" = 30,
-                        "year"   = 365,
-                        "years"  = 365,
-                        stop("Unrecognized unit in '", period, "'")
+      "day"    = 1,
+      "days"   = 1,
+      "week"   = 7,
+      "weeks"  = 7,
+      "month"  = 30,
+      "months" = 30,
+      "year"   = 365,
+      "years"  = 365,
+      stop("Unrecognized unit in '", period, "'")
     )
     return(num * day_equiv)
 
@@ -330,15 +331,13 @@ period_to_days <- function(period) {
     # For single-word strings, create a small dictionary of known terms.
     # You can expand this as much as you want.
     return(switch(p,
-                  "days"      = 1,
-                  "weeks"     = 7,
-                  "months"    = 30,
-                  "years"     = 365,
-                  # fallback if nothing matches
-                  stop("Unrecognized period: ", period)
+      "days"      = 1,
+      "weeks"     = 7,
+      "months"    = 30,
+      "years"     = 365,
+      # fallback if nothing matches
+      stop("Unrecognized period: ", period)
     ))
   }
 }
 period_to_days("months")
-
-

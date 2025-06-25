@@ -23,7 +23,9 @@ Raw_AntiCancer <- function(data, previous_data, spec, startDate, ...) {
   }
 
   n <- inps$n - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
   if (all(c("cmtrt", "cmst_dt") %in% names(curr_spec))) {
     curr_spec$cmtrt <- list(required = TRUE)
@@ -32,6 +34,7 @@ Raw_AntiCancer <- function(data, previous_data, spec, startDate, ...) {
 
   args <- list(
     subjid = list(n, external_subjid = data$Raw_SUBJ$subjid, replace = FALSE),
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     cmst_dt = list(n, startDate),
     default = list(n)
   )

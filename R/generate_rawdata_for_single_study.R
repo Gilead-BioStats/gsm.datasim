@@ -43,22 +43,27 @@
 #' )
 #'
 generate_rawdata_for_single_study <- function(SnapshotCount,
-                                              SnapshotWidth,
-                                              ParticipantCount,
-                                              SiteCount,
-                                              StudyID,
-                                              workflow_path,
-                                              mappings,
-                                              package,
-                                              desired_specs = NULL) {
-
+  SnapshotWidth,
+  ParticipantCount,
+  SiteCount,
+  StudyID,
+  workflow_path,
+  mappings,
+  package,
+  desired_specs = NULL) {
   # Generate start and end dates for snapshots
   start_dates <- seq(as.Date("2012-01-01"), length.out = SnapshotCount, by = SnapshotWidth)
   end_dates <- seq(as.Date("2012-02-01"), length.out = SnapshotCount, by = SnapshotWidth) - 1
 
   # Load workflow mappings and combine specifications
-  combined_specs <- load_specs(workflow_path, mappings, package) |>
-    purrr::list_modify("Mapped_SUBJ" = rlang::zap())
+  combined_specs <- load_specs(workflow_path, mappings, package)
+  combined_specs <- purrr::list_modify(
+    combined_specs,
+    !!!rlang::set_names(
+      rep(list(rlang::zap()), sum(startsWith(names(combined_specs), "Mapped_"))),
+      names(combined_specs)[startsWith(names(combined_specs), "Mapped_")]
+    )
+  )
 
   # Specify the desired first few elements in order
   desired_order <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL", "Raw_SV", "Raw_VISIT", "Raw_STUDCOMP")
@@ -73,10 +78,15 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
   if (!("Visit" %in% names(combined_specs))) {
     combined_specs$Raw_VISIT <- list(
       subjid = list(required = TRUE),
-      visit = list(required = TRUE,
-                   source_col = "foldername"),
-      visit_date = list(required = TRUE,
-                        source_col = "visit_dt"),
+      visit = list(
+        required = TRUE,
+        source_col = "foldername"
+      ),
+      visit_date = list(
+        required = TRUE,
+        source_col = "visit_dt"
+      ),
+      studyid = list(required = TRUE),
       invid = list(required = TRUE)
     )
   }
@@ -91,7 +101,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
 
   subject_count <- count_gen(ParticipantCount, SnapshotCount)
   site_count <- count_gen(SiteCount, SnapshotCount)
-  if(SnapshotCount > 1){
+  if (SnapshotCount > 1) {
     enrollment_count <- enrollment_count_gen(subject_count)
   }
   enrollment_count <- subject_count
@@ -121,27 +131,30 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
     if (snapshot_idx == 1) {
       previous_data <- list()
       data$Raw_STUDY <- as.data.frame(Raw_STUDY(data, previous_data, combined_specs,
-                                                StudyID = StudyID,
-                                                SiteCount = SiteCount,
-                                                ParticipantCount = ParticipantCount,
-                                                MinDate = start_dates[snapshot_idx],
-                                                MaxDate = end_dates[snapshot_idx],
-                                                GlobalMaxDate = max(end_dates)))
+        StudyID = StudyID,
+        SiteCount = SiteCount,
+        ParticipantCount = ParticipantCount,
+        MinDate = start_dates[snapshot_idx],
+        MaxDate = end_dates[snapshot_idx],
+        GlobalMaxDate = max(end_dates)
+      ))
       data$raw_gilda_study_data <- as.data.frame(raw_gilda_study_data(data, previous_data, combined_specs,
-                                                StudyID = StudyID,
-                                                SiteCount = SiteCount,
-                                                ParticipantCount = ParticipantCount,
-                                                MinDate = start_dates[snapshot_idx],
-                                                MaxDate = end_dates[snapshot_idx],
-                                                GlobalMaxDate = max(end_dates)))
+        StudyID = StudyID,
+        SiteCount = SiteCount,
+        ParticipantCount = ParticipantCount,
+        MinDate = start_dates[snapshot_idx],
+        MaxDate = end_dates[snapshot_idx],
+        GlobalMaxDate = max(end_dates)
+      ))
     } else {
       data$Raw_STUDY <- snapshots[[1]]$Raw_STUDY
-      data$Raw_STUDY$act_fpfv <- act_fpfv(start_dates[snapshot_idx],
-                                          end_dates[snapshot_idx],
-                                          data$Raw_STUDY$act_fpfv)
-      data$raw_gilda_study_data <-snapshots[[1]]$raw_gilda_study_data
+      data$Raw_STUDY$act_fpfv <- act_fpfv(
+        start_dates[snapshot_idx],
+        end_dates[snapshot_idx],
+        data$Raw_STUDY$act_fpfv
+      )
+      data$raw_gilda_study_data <- snapshots[[1]]$raw_gilda_study_data
       previous_data <- snapshots[[snapshot_idx - 1]]
-
     }
 
     # Loop over each raw data type specified in combined_specs
@@ -168,38 +181,53 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
       generator_func <- data_type
       # Determine arguments based on variable name
       args <- switch(data_type,
-                     Raw_SITE = list(data, previous_data, combined_specs, n_sites = n, startDate = start_dates[snapshot_idx], split_vars = list("Country_State_City")),
-                     Raw_SUBJ = list(data, previous_data, combined_specs, n_subj = n, startDate = start_dates[snapshot_idx],
-                                     endDate = end_dates[snapshot_idx], split_vars = list("subject_site_synq",
-                                                                          "subjid_subject_nsv",
-                                                                          "enrollyn_enrolldt_timeonstudy_firstparticipantdate_firstdosedate_timeontreatment")),
-                     Raw_ENROLL = list(data, previous_data, combined_specs, n_enroll = n, startDate = start_dates[snapshot_idx], split_vars = list("subject_to_enrollment")),
-                     Raw_IE =  list(data, previous_data, combined_specs, n_IE = n, split_vars = list("subject_to_ie", "tiver_ietestcd_ietest_ieorres_iecat")),
-                     Raw_SV = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated"),
-                                   SnapshotWidth = SnapshotWidth),
-                     Raw_LB = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subj_visit_repeated")),
-                     Raw_DATACHG = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subject_nsv_visit_repeated")),
-                     Raw_DATAENT = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subject_nsv_visit_repeated")),
-                     Raw_QUERY = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subject_nsv_visit_repeated")),
-                     Raw_AE = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx],
-                                   endDate = end_dates[snapshot_idx], split_vars = list("aest_dt_aeen_dt")),
-                     Raw_AntiCancer = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
-                     Raw_Baseline = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
-                     Raw_Consents = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
-                     Raw_Death = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
-                     Raw_VISIT = list(data, previous_data, combined_specs, n = n,
-                                      startDate = start_dates[snapshot_idx],
-                                      SnapshotCount = SnapshotCount,
-                                      SnapshotWidth = SnapshotWidth,
-                                      split_vars = list("subjid_invid")),
-                     Raw_Randomization = list(data, previous_data, combined_specs, n = n,
-                                              startDate = start_dates[snapshot_idx],
-                                              split_vars = list("subjid_invid_country")),
-                     Raw_OverallResponse = list(data, previous_data, combined_specs, n = n,
-                                                split_vars = list("subjid_rs_dt")),
-                     Raw_PK = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_visit_pkdat")),
-                     Raw_IE = list(data, previous_data, combined_specs, n = n, split_vars = list("tiver_ietestcd_ietest_ieorres_iecat")),
-                     list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx])  # Default case
+        Raw_SITE = list(data, previous_data, combined_specs, n_sites = n, startDate = start_dates[snapshot_idx], split_vars = list("Country_State_City")),
+        Raw_SUBJ = list(data, previous_data, combined_specs,
+          n_subj = n, startDate = start_dates[snapshot_idx],
+          endDate = end_dates[snapshot_idx], split_vars = list(
+            "subject_site_synq",
+            "subjid_subject_nsv",
+            "enrollyn_enrolldt_timeonstudy_firstparticipantdate_firstdosedate_timeontreatment"
+          )
+        ),
+        Raw_ENROLL = list(data, previous_data, combined_specs, n_enroll = n, startDate = start_dates[snapshot_idx], split_vars = list("subject_to_enrollment")),
+        Raw_IE = list(data, previous_data, combined_specs, n_IE = n, split_vars = list("subject_to_ie", "tiver_ietestcd_ietest_ieorres_iecat")),
+        Raw_SV = list(data, previous_data, combined_specs,
+          n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_repeated"),
+          SnapshotWidth = SnapshotWidth
+        ),
+        Raw_STUDCOMP = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_invid_unique")),
+        Raw_LB = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subj_visit_repeated")),
+        Raw_DATACHG = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subject_nsv_visit_repeated")),
+        Raw_DATAENT = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subject_nsv_visit_repeated")),
+        Raw_QUERY = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subject_nsv_visit_repeated")),
+        Raw_AE = list(data, previous_data, combined_specs,
+          n = n, startDate = start_dates[snapshot_idx],
+          endDate = end_dates[snapshot_idx], split_vars = list("aest_dt_aeen_dt")
+        ),
+        Raw_AntiCancer = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
+        Raw_Baseline = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
+        Raw_Consents = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
+        Raw_Death = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
+        Raw_VISIT = list(data, previous_data, combined_specs,
+          n = n,
+          startDate = start_dates[snapshot_idx],
+          SnapshotCount = SnapshotCount,
+          SnapshotWidth = SnapshotWidth,
+          split_vars = list("subjid_invid")
+        ),
+        Raw_Randomization = list(data, previous_data, combined_specs,
+          n = n,
+          startDate = start_dates[snapshot_idx],
+          split_vars = list("subjid_invid_country")
+        ),
+        Raw_OverallResponse = list(data, previous_data, combined_specs,
+          n = n,
+          split_vars = list("subjid_rs_dt")
+        ),
+        Raw_PK = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx], split_vars = list("subjid_visit_pkdat")),
+        Raw_IE = list(data, previous_data, combined_specs, n = n, split_vars = list("tiver_ietestcd_ietest_ieorres_iecat")),
+        list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]) # Default case
       )
 
 
@@ -207,11 +235,9 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
       # Combine variables into a data frame
       data[[data_type]] <- as.data.frame(variable_data)
       logger::log_info(glue::glue(" ---- Dataset {data_type} added successfully"))
-
     }
 
     if (nrow(data$Raw_ENROLL) > 0) {
-
       to_subj <- data$Raw_ENROLL %>%
         dplyr::select(subjid, enrollyn)
 
@@ -222,24 +248,22 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
           timeonstudy = dplyr::if_else(enrollyn == "N", NA, timeonstudy)
         )
     }
-    if(!"gilda_STUDY" %in% mappings){
+    if (!"gilda_STUDY" %in% mappings) {
       data$raw_gilda_study_data <- NULL
     }
-    if("Raw_IE" %in% names(data)){
+    if ("Raw_IE" %in% names(data)) {
       unenrolled <- data$Raw_SUBJ %>%
         filter(enrollyn == "N") %>%
         pull(subjid)
       data$Raw_IE <- data$Raw_IE %>%
-        slice_sample(n = round(ParticipantCount/3)) %>%
+        slice_sample(n = round(ParticipantCount / 3)) %>%
         filter(!(subjid %in% unenrolled))
     }
     snapshots[[snapshot_idx]] <- data
     logger::log_info(glue::glue(" -- Snapshot {snapshot_idx} added successfully"))
-
   }
 
   # Assign snapshot end dates as names
   names(snapshots) <- as.character(end_dates)
   return(snapshots)
 }
-

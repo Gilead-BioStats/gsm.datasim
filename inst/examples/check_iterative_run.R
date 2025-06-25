@@ -32,7 +32,7 @@ result2 <- raw_data_generator(template_path = "~/gsm.datasim/inst/small_template
 
 # generate data for endpoint reports:
 endpoint_mappings <- c("AntiCancer", "Baseline", "Death", "OverallResponse", "Randomization", "STUDCOMP",
-                       "Visit", "Consents", "STUDY", "SUBJ")
+                       "VISIT", "Consents", "STUDY", "SUBJ")
 
 basic_sim <- generate_rawdata_for_single_study(
   SnapshotCount = 1,

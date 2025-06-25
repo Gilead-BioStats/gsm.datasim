@@ -23,7 +23,9 @@ Raw_Randomization <- function(data, previous_data, spec, startDate, ...) {
   }
 
   n <- inps$n - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
   if (all(c("rgmn_dt") %in% names(curr_spec))) {
     curr_spec$rgmn_dt <- list(required = TRUE)
@@ -49,11 +51,15 @@ Raw_Randomization <- function(data, previous_data, spec, startDate, ...) {
 }
 
 subjid_invid_country <- function(n, Raw_SUBJ_data, ...) {
-  res <- Raw_SUBJ_data[sample(nrow(Raw_SUBJ_data), n, replace = TRUE),
-                       c("subjid", "invid", "country")]
-  return(list(subjid = res$subjid,
-              invid = res$invid,
-              country = res$country))
+  res <- Raw_SUBJ_data[
+    sample(nrow(Raw_SUBJ_data), n, replace = TRUE),
+    c("subjid", "invid", "country")
+  ]
+  return(list(
+    subjid = res$subjid,
+    invid = res$invid,
+    country = res$country
+  ))
 }
 
 rgmn_dt <- function(n, startDate, ...) {

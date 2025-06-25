@@ -1,6 +1,6 @@
 Package: gsm.datasim
 Title: Synthetic Test Data Generator
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: c(
     person("Roman", "Rogoza", email = "roman.rogoza@atorusresearch.com", role = c("aut", "cre")),
     person("Laura", "Maxwell", email = "laura.maxwell@atorusresearch.com", role = c("aut")),
@@ -11,8 +11,8 @@ Imports:
     arrow,
     dplyr, 
     glue,
-    gsm.core,
-    gsm.mapping,
+    gsm.core (>= 1.1.2),
+    gsm.mapping (>= 1.1.0),
     logger,
     magrittr,
     purrr,
@@ -25,8 +25,8 @@ Suggests:
     rmarkdown,
     testthat
 Remotes:
-    gsm.core=Gilead-BioStats/gsm.core@v1.1.0,
-    gsm.mapping=Gilead-BioStats/gsm.mapping@v1.0.1
+    gsm.core=Gilead-BioStats/gsm.core@main,
+    gsm.mapping=Gilead-BioStats/gsm.mapping@main
 License: Apache License (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

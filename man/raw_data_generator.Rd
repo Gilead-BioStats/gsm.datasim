@@ -10,7 +10,7 @@ raw_data_generator(
   StudyID = NULL,
   SnapshotCount = NULL,
   SnapshotWidth = NULL,
-  template_path = "~/gsm.datasim/inst/template.csv",
+  template_path = system.file("template.csv", package = "gsm.datasim"),
   workflow_path = "workflow/1_mappings",
   generate_reports = FALSE,
   mappings = NULL,
