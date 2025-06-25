@@ -12,12 +12,16 @@ generate_risk_signals_report <- function(lData) {
   # Step 3 - Create Reporting Data - Import Metadata and stack KRI Results
 
   reporting_wf_site <- gsm.core::MakeWorkflowList(strPath = "workflow/3_reporting")
-  reporting_site <- gsm.core::RunWorkflows(reporting_wf_site,
-                                      c(mapped, list(lAnalyzed = kris, lWorkflows = kri_wf)))
+  reporting_site <- gsm.core::RunWorkflows(
+    reporting_wf_site,
+    c(mapped, list(lAnalyzed = kris, lWorkflows = kri_wf))
+  )
 
   reporting_wf_country <- gsm.core::MakeWorkflowList(strPath = "workflow/3_reporting")
-  reporting_country <- gsm.core::RunWorkflows(reporting_wf_country,
-                                      c(mapped, list(lAnalyzed = cous, lWorkflows = cou_wf)))
+  reporting_country <- gsm.core::RunWorkflows(
+    reporting_wf_country,
+    c(mapped, list(lAnalyzed = cous, lWorkflows = cou_wf))
+  )
 
   return(
     list(
@@ -25,8 +29,6 @@ generate_risk_signals_report <- function(lData) {
       lAnalysis_country = cous,
       lReporting_site = reporting_site,
       lReporting_country = reporting_country
-      )
+    )
   )
 }
-
-

@@ -21,7 +21,6 @@ test_that("generate_rawdata_for_single_study works", {
   )
 
   expect_equal(length(result), 1) # 1 study
-  expect_equal(names(result), c("ABC"))   # 1 study with StudyID ABC
+  expect_equal(names(result), c("ABC")) # 1 study with StudyID ABC
   expect_equal(length(result$ABC), 2) # 2 snapshots
 })
-

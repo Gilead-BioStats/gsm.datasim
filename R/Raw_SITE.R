@@ -8,8 +8,7 @@
 #' @keywords internal
 #' @noRd
 
-Raw_SITE <- function(data, previous_data, spec, ...) {
-
+Raw_SITE <- function(data, previous_data, spec, startDate, ...) {
   inps <- list(...)
 
   curr_spec <- spec$Raw_SITE
@@ -23,7 +22,9 @@ Raw_SITE <- function(data, previous_data, spec, ...) {
   }
 
   n <- inps$n_sites - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
 
   if (all(c("Country", "State", "City") %in% names(curr_spec))) {
@@ -31,12 +32,10 @@ Raw_SITE <- function(data, previous_data, spec, ...) {
     curr_spec$Country <- NULL
     curr_spec$State <- NULL
     curr_spec$City <- NULL
-
   }
 
   if (all(c("invid") %in% names(curr_spec))) {
     curr_spec$invid <- list(required = TRUE)
-
   }
 
 
@@ -44,7 +43,7 @@ Raw_SITE <- function(data, previous_data, spec, ...) {
   args <- list(
     studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
     invid = list(n, dataset),
-    default = list(n)
+    default = list(n, startDate)
   )
 
   res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_SITE, ...)
@@ -81,8 +80,6 @@ invid <- function(n, previous_data, ...) {
 
   # Randomly sample 'n' unique strings from the available strings
   sample(new_strings_invids, n)
-
-
 }
 
 country <- function(n, ...) {
@@ -93,25 +90,28 @@ country <- function(n, ...) {
 InvestigatorFirstName <- function(n, ...) {
   # Function body for InvestigatorFirstName
   sample(c("John", "Joanne", "Fred"),
-         n,
-         replace = TRUE)
+    n,
+    replace = TRUE
+  )
 }
 
 InvestigatorLastName <- function(n, ...) {
   # Function body for InvestigatorLastName
   sample(c("Doe", "Deer", "Smith"),
-         n,
-         replace = TRUE)
+    n,
+    replace = TRUE
+  )
 }
 site_status <- function(n, ...) {
   # Function body for site_status
   sample(c("Active", "", "Closed"),
-         n,
-         replace = TRUE)
+    n,
+    replace = TRUE
+  )
 }
 
 Country_State_City_data <- data.frame(
-  country = c("UK","UK", "US", "US", "Japan", "Japan"),
+  country = c("UK", "UK", "US", "US", "Japan", "Japan"),
   state = c("Greater London", "Buckinghamshire", "CA", "PA", "Kanto", "Kumamoto Prefecture"),
   city = c("London", "Milton Keynes", "Foster City", "Newtown Square", "Tokyo", "Kumamoto")
 )
@@ -120,8 +120,9 @@ City <- function(n, ...) {
   cities <- unique(Country_State_City_data$city)
   # Function body for City
   sample(cities,
-         n,
-         replace = TRUE)
+    n,
+    replace = TRUE
+  )
 }
 
 State <- function(n, ...) {
@@ -132,7 +133,8 @@ State <- function(n, ...) {
   } else {
     states <- Country_State_City_data$state %>%
       sample(n,
-             replace = TRUE)
+        replace = TRUE
+      )
   }
   return(states)
 }
@@ -153,7 +155,9 @@ Country_State_City <- function(n, ...) {
   cities <- City(n)
   states <- State(n, cities = cities)
   countries <- Country(n, cities = cities)
-  return(list(City = cities,
-              State = states,
-              Country = countries))
+  return(list(
+    City = cities,
+    State = states,
+    Country = countries
+  ))
 }

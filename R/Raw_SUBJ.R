@@ -24,7 +24,9 @@ Raw_SUBJ <- function(data, previous_data, spec, startDate, endDate, ...) {
   }
 
   n <- inps$n_subj - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
   if (!("enrolldt" %in% names(curr_spec))) {
     curr_spec$enrolldt <- list(required = TRUE)
@@ -34,7 +36,6 @@ Raw_SUBJ <- function(data, previous_data, spec, startDate, endDate, ...) {
     curr_spec$subject_site_synq <- list(required = TRUE)
     curr_spec$invid <- NULL
     curr_spec$country <- NULL
-
   }
 
   if (all(c("subjid", "subject_nsv") %in% names(curr_spec))) {
@@ -59,7 +60,7 @@ Raw_SUBJ <- function(data, previous_data, spec, startDate, endDate, ...) {
     subjid_subject_nsv = list(n, previous_data$Raw_SUBJ$subjid),
     subject_site_synq = list(n, data$Raw_SITE),
     enrollyn_enrolldt_timeonstudy_firstparticipantdate_firstdosedate_timeontreatment = list(n, startDate, endDate),
-    default = list(n)
+    default = list(n, startDate)
   )
 
   res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_SUBJ, ...)
@@ -70,7 +71,7 @@ Raw_SUBJ <- function(data, previous_data, spec, startDate, endDate, ...) {
   return(res)
 }
 
-subjid <- function(n, external_subjid = NULL, replace = TRUE, previous_subjid=NULL, ...) {
+subjid <- function(n, external_subjid = NULL, replace = TRUE, previous_subjid = NULL, ...) {
   args <- list(...)
 
   if (!is.null(external_subjid)) {
@@ -96,21 +97,21 @@ subjid <- function(n, external_subjid = NULL, replace = TRUE, previous_subjid=NU
   return(res)
 }
 
-subjid_subject_nsv <- function(n, dataset,...) {
+subjid_subject_nsv <- function(n, dataset, ...) {
   subjid_dat <- subjid(n, previous_subjid = dataset, ...)
   subject_nsv_dat <- subject_nsv(n, subjid_dat, ...)
   return(list(
     subjid = subjid_dat,
     subject_nsv = subject_nsv_dat
   ))
-
 }
 
 subject_site_synq <- function(n, Raw_SITE_data, ...) {
-  Raw_SITE_data[sample(nrow(Raw_SITE_data), n, replace = TRUE),
-                c("pi_number", "country")] %>%
-    dplyr::rename("invid" =  "pi_number")
-
+  Raw_SITE_data[
+    sample(nrow(Raw_SITE_data), n, replace = TRUE),
+    c("pi_number", "country")
+  ] %>%
+    dplyr::rename("invid" = "pi_number")
 }
 
 enrollyn <- function(n, ...) {
@@ -121,13 +122,13 @@ enrollyn <- function(n, ...) {
   #   return("N")
   # }
   sample(c("Y", "N"),
-         prob = c(0.75, 0.25),
-         n,
-         replace = TRUE)
-
+    prob = c(0.75, 0.25),
+    n,
+    replace = TRUE
+  )
 }
 
-subject_nsv <- function(n, subjid, subject_nsv=NULL, replace = TRUE, ...) {
+subject_nsv <- function(n, subjid, subject_nsv = NULL, replace = TRUE, ...) {
   # Function body for subject_nsv
   if (!is.null(subject_nsv)) {
     return(sample(subject_nsv, n, replace = replace))
@@ -151,10 +152,10 @@ agerep <- function(n, ...) {
   sample(18:55, n, replace = T)
 }
 
-sex <- function(n, ...){
+sex <- function(n, ...) {
   sample(c("M", "F"), n, replace = T)
 }
-race <- function(n, ...){
+race <- function(n, ...) {
   sample(c("White", "Asian", "Black", "Other"), n, replace = T)
 }
 enrollyn_enrolldt_timeonstudy_firstparticipantdate_firstdosedate_timeontreatment <- function(n, startDate, endDate, ...) {
@@ -169,7 +170,7 @@ enrollyn_enrolldt_timeonstudy_firstparticipantdate_firstdosedate_timeontreatment
     enrollyn = enrollyn_dat,
     enrolldt = enrolldt_dat,
     timeonstudy = timeonstudy_dat,
-    firstparticipant = firstparticipantdate_dat,
+    firstparticipantdate = firstparticipantdate_dat,
     firstdosedate = firstdosedate_dat,
     timeontreatment = timeontreatment_dat
   ))

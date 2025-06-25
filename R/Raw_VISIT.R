@@ -8,7 +8,7 @@
 #' @family internal
 #' @keywords internal
 #' @noRd
-Raw_VISIT <- function(data, previous_data, spec, startDate, SnapshotCount, SnapshotWidth,...) {
+Raw_VISIT <- function(data, previous_data, spec, startDate, SnapshotCount, SnapshotWidth, ...) {
   inps <- list(...)
   if ("Raw_VISIT" %in% names(previous_data)) {
     dataset <- previous_data$Raw_VISIT
@@ -19,7 +19,9 @@ Raw_VISIT <- function(data, previous_data, spec, startDate, SnapshotCount, Snaps
   }
 
   n <- inps$n - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
   possible_Visits <- data.frame(
     visit = c("Screening", paste0("VISIT ", 1:SnapshotCount), "Follow-up")
@@ -51,11 +53,12 @@ Raw_VISIT <- function(data, previous_data, spec, startDate, SnapshotCount, Snaps
   }
 
 
-  #subjs <- subjid(n, external_subjid = data$Raw_SUBJ$subjid, replace = TRUE)
+  # subjs <- subjid(n, external_subjid = data$Raw_SUBJ$subjid, replace = TRUE)
   args <- list(
     subjid_invid = list(nrow(possible_Visits), data$Raw_SUBJ),
     visit_date = list(n, startDate, possible_Visits, SnapshotWidth = SnapshotWidth),
-    #invid = list(n = length(subjs)),
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
+    # invid = list(n = length(subjs)),
     default = list(n, possible_Visits)
   )
 
@@ -63,23 +66,25 @@ Raw_VISIT <- function(data, previous_data, spec, startDate, SnapshotCount, Snaps
   return(res)
 }
 
-subjid_invid <- function(n, Raw_SUBJ_data, ...) {
-  res <- Raw_SUBJ_data[sample(nrow(Raw_SUBJ_data), n, replace = TRUE),
-                c("subjid", "invid")]
-  return(list(subjid = res$subjid,
-              invid = res$invid))
+subjid_invid <- function(n, Raw_SUBJ_data, replace = TRUE, ...) {
+  res <- Raw_SUBJ_data[
+    sample(nrow(Raw_SUBJ_data), n, replace = replace),
+    c("subjid", "invid")
+  ]
+  return(list(
+    subjid = res$subjid,
+    invid = res$invid
+  ))
 }
 
-visit_date <- function(n, start_date, possible_Visits, SnapshotWidth,...) {
-  rep(generate_consecutive_random_dates(nrow(possible_Visits), start_date, period_to_days(SnapshotWidth)), n)
-}
+# visit_date <- function(n, start_date, possible_Visits, SnapshotWidth,...) {
+#   rep(generate_consecutive_random_dates(nrow(possible_Visits), start_date, period_to_days(SnapshotWidth)), n)
+# }
 
-visit_dt <- function(n, start_date, possible_Visits, SnapshotWidth,...) {
+visit_dt <- function(n, start_date, possible_Visits, SnapshotWidth, ...) {
   rep(generate_consecutive_random_dates(nrow(possible_Visits), start_date, period_to_days(SnapshotWidth)), n)
 }
 
 visit <- function(n, possible_Visits, ...) {
   rep(possible_Visits$visit, n)
 }
-
-

@@ -8,7 +8,7 @@
 #' @keywords internal
 #' @noRd
 
-Raw_SDRGCOMP <- function(data, previous_data, spec, ...) {
+Raw_SDRGCOMP <- function(data, previous_data, spec, startDate, ...) {
   # Function body for Raw_SDRGCOMP
   inps <- list(...)
 
@@ -23,11 +23,14 @@ Raw_SDRGCOMP <- function(data, previous_data, spec, ...) {
   }
 
   n <- inps$n - previous_row_num
-  if (n == 0) return(dataset)
+  if (n == 0) {
+    return(dataset)
+  }
 
   args <- list(
     subjid = list(n, data$Raw_SUBJ$subjid, replace = FALSE),
-    default = list(n)
+    studyid = list(n, data$Raw_STUDY$protocol_number[[1]]),
+    default = list(n, startDate)
   )
 
   res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_SDRGCOMP, ...)
@@ -38,7 +41,8 @@ Raw_SDRGCOMP <- function(data, previous_data, spec, ...) {
 sdrgyn <- function(n, ...) {
   # Function body for sdrgyn
   sample(c("Y", "N"),
-         prob = c(0.75, 0.25),
-         n,
-         replace = TRUE)
+    prob = c(0.75, 0.25),
+    n,
+    replace = TRUE
+  )
 }
