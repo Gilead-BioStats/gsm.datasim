@@ -1,3 +1,6 @@
+# gsm.datasim v1.1.1
+This release adds new contributor guidelines and standardized issue templates.
+
 # gsm.datasim v1.1.0
 
 ## Notable Changes:
