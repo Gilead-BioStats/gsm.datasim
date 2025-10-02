@@ -1,6 +1,6 @@
 Package: gsm.datasim
 Title: Synthetic Test Data Generator
-Version: 1.1.1
+Version: 1.1.2
 Authors@R: c(
     person("Roman", "Rogoza", email = "roman.rogoza@atorusresearch.com", role = c("aut", "cre")),
     person("Laura", "Maxwell", email = "laura.maxwell@atorusresearch.com", role = c("aut")),
@@ -30,7 +30,7 @@ Remotes:
 License: Apache License (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 URL: https://github.com/Gilead-BioStats/gsm.datasim, https://gilead-biostats.github.io/gsm.datasim
 BugReports: https://github.com/Gilead-BioStats/gsm.datasim/issues
