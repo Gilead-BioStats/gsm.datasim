@@ -259,6 +259,12 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
         slice_sample(n = round(ParticipantCount / 3)) %>%
         filter(!(subjid %in% unenrolled))
     }
+    if ("Raw_Randomization" %in% names(data)) {
+      data$Raw_Randomization <- data$Raw_Randomization %>%
+        group_by(subjid) %>%
+        filter(rgmn_dt == min(rgmn_dt, na.rm = TRUE)) %>%
+        ungroup()
+    }
     snapshots[[snapshot_idx]] <- data
     logger::log_info(glue::glue(" -- Snapshot {snapshot_idx} added successfully"))
   }
