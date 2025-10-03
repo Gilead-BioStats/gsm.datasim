@@ -52,7 +52,7 @@ Raw_Randomization <- function(data, previous_data, spec, startDate, ...) {
 
 subjid_invid_country <- function(n, Raw_SUBJ_data, ...) {
   res <- Raw_SUBJ_data[
-    sample(nrow(Raw_SUBJ_data), n, replace = TRUE),
+    sample(nrow(Raw_SUBJ_data), n),
     c("subjid", "invid", "country")
   ]
   return(list(

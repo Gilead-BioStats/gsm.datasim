@@ -1,3 +1,6 @@
+# gsm.datasim v1.1.2
+This release resolves a bug involving duplicate records in the randomization domain.
+
 # gsm.datasim v1.1.1
 This release adds new contributor guidelines and standardized issue templates.
 

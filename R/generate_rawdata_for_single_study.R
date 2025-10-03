@@ -21,7 +21,7 @@
 #'
 #' @export
 #' @details
-#' The function generates snapshots over a sequence of months, starting from `"2012-01-01"`. For each snapshot:
+#' The function generates snapshots over a sequence of months,starting from `"2012-01-01"`. For each snapshot:
 #' \enumerate{
 #'   \item The number of adverse events (`ae_num`) is simulated.
 #'   \item The number of participants screened is determined.
@@ -42,7 +42,8 @@
 #'   desired_specs = NULL
 #' )
 #'
-generate_rawdata_for_single_study <- function(SnapshotCount,
+generate_rawdata_for_single_study <- function(
+  SnapshotCount,
   SnapshotWidth,
   ParticipantCount,
   SiteCount,
@@ -50,10 +51,31 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
   workflow_path,
   mappings,
   package,
-  desired_specs = NULL) {
+  desired_specs = NULL
+  #SnapshotEndDate = Sys.Date()
+) {
   # Generate start and end dates for snapshots
   start_dates <- seq(as.Date("2012-01-01"), length.out = SnapshotCount, by = SnapshotWidth)
   end_dates <- seq(as.Date("2012-02-01"), length.out = SnapshotCount, by = SnapshotWidth) - 1
+
+  # Parse SnapshotWidth (e.g., "months", "3 months", "weeks", etc.)
+  #width_parts <- strsplit(SnapshotWidth, " ")[[1]]
+  #if (length(width_parts) == 2) {
+  #  width_num <- as.numeric(width_parts[1])
+  #  width_unit <- width_parts[2]
+  #} else {
+  #  width_num <- 1
+  #  width_unit <- SnapshotWidth
+  #}
+
+  ## Today's date is the end of the most recent snapshot
+  #end_dates <- rev(seq(
+  #  from = as.Date(SnapshotEndDate),
+  #  by = paste0("-", width_num, " ", width_unit),
+  #  length.out = SnapshotCount
+  #))
+
+  #start_dates <- end_dates - do.call(width_unit, list(width_num)) + 1
 
   # Load workflow mappings and combine specifications
   combined_specs <- load_specs(workflow_path, mappings, package)
@@ -108,11 +130,11 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
 
   ae_count <- subject_count * 3
   pd_count <- subject_count * 3
-  sdrgcomp_count <- ceiling(subject_count / 2)
+  sdrgcomp_count <- ceiling(subject_count / 10)
   studcomp_count <- ceiling(subject_count / 10)
   consents_count <- ceiling(subject_count / 75)
   death_count <- ceiling(subject_count / 85)
-  anticancer_count <- ceiling(subject_count / 10)
+  anticancer_count <- ceiling(subject_count / 75)
 
 
   # print(subject_count)
@@ -258,6 +280,12 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
       data$Raw_IE <- data$Raw_IE %>%
         slice_sample(n = round(ParticipantCount / 3)) %>%
         filter(!(subjid %in% unenrolled))
+    }
+    if ("Raw_Randomization" %in% names(data)) {
+      data$Raw_Randomization <- data$Raw_Randomization %>%
+        group_by(subjid) %>%
+        filter(rgmn_dt == min(rgmn_dt, na.rm = TRUE)) %>%
+        ungroup()
     }
     snapshots[[snapshot_idx]] <- data
     logger::log_info(glue::glue(" -- Snapshot {snapshot_idx} added successfully"))
