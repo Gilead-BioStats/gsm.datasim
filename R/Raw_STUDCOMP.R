@@ -91,16 +91,16 @@ subjid_invid_unique <- function(n, Raw_SUBJ_data, previous_STUDCOMP_data, replac
 compyn <- function(n, ...) {
   # Function body for compyn
   sample(c(NA, "N", "Y"),
-    prob = c(0.7, 0.1, 0.15),
-    n,
+    size = n,
+    prob = c(0.7, 0.1, 0.2),
     replace = TRUE
   )
 }
 
 compreas <- function(n, ...) {
   sample(c("", "Lost to Follow-Up", "Death", "Withdrew Consent"),
+    size = n,
     prob = c(0.85, 0.05, 0.05, 0.05),
-    n,
     replace = TRUE
   )
 }
