@@ -14,8 +14,8 @@
 #' @param workflow_path A string specifying the path to the workflow mappings.
 #' @param mappings A string specifying the names of the workflows to run.
 #' @param package A string specifying the package in which the workflows used in `MakeWorkflowList()` are located.
-#' @param strStartDate A string to denote when the first snapshot of simulated data occurs
 #' @param desired_specs A list of specifications of the data types that should be included.
+#' @param SnapshotEndDate A Date object specifying the end date of the most recent snapshot.
 #'
 #' @return A list of data snapshots, where each element contains simulated data for a particular snapshot
 #' period (typically a month), with variables populated according to the provided specifications.
@@ -40,7 +40,6 @@
 #'   workflow_path = "workflow/1_mappings",
 #'   mappings = "AE",
 #'   package = "gsm.mapping",
-#'   strStartDate = "2012-01-01",
 #'   desired_specs = NULL
 #' )
 #'
