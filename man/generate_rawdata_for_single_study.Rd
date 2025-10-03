@@ -13,7 +13,8 @@ generate_rawdata_for_single_study(
   workflow_path,
   mappings,
   package,
-  desired_specs = NULL
+  desired_specs = NULL,
+  SnapshotEndDate = Sys.Date()
 )
 }
 \arguments{
@@ -47,7 +48,7 @@ The data is simulated over a series of months, with key variables such as subjec
 adverse events, and time on study being populated according to the study's specifications.
 }
 \details{
-The function generates snapshots over a sequence of months, starting from \code{"2012-01-01"}. For each snapshot:
+The function generates snapshots over a sequence of months, starting from January 1st of the current year. For each snapshot:
 \enumerate{
 \item The number of adverse events (\code{ae_num}) is simulated.
 \item The number of participants screened is determined.

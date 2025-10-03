@@ -3,6 +3,7 @@
 
 #' @import dplyr
 #' @import gsm.mapping
+#' @import lubridate
 #' @import purrr
 #' @importFrom arrow write_parquet
 #' @importFrom glue glue

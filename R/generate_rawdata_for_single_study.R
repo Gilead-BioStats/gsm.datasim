@@ -52,22 +52,26 @@ generate_rawdata_for_single_study <- function(
   mappings,
   package,
   desired_specs = NULL,
-  SnapshotStartDate = '2012-01-01'
-  #SnapshotStartDate = Sys.Date() %>%
-  #  as.character() %>%
-  #  stringr::str_replace('-\\d{2}-\\d{2}$', '-01-01')
+  SnapshotEndDate = Sys.Date()
 ) {
-  # Generate start and end dates for snapshots
-  start_dates <- seq(
-      as.Date(SnapshotStartDate),
-      length.out = SnapshotCount,
-      by = SnapshotWidth
-  )
-  end_dates <- seq(
-      as.Date(SnapshotStartDate) %m+% months(1),
-      length.out = SnapshotCount,
-      by = SnapshotWidth
-  ) - 1
+  # Parse SnapshotWidth (e.g., "months", "3 months", "weeks", etc.)
+  width_parts <- strsplit(SnapshotWidth, " ")[[1]]
+  if (length(width_parts) == 2) {
+    width_num <- as.numeric(width_parts[1])
+    width_unit <- width_parts[2]
+  } else {
+    width_num <- 1
+    width_unit <- SnapshotWidth
+  }
+
+  # Today's date is the end of the most recent snapshot
+  end_dates <- rev(seq(
+    from = as.Date(SnapshotEndDate),
+    by = paste0("-", width_num, " ", width_unit),
+    length.out = SnapshotCount
+  ))
+
+  start_dates <- end_dates - do.call(width_unit, list(width_num)) + 1
 
   # Load workflow mappings and combine specifications
   combined_specs <- load_specs(workflow_path, mappings, package)
