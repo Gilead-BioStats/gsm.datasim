@@ -21,7 +21,7 @@
 #'
 #' @export
 #' @details
-#' The function generates snapshots over a sequence of months, starting from `"2012-01-01"`. For each snapshot:
+#' The function generates snapshots over a sequence of months, starting from January 1st of the current year. For each snapshot:
 #' \enumerate{
 #'   \item The number of adverse events (`ae_num`) is simulated.
 #'   \item The number of participants screened is determined.
@@ -42,7 +42,8 @@
 #'   desired_specs = NULL
 #' )
 #'
-generate_rawdata_for_single_study <- function(SnapshotCount,
+generate_rawdata_for_single_study <- function(
+  SnapshotCount,
   SnapshotWidth,
   ParticipantCount,
   SiteCount,
@@ -50,10 +51,23 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
   workflow_path,
   mappings,
   package,
-  desired_specs = NULL) {
+  desired_specs = NULL,
+  SnapshotStartDate = '2012-01-01'
+  #SnapshotStartDate = Sys.Date() %>%
+  #  as.character() %>%
+  #  stringr::str_replace('-\\d{2}-\\d{2}$', '-01-01')
+) {
   # Generate start and end dates for snapshots
-  start_dates <- seq(as.Date("2012-01-01"), length.out = SnapshotCount, by = SnapshotWidth)
-  end_dates <- seq(as.Date("2012-02-01"), length.out = SnapshotCount, by = SnapshotWidth) - 1
+  start_dates <- seq(
+      as.Date(SnapshotStartDate),
+      length.out = SnapshotCount,
+      by = SnapshotWidth
+  )
+  end_dates <- seq(
+      as.Date(SnapshotStartDate) %m+% months(1),
+      length.out = SnapshotCount,
+      by = SnapshotWidth
+  ) - 1
 
   # Load workflow mappings and combine specifications
   combined_specs <- load_specs(workflow_path, mappings, package)
@@ -108,11 +122,11 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
 
   ae_count <- subject_count * 3
   pd_count <- subject_count * 3
-  sdrgcomp_count <- ceiling(subject_count / 2)
+  sdrgcomp_count <- ceiling(subject_count / 10)
   studcomp_count <- ceiling(subject_count / 10)
   consents_count <- ceiling(subject_count / 75)
   death_count <- ceiling(subject_count / 85)
-  anticancer_count <- ceiling(subject_count / 10)
+  anticancer_count <- ceiling(subject_count / 75)
 
 
   # print(subject_count)
