@@ -13,6 +13,7 @@ generate_rawdata_for_single_study(
   workflow_path,
   mappings,
   package,
+  strStartDate = "2012-01-01",
   desired_specs = NULL
 )
 }
@@ -33,6 +34,8 @@ Accepts "days", "weeks", "months" and "years". User can also place a number and 
 \item{mappings}{A string specifying the names of the workflows to run.}
 
 \item{package}{A string specifying the package in which the workflows used in \code{MakeWorkflowList()} are located.}
+
+\item{strStartDate}{A string to denote when the first snapshot of simulated data occurs}
 
 \item{desired_specs}{A list of specifications of the data types that should be included.}
 }
@@ -65,6 +68,7 @@ snapshots <- generate_rawdata_for_single_study(
   workflow_path = "workflow/1_mappings",
   mappings = "AE",
   package = "gsm.mapping",
+  strStartDate = "2012-01-01",
   desired_specs = NULL
 )
 

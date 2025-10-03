@@ -14,6 +14,7 @@
 #' @param workflow_path A string specifying the path to the workflow mappings.
 #' @param mappings A string specifying the names of the workflows to run.
 #' @param package A string specifying the package in which the workflows used in `MakeWorkflowList()` are located.
+#' @param strStartDate A string to denote when the first snapshot of simulated data occurs
 #' @param desired_specs A list of specifications of the data types that should be included.
 #'
 #' @return A list of data snapshots, where each element contains simulated data for a particular snapshot
@@ -39,6 +40,7 @@
 #'   workflow_path = "workflow/1_mappings",
 #'   mappings = "AE",
 #'   package = "gsm.mapping",
+#'   strStartDate = "2012-01-01",
 #'   desired_specs = NULL
 #' )
 #'
@@ -50,10 +52,11 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
   workflow_path,
   mappings,
   package,
+  strStartDate = "2012-01-01",
   desired_specs = NULL) {
   # Generate start and end dates for snapshots
-  start_dates <- seq(as.Date("2012-01-01"), length.out = SnapshotCount, by = SnapshotWidth)
-  end_dates <- seq(as.Date("2012-02-01"), length.out = SnapshotCount, by = SnapshotWidth) - 1
+  start_dates <- seq(as.Date(strStartDate), length.out = SnapshotCount, by = SnapshotWidth)
+  end_dates <- start_dates + 28
 
   # Load workflow mappings and combine specifications
   combined_specs <- load_specs(workflow_path, mappings, package)
