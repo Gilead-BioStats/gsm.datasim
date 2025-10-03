@@ -15,7 +15,6 @@ raw_data_generator(
   generate_reports = FALSE,
   mappings = NULL,
   package = "gsm.mapping",
-  strStartDate = "2012-01-01",
   save = FALSE
 )
 }
@@ -46,8 +45,6 @@ Accepts "days", "weeks", "months" and "years". User can also place a number and 
 \item{mappings}{A string specifying the names of the workflows to run.}
 
 \item{package}{A string specifying the package in which the workflows used in \code{MakeWorkflowList()} are located. Default is "gsm".}
-
-\item{strStartDate}{A string to denote when the first snapshot of simulated data occurs}
 
 \item{save}{A boolean, specifying whether or not this should be saved out as an RDS}
 }

@@ -22,7 +22,6 @@
 #' @param generate_reports A boolean, specifying whether or not to produce reports upon execution. Default is FALSE.
 #' @param mappings A string specifying the names of the workflows to run.
 #' @param package A string specifying the package in which the workflows used in `MakeWorkflowList()` are located. Default is "gsm".
-#' @param strStartDate A string to denote when the first snapshot of simulated data occurs
 #' @param save A boolean, specifying whether or not this should be saved out as an RDS
 #'
 #' @return A list of raw data generated for each study snapshot, saved as an RDS file in `"data-raw/raw_data.RDS"`.
@@ -58,7 +57,6 @@ raw_data_generator <- function(
   generate_reports = FALSE,
   mappings = NULL,
   package = "gsm.mapping",
-  strStartDate = "2012-01-01",
   save = FALSE
 ) {
   # Initialize the list to store raw data
@@ -82,8 +80,7 @@ raw_data_generator <- function(
         StudyID = curr_vars$StudyID,
         workflow_path = workflow_path,
         mappings = mappings,
-        package = package,
-        strStartDate = strStartDate
+        package = package
       )
 
       logger::log_info(glue::glue("Added {curr_vars$StudyID} successfully"))
