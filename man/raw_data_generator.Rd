@@ -69,7 +69,13 @@ the \code{template.csv} file to get the necessary parameters for multiple studie
 \examples{
 \dontrun{
 # Generate raw data using specified parameters
-data <- raw_data_generator(ParticipantCount = 100, SiteCount = 10, StudyID = "Study01", SnapshotCount = 5, SnapshotWidth = "months")
+data <- raw_data_generator(
+  ParticipantCount = 100,
+  SiteCount = 10,
+  StudyID = "Study01",
+  SnapshotCount = 5,
+  SnapshotWidth = "months"
+)
 
 
 # Generate raw data using a template file
