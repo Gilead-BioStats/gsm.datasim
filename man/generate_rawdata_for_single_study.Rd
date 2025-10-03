@@ -36,6 +36,8 @@ Accepts "days", "weeks", "months" and "years". User can also place a number and 
 \item{package}{A string specifying the package in which the workflows used in \code{MakeWorkflowList()} are located.}
 
 \item{desired_specs}{A list of specifications of the data types that should be included.}
+
+\item{strStartDate}{A string to denote when the first snapshot of simulated data occurs}
 }
 \value{
 A list of data snapshots, where each element contains simulated data for a particular snapshot
@@ -66,6 +68,7 @@ snapshots <- generate_rawdata_for_single_study(
   workflow_path = "workflow/1_mappings",
   mappings = "AE",
   package = "gsm.mapping",
+  strStartDate = "2012-01-01",
   desired_specs = NULL
 )
 
