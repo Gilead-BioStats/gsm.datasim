@@ -15,6 +15,7 @@ raw_data_generator(
   generate_reports = FALSE,
   mappings = NULL,
   package = "gsm.mapping",
+  strStartDate = "2012-01-01",
   save = FALSE
 )
 }
@@ -46,6 +47,8 @@ Accepts "days", "weeks", "months" and "years". User can also place a number and 
 
 \item{package}{A string specifying the package in which the workflows used in \code{MakeWorkflowList()} are located. Default is "gsm".}
 
+\item{strStartDate}{A string to denote when the first snapshot of simulated data occurs}
+
 \item{save}{A boolean, specifying whether or not this should be saved out as an RDS}
 }
 \value{
@@ -69,13 +72,7 @@ the \code{template.csv} file to get the necessary parameters for multiple studie
 \examples{
 \dontrun{
 # Generate raw data using specified parameters
-data <- raw_data_generator(
-  ParticipantCount = 100,
-  SiteCount = 10,
-  StudyID = "Study01",
-  SnapshotCount = 5,
-  SnapshotWidth = "months"
-)
+data <- raw_data_generator(ParticipantCount = 100, SiteCount = 10, StudyID = "Study01", SnapshotCount = 5, SnapshotWidth = "months")
 
 
 # Generate raw data using a template file
