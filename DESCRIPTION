@@ -17,6 +17,7 @@ Imports:
     lubridate,
     magrittr,
     purrr,
+    R6,
     rlang,
     stringr,
     tictoc,
