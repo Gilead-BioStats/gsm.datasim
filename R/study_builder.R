@@ -895,9 +895,9 @@ quick_longitudinal_study <- function(study_name = "Clinical Trial",
   study_id <- gsub("^-|-$", "", study_id)
   study_id <- toupper(paste0(study_id, "-", sprintf("%03d", sample(100:999, 1))))
   
-  message(sprintf("🚀 Quick start: Generating '%s' [%s] (%s study)", 
+  message(sprintf("Quick start: Generating '%s' [%s] (%s study)", 
                  study_name, study_id, study_type))
-  message(sprintf("📊 Domains: %s", paste(domains, collapse = ", ")))
+  message(sprintf("Domains: %s", paste(domains, collapse = ", ")))
   
   create_longitudinal_study(
     study_id = study_id,
