@@ -19,7 +19,6 @@ generate_rawdata_for_single_study(
   workflow_path,
   mappings,
   package,
-  strStartDate = "2012-01-01",
   desired_specs = NULL
 )
 ```
@@ -61,10 +60,6 @@ generate_rawdata_for_single_study(
   A string specifying the package in which the workflows used in
   `MakeWorkflowList()` are located.
 
-- strStartDate:
-
-  A string to denote when the first snapshot of simulated data occurs
-
 - desired_specs:
 
   A list of specifications of the data types that should be included.
@@ -77,8 +72,8 @@ populated according to the provided specifications.
 
 ## Details
 
-The function generates snapshots over a sequence of months, starting
-from `"2012-01-01"`. For each snapshot:
+The function generates snapshots over a sequence of months,starting from
+`"2012-01-01"`. For each snapshot:
 
 1.  The number of adverse events (`ae_num`) is simulated.
 
@@ -100,55 +95,8 @@ snapshots <- generate_rawdata_for_single_study(
   workflow_path = "workflow/1_mappings",
   mappings = "AE",
   package = "gsm.mapping",
-  strStartDate = "2012-01-01",
   desired_specs = NULL
 )
-#> INFO [2026-01-13 20:05:38]  -- Adding snapshot 1...
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_SITE...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_SITE added successfully
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_SUBJ...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_SUBJ added successfully
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_ENROLL...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_ENROLL added successfully
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_SV...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_SV added successfully
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_VISIT...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_VISIT added successfully
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_AE...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_AE added successfully
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_DATAENT...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_DATAENT added successfully
-#> INFO [2026-01-13 20:05:38]  -- Snapshot 1 added successfully
-#> INFO [2026-01-13 20:05:38]  -- Adding snapshot 2...
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_SITE...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_SITE added successfully
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_SUBJ...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_SUBJ added successfully
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_ENROLL...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_ENROLL added successfully
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_SV...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_SV added successfully
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_VISIT...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_VISIT added successfully
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_AE...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_AE added successfully
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_DATAENT...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_DATAENT added successfully
-#> INFO [2026-01-13 20:05:38]  -- Snapshot 2 added successfully
-#> INFO [2026-01-13 20:05:38]  -- Adding snapshot 3...
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_SITE...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_SITE added successfully
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_SUBJ...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_SUBJ added successfully
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_ENROLL...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_ENROLL added successfully
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_SV...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_SV added successfully
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_VISIT...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_VISIT added successfully
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_AE...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_AE added successfully
-#> INFO [2026-01-13 20:05:38]  ---- Adding dataset Raw_DATAENT...
-#> INFO [2026-01-13 20:05:38]  ---- Dataset Raw_DATAENT added successfully
-#> INFO [2026-01-13 20:05:38]  -- Snapshot 3 added successfully
+#> INFO [2026-02-06 15:16:54]  -- Adding snapshot 1...
+#> Error in db_lock_dt(1): could not find function "db_lock_dt"
 ```
