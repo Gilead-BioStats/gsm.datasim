@@ -14,6 +14,7 @@
 #' @param workflow_path A string specifying the path to the workflow mappings.
 #' @param mappings A string specifying the names of the workflows to run.
 #' @param package A string specifying the package in which the workflows used in `MakeWorkflowList()` are located.
+#' @param strStartDate A string to denote when the first snapshot of simulated data occurs
 #' @param desired_specs A list of specifications of the data types that should be included.
 #'
 #' @return A list of data snapshots, where each element contains simulated data for a particular snapshot
@@ -21,7 +22,7 @@
 #'
 #' @export
 #' @details
-#' The function generates snapshots over a sequence of months,starting from `"2012-01-01"`. For each snapshot:
+#' The function generates snapshots over a sequence of months, starting from `"2012-01-01"`. For each snapshot:
 #' \enumerate{
 #'   \item The number of adverse events (`ae_num`) is simulated.
 #'   \item The number of participants screened is determined.
@@ -39,11 +40,11 @@
 #'   workflow_path = "workflow/1_mappings",
 #'   mappings = "AE",
 #'   package = "gsm.mapping",
+#'   strStartDate = "2012-01-01",
 #'   desired_specs = NULL
 #' )
 #'
-generate_rawdata_for_single_study <- function(
-  SnapshotCount,
+generate_rawdata_for_single_study <- function(SnapshotCount,
   SnapshotWidth,
   ParticipantCount,
   SiteCount,
@@ -51,31 +52,11 @@ generate_rawdata_for_single_study <- function(
   workflow_path,
   mappings,
   package,
-  desired_specs = NULL
-  #SnapshotEndDate = Sys.Date()
-) {
+  strStartDate = "2012-01-01",
+  desired_specs = NULL) {
   # Generate start and end dates for snapshots
-  start_dates <- seq(as.Date("2012-01-01"), length.out = SnapshotCount, by = SnapshotWidth)
-  end_dates <- seq(as.Date("2012-02-01"), length.out = SnapshotCount, by = SnapshotWidth) - 1
-
-  # Parse SnapshotWidth (e.g., "months", "3 months", "weeks", etc.)
-  #width_parts <- strsplit(SnapshotWidth, " ")[[1]]
-  #if (length(width_parts) == 2) {
-  #  width_num <- as.numeric(width_parts[1])
-  #  width_unit <- width_parts[2]
-  #} else {
-  #  width_num <- 1
-  #  width_unit <- SnapshotWidth
-  #}
-
-  ## Today's date is the end of the most recent snapshot
-  #end_dates <- rev(seq(
-  #  from = as.Date(SnapshotEndDate),
-  #  by = paste0("-", width_num, " ", width_unit),
-  #  length.out = SnapshotCount
-  #))
-
-  #start_dates <- end_dates - do.call(width_unit, list(width_num)) + 1
+  start_dates <- seq(as.Date(strStartDate), length.out = SnapshotCount, by = SnapshotWidth)
+  end_dates <- start_dates + 28
 
   # Load workflow mappings and combine specifications
   combined_specs <- load_specs(workflow_path, mappings, package)
@@ -130,11 +111,11 @@ generate_rawdata_for_single_study <- function(
 
   ae_count <- subject_count * 3
   pd_count <- subject_count * 3
-  sdrgcomp_count <- ceiling(subject_count / 10)
+  sdrgcomp_count <- ceiling(subject_count / 2)
   studcomp_count <- ceiling(subject_count / 10)
   consents_count <- ceiling(subject_count / 75)
   death_count <- ceiling(subject_count / 85)
-  anticancer_count <- ceiling(subject_count / 75)
+  anticancer_count <- ceiling(subject_count / 10)
 
 
   # print(subject_count)

@@ -13,6 +13,7 @@ single_result <- generate_rawdata_for_single_study(SnapshotCount = 3,
                                                    workflow_path = "workflow/1_mappings",
                                                    mappings = core_mappings,
                                                    package = "gsm.mapping",
+                                                   strStartDate = "1991-05-15",
                                                    desired_specs = NULL)
 # Step 1 - Create Mapped Data Layer - filter, aggregate and join raw data to create mapped data layer
 mappings_wf <- MakeWorkflowList(strNames = core_mappings, strPath = "workflow/1_mappings", strPackage = "gsm.mapping")
