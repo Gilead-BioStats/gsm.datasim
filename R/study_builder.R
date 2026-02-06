@@ -445,7 +445,7 @@ generate_study_data_with_config <- function(config, workflow_path = "workflow/1_
 #' @param timepoints Number of data collection timepoints
 #' @param interval Time interval between collection points (e.g., "1 month", "2 weeks")
 #' @param start_date Study start date
-#' @param domains Clinical domains to include (e.g., c("adverse_events", "lab_data", "visits"))
+#' @param domains Clinical domains to include (e.g., c("AE", "LB", "VISIT"))
 #' @param include_pipeline Whether to run full analytics pipeline (raw -> mapped -> metrics -> reports)
 #' @return LongitudinalStudy object containing all generated data and results
 #' @export
@@ -458,7 +458,7 @@ generate_study_data_with_config <- function(config, workflow_path = "workflow/1_
 #'   sites = 15,
 #'   timepoints = 6,
 #'   interval = "2 months",
-#'   domains = c("adverse_events", "lab_data", "visits")
+#'   domains = c("AE", "LB", "VISIT")
 #' )
 #' 
 #' # With full analytics pipeline
@@ -468,7 +468,7 @@ generate_study_data_with_config <- function(config, workflow_path = "workflow/1_
 #'   sites = 25,
 #'   timepoints = 12,
 #'   interval = "1 month",
-#'   domains = c("adverse_events", "lab_data", "visits", "queries"),
+#'   domains = c("AE", "LB", "VISIT", "QUERY"),
 #'   include_pipeline = TRUE
 #' )
 #' 
@@ -483,14 +483,15 @@ create_longitudinal_study <- function(study_id = "STUDY-001",
                                      timepoints = 5,
                                      interval = "1 month",
                                      start_date = Sys.Date() - 365,
-                                     domains = c("adverse_events", "lab_data", "visits"),
+                                     domains = c("AE", "LB", "VISIT"),
                                      include_pipeline = FALSE) {
   
   # Validate inputs
   validate_study_inputs(participants, sites, timepoints, domains)
   
-  # Convert user-friendly domain names to technical mappings
-  mappings <- map_domain_names_to_mappings(domains)
+  # Ensure core mappings are included
+  core_mappings <- c("STUDY", "SITE", "SUBJ", "ENROLL")
+  mappings <- unique(c(core_mappings, domains))
   
   # Generate core study structure
   message(sprintf("Creating longitudinal study '%s' with %d participants across %d sites over %d timepoints", 
@@ -604,10 +605,9 @@ LongitudinalStudy <- R6::R6Class("LongitudinalStudy",
     },
     
     #' Get specific domain data across all timepoints
-    #' @param domain Domain name (e.g., "adverse_events", "lab_data")
+    #' @param domain Domain mapping name (e.g., "AE", "LB")
     get_domain_timeline = function(domain) {
-      mapping_name <- map_domain_names_to_mappings(domain)
-      raw_name <- paste0("Raw_", mapping_name)
+      raw_name <- paste0("Raw_", domain)
       
       timeline_data <- list()
       for (i in seq_along(self$raw_data)) {
@@ -633,8 +633,10 @@ validate_study_inputs <- function(participants, sites, timepoints, domains) {
   if (timepoints < 1) stop("timepoints must be at least 1")
   if (sites > participants) warning("More sites than participants may result in empty sites")
   
-  valid_domains <- c("adverse_events", "lab_data", "visits", "queries", "protocol_deviations", 
-                    "data_changes", "data_entry", "study_completion", "enrollment", "consents")
+  valid_domains <- c("AE", "LB", "VISIT", "QUERY", "PD", "DATACHG", "DATAENT", 
+                    "STUDCOMP", "ENROLL", "Consents", "COUNTRY", "EXCLUSION", 
+                    "PK", "IE", "SDRGCOMP", "AntiCancer", "Baseline", "Death", 
+                    "OverallResponse", "Randomization", "STUDY", "SUBJ", "SITE")
   invalid_domains <- setdiff(domains, valid_domains)
   if (length(invalid_domains) > 0) {
     stop(sprintf("Invalid domains: %s. Valid options: %s", 
@@ -643,33 +645,14 @@ validate_study_inputs <- function(participants, sites, timepoints, domains) {
   }
 }
 
-#' Map user-friendly domain names to technical mapping names
-#' @param domains Vector of user-friendly domain names
-#' @return Vector of technical mapping names
+#' Ensure core mappings are included with domains
+#' @param domains Vector of domain mapping names
+#' @return Vector of mapping names including required core mappings
 #' @keywords internal
-map_domain_names_to_mappings <- function(domains) {
-  domain_mapping <- c(
-    "adverse_events" = "AE",
-    "lab_data" = "LB", 
-    "visits" = "VISIT",
-    "queries" = "QUERY",
-    "protocol_deviations" = "PD",
-    "data_changes" = "DATACHG",
-    "data_entry" = "DATAENT", 
-    "study_completion" = "STUDCOMP",
-    "enrollment" = "ENROLL",
-    "consents" = "Consents",
-    "country" = "COUNTRY",
-    "exclusions" = "EXCLUSION",
-    "biomarkers" = "PK"
-  )
-  
+ensure_core_mappings <- function(domains) {
   # Always include core mappings
   core_mappings <- c("STUDY", "SITE", "SUBJ", "ENROLL")
-  mapped_domains <- unique(c(core_mappings, domain_mapping[domains]))
-  
-  # Remove any NA values (unmapped domains)
-  mapped_domains[!is.na(mapped_domains)]
+  unique(c(core_mappings, domains))
 }
 
 #' Generate study data snapshots
@@ -895,28 +878,45 @@ generate_complete_longitudinal_study <- function(participant_count = 1000,
 #' @param participants Number of participants (default: 1000)
 #' @param sites Number of sites (default: 150) 
 #' @param months_duration Study duration in months (default: 3)
-#' @param domains Clinical domains to include (uses sensible defaults)
+#' @param study_type Type of study - "standard" for basic clinical domains or "endpoints" for comprehensive endpoint analysis
+#' @param domains Clinical domains to include (overrides study_type if specified)
 #' @return LongitudinalStudy object with complete analytics
 #' @export
 #' @examples
 #' \dontrun{
-#' # One-liner replacement for the complex workflow in issue #95
-#' study <- quick_longitudinal_study("Oncology Phase III", 
-#'                                  participants = 1000, 
-#'                                  sites = 150, 
-#'                                  months_duration = 3)
+#' # Standard clinical trial
+#' study <- quick_longitudinal_study("Oncology Phase III", study_type = "standard")
 #' 
-#' # Access results intuitively
-#' study$summary()
-#' site_analytics <- study$analytics$by_site
-#' country_analytics <- study$analytics$by_country
+#' # Comprehensive endpoints study  
+#' study <- quick_longitudinal_study("Cardio Endpoints", study_type = "endpoints")
+#' 
+#' # Custom domains (overrides study_type)
+#' study <- quick_longitudinal_study("Custom Trial", 
+#'                                  domains = c("AE", "LB"))
 #' }
 quick_longitudinal_study <- function(study_name = "Clinical Trial",
                                     participants = 1000,
                                     sites = 150, 
                                     months_duration = 3,
-                                    domains = c("adverse_events", "lab_data", "visits", 
-                                              "queries", "protocol_deviations", "data_changes")) {
+                                    study_type = "standard",
+                                    domains = NULL) {
+  
+  # Define domain sets based on study type
+  if (is.null(domains)) {
+    domains <- switch(study_type,
+      "standard" = c(
+        "AE", "COUNTRY", "DATACHG", "DATAENT", "ENROLL", "LB", 
+        "VISIT", "PD", "PK", "QUERY", "STUDCOMP", "SDRGCOMP", "IE", "EXCLUSION"
+      ),
+      "endpoints" = c(
+        "AntiCancer", "Baseline", "Death", "OverallResponse", "Randomization", 
+        "STUDCOMP", "VISIT", "Consents", "STUDY", "SUBJ"
+      ),
+      # Default to standard if unrecognized type
+      c("AE", "COUNTRY", "DATACHG", "DATAENT", "ENROLL", "LB", 
+        "VISIT", "PD", "PK", "QUERY", "STUDCOMP", "SDRGCOMP", "IE", "EXCLUSION")
+    )
+  }
   
   # Auto-generate study ID from name
   study_id <- gsub("[^A-Za-z0-9]", "-", study_name)
@@ -924,7 +924,9 @@ quick_longitudinal_study <- function(study_name = "Clinical Trial",
   study_id <- gsub("^-|-$", "", study_id)
   study_id <- toupper(paste0(study_id, "-", sprintf("%03d", sample(100:999, 1))))
   
-  message(sprintf("🚀 Quick start: Generating '%s' [%s]", study_name, study_id))
+  message(sprintf("🚀 Quick start: Generating '%s' [%s] (%s study)", 
+                 study_name, study_id, study_type))
+  message(sprintf("📊 Domains: %s", paste(domains, collapse = ", ")))
   
   create_longitudinal_study(
     study_id = study_id,
