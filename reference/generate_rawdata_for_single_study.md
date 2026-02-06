@@ -97,6 +97,6 @@ snapshots <- generate_rawdata_for_single_study(
   package = "gsm.mapping",
   desired_specs = NULL
 )
-#> INFO [2026-02-06 15:16:54]  -- Adding snapshot 1...
+#> INFO [2026-02-06 15:26:58]  -- Adding snapshot 1...
 #> Error in db_lock_dt(1): could not find function "db_lock_dt"
 ```
