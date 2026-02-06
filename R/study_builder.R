@@ -84,16 +84,9 @@ StudyConfig <- R6::R6Class("StudyConfig",
     },
     
     #' Validate the configuration
+    #' @description Basic validation of study parameters
     validate = function() {
-      # Check required datasets
-      required_datasets <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL")
-      missing <- setdiff(required_datasets, names(self$dataset_configs))
-      
-      if (length(missing) > 0) {
-        stop(sprintf("Missing required datasets: %s", paste(missing, collapse = ", ")))
-      }
-      
-      # Check temporal configuration
+      # Basic checks only
       if (self$temporal_config$snapshot_count < 1) {
         stop("snapshot_count must be at least 1")
       }
@@ -301,6 +294,7 @@ StudyBuilder <- R6::R6Class("StudyBuilder",
     },
     
     #' Preview the configuration without generating data
+    #' @description Display study configuration summary
     preview = function() {
       cat("Study Configuration Preview\n")
       cat("==========================\n\n")
@@ -369,6 +363,7 @@ create_study <- function(study_id = "STUDY001") {
 
 #' Example of fluent interface usage
 #' 
+#' @name study_builder_examples
 #' @examples
 #' \dontrun{
 #' # Simple study with standard datasets
@@ -559,6 +554,7 @@ LongitudinalStudy <- R6::R6Class("LongitudinalStudy",
     },
     
     #' Get summary of study structure
+    #' @description Display comprehensive study summary
     summary = function() {
       cat("Longitudinal Study Summary\n")
       cat("=========================\n")
@@ -583,12 +579,8 @@ LongitudinalStudy <- R6::R6Class("LongitudinalStudy",
     },
     
     #' Run the complete analytics pipeline
+    #' @description Execute full analytics pipeline on study data
     run_analytics_pipeline = function() {
-      if (!check_pipeline_dependencies()) {
-        warning("Analytics pipeline dependencies not available. Skipping pipeline execution.")
-        return(invisible(self))
-      }
-      
       pipeline_results <- execute_analytics_pipeline(self$raw_data, self$config)
       self$analytics <- organize_analytics_results(pipeline_results)
       
@@ -631,18 +623,6 @@ validate_study_inputs <- function(participants, sites, timepoints, domains) {
   if (participants < 1) stop("participants must be at least 1")
   if (sites < 1) stop("sites must be at least 1") 
   if (timepoints < 1) stop("timepoints must be at least 1")
-  if (sites > participants) warning("More sites than participants may result in empty sites")
-  
-  valid_domains <- c("AE", "LB", "VISIT", "QUERY", "PD", "DATACHG", "DATAENT", 
-                    "STUDCOMP", "ENROLL", "Consents", "COUNTRY", "EXCLUSION", 
-                    "PK", "IE", "SDRGCOMP", "AntiCancer", "Baseline", "Death", 
-                    "OverallResponse", "Randomization", "STUDY", "SUBJ", "SITE")
-  invalid_domains <- setdiff(domains, valid_domains)
-  if (length(invalid_domains) > 0) {
-    stop(sprintf("Invalid domains: %s. Valid options: %s", 
-                paste(invalid_domains, collapse = ", "),
-                paste(valid_domains, collapse = ", ")))
-  }
 }
 
 #' Ensure core mappings are included with domains
@@ -695,15 +675,6 @@ parse_interval_to_snapshot_width <- function(interval) {
   } else {
     return("months")  # default
   }
-}
-
-#' Check if analytics pipeline dependencies are available
-#' @return Logical indicating if dependencies are available
-#' @keywords internal
-check_pipeline_dependencies <- function() {
-  required_packages <- c("gsm.core", "gsm.mapping", "gsm.kri", "gsm.reporting", "gsm.qtl")
-  missing_packages <- setdiff(required_packages, rownames(installed.packages()))
-  length(missing_packages) == 0
 }
 
 #' Execute the analytics pipeline
