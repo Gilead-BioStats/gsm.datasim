@@ -68,17 +68,17 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
     )
   )
 
+  # Fix Raw_VISIT
+  combined_specs$Raw_VISIT <- list(
+    subjid = list(required = TRUE),
+    foldername = list(required = TRUE),
+    instancename = list(required = TRUE),
+    visit_dt = list(required = TRUE),
+    studyid = list(required = TRUE)
+  )
+
   # Specify the desired first few elements in order
   desired_order <- c("Raw_STUDY", "Raw_SITE", "Raw_SUBJ", "Raw_ENROLL", "Raw_VISIT", "Raw_STUDCOMP")
-  if (!("Raw_VISIT" %in% names(combined_specs))) {
-    combined_specs$Raw_VISIT <- list(
-      subjid = list(required = TRUE),
-      foldername = list(required = TRUE),
-      instancename = list(required = TRUE),
-      visit_dt = list(required = TRUE),
-      studyid = list(required = TRUE)
-    )
-  }
   desired_order <- desired_order[desired_order %in% names(combined_specs)]
 
   # Rearrange the elements

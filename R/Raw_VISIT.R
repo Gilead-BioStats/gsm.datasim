@@ -10,8 +10,8 @@
 #' @noRd
 Raw_VISIT <- function(data, previous_data, spec, startDate, SnapshotWidth, ...) {
   inps <- list(...)
-  if ("Raw_SV" %in% names(previous_data)) {
-    dataset <- previous_data$Raw_SV
+  if ("Raw_VISIT" %in% names(previous_data)) {
+    dataset <- previous_data$Raw_VISIT
     previous_row_num <- length(unique(dataset$subjid))
   } else {
     dataset <- NULL
@@ -50,7 +50,7 @@ Raw_VISIT <- function(data, previous_data, spec, startDate, SnapshotWidth, ...) 
     )
   )
 
-  curr_spec <- spec$Raw_SV
+  curr_spec <- spec$Raw_VISIT
 
 
   if (!("subjid" %in% names(curr_spec))) {
@@ -96,7 +96,7 @@ Raw_VISIT <- function(data, previous_data, spec, startDate, SnapshotWidth, ...) 
     default = list(n, subjs, possible_visits)
   )
 
-  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_SV, ...)
+  res <- add_new_var_data(dataset, curr_spec, args, spec$Raw_VISIT, ...)
 
   return(res)
 }
@@ -122,3 +122,4 @@ instancename <- function(n, subjs, possible_visits, ...) {
 visit_dt <- function(n, start_date, possible_Visits, SnapshotWidth, ...) {
   rep(generate_consecutive_random_dates(nrow(possible_Visits), start_date, period_to_days(SnapshotWidth)), n)
 }
+visit <- foldername

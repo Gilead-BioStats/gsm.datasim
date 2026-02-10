@@ -2,10 +2,8 @@ devtools::load_all()
 library(dplyr)
 
 # generate data for KRI reports:
-core_mappings <- "VISIT"
-#
-# c("AE", "COUNTRY", "DATACHG", "DATAENT", "ENROLL", "LB", "PK",
-#                    "PD", "QUERY", "STUDY", "STUDCOMP", "SDRGCOMP", "SITE", "SUBJ", "VISIT")
+core_mappings <-  c("AE", "COUNTRY", "DATACHG", "DATAENT", "ENROLL", "LB", "PK", "PD", "QUERY", "STUDY", "STUDCOMP", "SDRGCOMP", "SITE", "SUBJ", "VISIT")
+
 
 single_result <- generate_rawdata_for_single_study(SnapshotCount = 3,
                                                    SnapshotWidth = "months",
