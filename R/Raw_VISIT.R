@@ -24,7 +24,7 @@ Raw_VISIT <- function(data, previous_data, spec, startDate, SnapshotCount, Snaps
   }
 
   possible_Visits <- data.frame(
-    visit = c("Screening", paste0("VISIT ", 1:SnapshotCount), "Follow-up")
+    visit = c("Screening", paste0("VISIT ", 1:(SnapshotCount-1)), "End of Treatment", "Follow-up")
   )
 
   curr_spec <- spec$Raw_VISIT
