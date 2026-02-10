@@ -56,6 +56,9 @@ Raw_VISIT <- function(data, previous_data, spec, startDate, SnapshotWidth, ...) 
   if (!("subjid" %in% names(curr_spec))) {
     curr_spec$subjid <- list(required = TRUE)
   }
+  if (!("studyid" %in% names(curr_spec))) {
+    curr_spec$studyid <- list(required = TRUE)
+  }
 
   if (!("invid" %in% names(curr_spec))) {
     curr_spec$invid_repeated <- list(required = TRUE)
@@ -88,6 +91,7 @@ Raw_VISIT <- function(data, previous_data, spec, startDate, SnapshotWidth, ...) 
   args <- list(
     subjid_repeated = list(nrow(possible_visits), subjs),
     invid_repeated = list(nrow(possible_visits), invids),
+    studyid = list(nrow(possible_visits), data$Raw_STUDY$protocol_number[[1]]),
     visit_dt = list(n, startDate, possible_visits, SnapshotWidth),
     default = list(n, subjs, possible_visits)
   )

@@ -75,24 +75,10 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
       subjid = list(required = TRUE),
       foldername = list(required = TRUE),
       instancename = list(required = TRUE),
-      visit_dt = list(required = TRUE)
+      visit_dt = list(required = TRUE),
+      studyid = list(required = TRUE)
     )
   }
-  # if (!("Visit" %in% names(combined_specs))) {
-  #   combined_specs$Raw_VISIT <- list(
-  #     subjid = list(required = TRUE),
-  #     visit = list(
-  #       required = TRUE,
-  #       source_col = "foldername"
-  #     ),
-  #     visit_date = list(
-  #       required = TRUE,
-  #       source_col = "visit_dt"
-  #     ),
-  #     studyid = list(required = TRUE),
-  #     invid = list(required = TRUE)
-  #   )
-  # }
   desired_order <- desired_order[desired_order %in% names(combined_specs)]
 
   # Rearrange the elements
@@ -212,13 +198,6 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
         Raw_Baseline = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
         Raw_Consents = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
         Raw_Death = list(data, previous_data, combined_specs, n = n, startDate = start_dates[snapshot_idx]),
-        # Raw_VISIT = list(data, previous_data, combined_specs,
-        #   n = n,
-        #   startDate = start_dates[snapshot_idx],
-        #   SnapshotCount = SnapshotCount,
-        #   SnapshotWidth = SnapshotWidth,
-        #   split_vars = list("subjid_invid")
-        # ),
         Raw_Randomization = list(data, previous_data, combined_specs,
           n = n,
           startDate = start_dates[snapshot_idx],
