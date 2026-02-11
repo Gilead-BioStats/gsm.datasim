@@ -1,13 +1,19 @@
-# Longitudinal Study Data Container
+# Generate Longitudinal Clinical Trial Data with Integrated Workflow
 
-Longitudinal Study Data Container
+Generate Longitudinal Clinical Trial Data with Integrated Workflow
 
-Longitudinal Study Data Container
+Generate Longitudinal Clinical Trial Data with Integrated Workflow
+
+## Value
+
+LongitudinalStudy object containing all generated data and results
 
 ## Details
 
-R6 class that encapsulates longitudinal study data and provides
-intuitive access methods for different analysis perspectives.
+Creates a longitudinal study with multiple time points and optional
+integrated pipeline processing. This function provides a clean,
+intuitive interface for generating realistic clinical trial data over
+time.
 
 ## Public fields
 
@@ -40,6 +46,8 @@ intuitive access methods for different analysis perspectives.
 - [`LongitudinalStudy$get_timepoint()`](#method-LongitudinalStudy-get_timepoint)
 
 - [`LongitudinalStudy$get_domain_timeline()`](#method-LongitudinalStudy-get_domain_timeline)
+
+- [`LongitudinalStudy$get_domain_names()`](#method-LongitudinalStudy-get_domain_names)
 
 - [`LongitudinalStudy$clone()`](#method-LongitudinalStudy-clone)
 
@@ -107,13 +115,23 @@ timepoint
 
 #### Usage
 
-    LongitudinalStudy$get_domain_timeline(domain)
+    LongitudinalStudy$get_domain_timeline(domain_name)
 
 #### Arguments
 
-- `domain`:
+- `domain_name`:
 
-  Domain mapping name (e.g., "AE", "LB")
+  Domain mapping name (e.g., "AE", "LB") Get available domain names
+
+------------------------------------------------------------------------
+
+### Method `get_domain_names()`
+
+Return list of available domain names across all timepoints
+
+#### Usage
+
+    LongitudinalStudy$get_domain_names()
 
 ------------------------------------------------------------------------
 
@@ -130,3 +148,5 @@ The objects of this class are cloneable with this method.
 - `deep`:
 
   Whether to make a deep clone.
+
+## Examples

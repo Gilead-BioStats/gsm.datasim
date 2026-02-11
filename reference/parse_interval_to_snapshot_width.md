@@ -1,6 +1,6 @@
-# Parse user-friendly interval to snapshot width format
+# Parse interval string to snapshot width
 
-Parse user-friendly interval to snapshot width format
+Parse interval string to snapshot width
 
 ## Usage
 
@@ -12,8 +12,8 @@ parse_interval_to_snapshot_width(interval)
 
 - interval:
 
-  User-friendly interval (e.g., "1 month", "2 weeks")
+  Interval string (e.g., "1 month", "2 weeks")
 
 ## Value
 
-Snapshot width format for existing function
+Snapshot width for temporal configuration

@@ -1,6 +1,6 @@
-# Organize analytics results into intuitive structure
+# Organize analytics pipeline results
 
-Organize analytics results into intuitive structure
+Organize analytics pipeline results
 
 ## Usage
 
@@ -12,7 +12,7 @@ organize_analytics_results(pipeline_results)
 
 - pipeline_results:
 
-  Results from pipeline execution
+  Raw pipeline results from gsm.core
 
 ## Value
 

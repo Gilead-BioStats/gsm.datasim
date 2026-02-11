@@ -1,6 +1,6 @@
-# Generate study data using configuration object
+# Generate study data with configuration
 
-Internal function to generate study data based on StudyConfig settings
+Generate study data with configuration
 
 ## Usage
 
@@ -17,7 +17,7 @@ generate_study_data_with_config(
 
 - config:
 
-  StudyConfig object containing all configuration
+  StudyConfig object
 
 - workflow_path:
 
@@ -25,7 +25,7 @@ generate_study_data_with_config(
 
 - mappings:
 
-  Mapping specifications to use
+  Optional mappings list to use
 
 - package:
 

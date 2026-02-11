@@ -123,9 +123,14 @@ intuitive and discoverable through method chaining.
     StudyBuilder$with_standard_datasets(
       adverse_events = TRUE,
       protocol_deviations = TRUE,
-      lab_data = FALSE,
+      lab_data = TRUE,
       visits = TRUE,
-      enrollment = TRUE
+      enrollment = TRUE,
+      data_quality = TRUE,
+      pharmacokinetics = TRUE,
+      study_completion = TRUE,
+      inclusion_exclusion = TRUE,
+      country = TRUE
     )
 
 #### Arguments
@@ -148,7 +153,27 @@ intuitive and discoverable through method chaining.
 
 - `enrollment`:
 
-  Include enrollment data Add custom dataset with flexible configuration
+  Include enrollment data
+
+- `data_quality`:
+
+  Include data quality domains (DATACHG, DATAENT, QUERY)
+
+- `pharmacokinetics`:
+
+  Include pharmacokinetics data
+
+- `study_completion`:
+
+  Include study completion data
+
+- `inclusion_exclusion`:
+
+  Include inclusion/exclusion criteria
+
+- `country`:
+
+  Include country mapping Add custom dataset with flexible configuration
 
 ------------------------------------------------------------------------
 

@@ -167,9 +167,14 @@ Include standard clinical datasets with default configurations</p></dd>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">StudyBuilder</span><span class="op">$</span><span class="fu">with_standard_datasets</span><span class="op">(</span></span>
 <span>  adverse_events <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  protocol_deviations <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  lab_data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  lab_data <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  visits <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  enrollment <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  enrollment <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  data_quality <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  pharmacokinetics <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  study_completion <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  inclusion_exclusion <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  country <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
@@ -192,7 +197,27 @@ Include standard clinical datasets with default configurations</p></dd>
 
 
 <dt><code>enrollment</code></dt>
-<dd><p>Include enrollment data
+<dd><p>Include enrollment data</p></dd>
+
+
+<dt><code>data_quality</code></dt>
+<dd><p>Include data quality domains (DATACHG, DATAENT, QUERY)</p></dd>
+
+
+<dt><code>pharmacokinetics</code></dt>
+<dd><p>Include pharmacokinetics data</p></dd>
+
+
+<dt><code>study_completion</code></dt>
+<dd><p>Include study completion data</p></dd>
+
+
+<dt><code>inclusion_exclusion</code></dt>
+<dd><p>Include inclusion/exclusion criteria</p></dd>
+
+
+<dt><code>country</code></dt>
+<dd><p>Include country mapping
 Add custom dataset with flexible configuration</p></dd>
 
 

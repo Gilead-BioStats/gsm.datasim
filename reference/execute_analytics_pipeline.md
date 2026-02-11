@@ -1,6 +1,6 @@
-# Execute the analytics pipeline
+# Execute analytics pipeline
 
-Execute the analytics pipeline
+Execute analytics pipeline
 
 ## Usage
 
@@ -12,12 +12,12 @@ execute_analytics_pipeline(raw_data, config)
 
 - raw_data:
 
-  List of raw data snapshots
+  Raw study data
 
 - config:
 
-  Study configuration
+  StudyConfig object
 
 ## Value
 
-Pipeline results
+Analytics pipeline results

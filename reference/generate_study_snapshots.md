@@ -1,6 +1,6 @@
-# Generate study data snapshots
+# Generate study data across multiple timepoints
 
-Generate study data snapshots
+Generate study data across multiple timepoints
 
 ## Usage
 
@@ -35,12 +35,12 @@ generate_study_snapshots(
 
 - interval:
 
-  Time interval
+  Time interval between snapshots
 
 - mappings:
 
-  Technical mapping names
+  Vector of mapping names to use
 
 ## Value
 
-List of raw data snapshots
+List of raw data for each timepoint
