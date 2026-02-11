@@ -247,10 +247,12 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
         filter(rgmn_dt == min(rgmn_dt, na.rm = TRUE)) %>%
         ungroup()
     }
-    data$Raw_VISIT <- data$Raw_VISIT %>%
-      left_join(., select(data$Raw_SDRGCOMP, subjid, sdrgyn), by = c("subjid")) %>%
-      filter(sdrgyn == "Y" | !foldername %in% c("End of Treatment", "Follow-up")) %>%
-      select(-sdrgyn)
+    if ("Raw_VISIT" %in% names(data) & "Raw_SDRGCOMP" %in% names(data)) {
+      data$Raw_VISIT <- data$Raw_VISIT %>%
+        left_join(., select(data$Raw_SDRGCOMP, subjid, sdrgyn), by = c("subjid")) %>%
+        filter(sdrgyn == "Y" | !foldername %in% c("End of Treatment", "Follow-up")) %>%
+        select(-sdrgyn)
+    }
     snapshots[[snapshot_idx]] <- data
     logger::log_info(glue::glue(" -- Snapshot {snapshot_idx} added successfully"))
   }
