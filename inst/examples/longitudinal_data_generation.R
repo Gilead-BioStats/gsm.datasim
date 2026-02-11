@@ -8,9 +8,9 @@ library(gsm.datasim)
 
 # Standard study (core mappings)
 study <- quick_longitudinal_study(
-  study_name = "Oncology Phase III Trial", 
-  participants = 1000, 
-  sites = 150, 
+  study_name = "Oncology Phase III Trial",
+  participants = 1000,
+  sites = 150,
   months_duration = 3,
   study_type = "standard"
 )
@@ -57,13 +57,14 @@ cat("Datasets in timepoint 1:", paste(names(timepoint_1_data), collapse = ", "),
 
 # Chain methods for readable, discoverable configuration
 
-complex_study <- create_study("COMPLEX-TRIAL-001") %>%
-  with_study_design(participants = 300, sites = 20) %>%
-  over_time(start_date = "2023-01-01", snapshots = 8, frequency = "6 weeks") %>%
-  with_standard_datasets(adverse_events = TRUE, visits = TRUE, lab_data = TRUE) %>%
-  with_adverse_events(rate_per_patient = 2.5, temporal_pattern = "increasing") %>%
-  with_data_quality(queries = TRUE, data_changes = TRUE) %>%
-  preview()  # Preview configuration before generation
+# Note: The following complex study configuration demonstrates R6 method chaining
+complex_study <- create_study("COMPLEX-TRIAL-001")
+complex_study$with_study_design(participants = 300, sites = 20)
+complex_study$over_time(start_date = "2023-01-01", snapshots = 8, frequency = "6 weeks")
+complex_study$with_standard_datasets(adverse_events = TRUE, visits = TRUE, lab_data = TRUE)
+complex_study$with_adverse_events(rate_per_patient = 2.5, temporal_pattern = "increasing")
+complex_study$with_data_quality(queries = TRUE, data_changes = TRUE)
+complex_study$preview()  # Preview configuration before generation
 
 # Generate the data (commented out to avoid long execution)
 # complex_results <- complex_study$generate()

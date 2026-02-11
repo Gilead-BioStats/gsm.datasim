@@ -17,4 +17,3 @@ Pipeline results
 \description{
 Execute the analytics pipeline
 }
-\keyword{internal}

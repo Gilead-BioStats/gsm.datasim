@@ -12,7 +12,8 @@ create_longitudinal_study(
   interval = "1 month",
   start_date = Sys.Date() - 365,
   domains = c("AE", "LB", "VISIT"),
-  include_pipeline = FALSE
+  include_pipeline = FALSE,
+  study_type = "standard"
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ create_longitudinal_study(
 \item{domains}{Clinical domains to include (e.g., c("AE", "LB", "VISIT"))}
 
 \item{include_pipeline}{Whether to run full analytics pipeline (raw -> mapped -> metrics -> reports)}
+
+\item{study_type}{Type of study - "standard" uses gsm.kri metrics, "endpoints" uses gsm.endpoints metrics}
 }
 \value{
 LongitudinalStudy object containing all generated data and results
@@ -54,7 +57,7 @@ study <- create_longitudinal_study(
 
 # With full analytics pipeline
 study_with_analytics <- create_longitudinal_study(
-  study_id = "CARDIO-002", 
+  study_id = "CARDIO-002",
   participants = 500,
   sites = 25,
   timepoints = 12,

@@ -15,4 +15,3 @@ Snapshot width format for existing function
 \description{
 Parse user-friendly interval to snapshot width format
 }
-\keyword{internal}

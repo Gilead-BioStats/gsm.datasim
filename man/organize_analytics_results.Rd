@@ -15,4 +15,3 @@ Organized analytics results
 \description{
 Organize analytics results into intuitive structure
 }
-\keyword{internal}

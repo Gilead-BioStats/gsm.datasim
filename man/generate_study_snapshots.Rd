@@ -32,4 +32,3 @@ List of raw data snapshots
 \description{
 Generate study data snapshots
 }
-\keyword{internal}

@@ -12,7 +12,7 @@ generate_complete_longitudinal_study(
   snapshot_width = "months",
   start_date = as.Date("2025-02-01"),
   core_mappings = c("AE", "COUNTRY", "DATACHG", "DATAENT", "ENROLL", "LB", "VISIT", "PD",
-    "PK", "QUERY", "STUDY", "STUDCOMP", "SDRGCOMP", "SITE", "SUBJ", "IE", "EXCLUSION"))
+    "PK", "QUERY", "STUDY", "STUDCOMP", "SDRGCOMP", "SITE", "SUBJ", "IE", "EXCLUSION")
 )
 }
 \arguments{

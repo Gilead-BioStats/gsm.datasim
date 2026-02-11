@@ -26,4 +26,3 @@ List of generated study data
 \description{
 Internal function to generate study data based on StudyConfig settings
 }
-\keyword{internal}

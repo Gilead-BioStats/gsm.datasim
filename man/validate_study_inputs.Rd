@@ -18,4 +18,3 @@ validate_study_inputs(participants, sites, timepoints, domains)
 \description{
 Validate study input parameters
 }
-\keyword{internal}

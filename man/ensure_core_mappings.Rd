@@ -15,4 +15,3 @@ Vector of mapping names including required core mappings
 \description{
 Ensure core mappings are included with domains
 }
-\keyword{internal}
