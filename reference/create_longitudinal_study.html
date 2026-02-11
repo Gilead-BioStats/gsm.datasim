@@ -57,7 +57,8 @@ generating realistic clinical trial data over time.</p>
 <span>  interval <span class="op">=</span> <span class="st">"1 month"</span>,</span>
 <span>  start_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">365</span>,</span>
 <span>  domains <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AE"</span>, <span class="st">"LB"</span>, <span class="st">"VISIT"</span><span class="op">)</span>,</span>
-<span>  include_pipeline <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  include_pipeline <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  study_type <span class="op">=</span> <span class="st">"standard"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -96,6 +97,10 @@ generating realistic clinical trial data over time.</p>
 <dt id="arg-include-pipeline">include_pipeline<a class="anchor" aria-label="anchor" href="#arg-include-pipeline"></a></dt>
 <dd><p>Whether to run full analytics pipeline (raw -&gt; mapped -&gt; metrics -&gt; reports)</p></dd>
 
+
+<dt id="arg-study-type">study_type<a class="anchor" aria-label="anchor" href="#arg-study-type"></a></dt>
+<dd><p>Type of study - "standard" uses gsm.kri metrics, "endpoints" uses gsm.endpoints metrics</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -117,7 +122,7 @@ generating realistic clinical trial data over time.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># With full analytics pipeline</span></span></span>
 <span class="r-in"><span><span class="va">study_with_analytics</span> <span class="op">&lt;-</span> <span class="fu">create_longitudinal_study</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  study_id <span class="op">=</span> <span class="st">"CARDIO-002"</span>, </span></span>
+<span class="r-in"><span>  study_id <span class="op">=</span> <span class="st">"CARDIO-002"</span>,</span></span>
 <span class="r-in"><span>  participants <span class="op">=</span> <span class="fl">500</span>,</span></span>
 <span class="r-in"><span>  sites <span class="op">=</span> <span class="fl">25</span>,</span></span>
 <span class="r-in"><span>  timepoints <span class="op">=</span> <span class="fl">12</span>,</span></span>

@@ -55,11 +55,11 @@ if (FALSE) { # \dontrun{
 # Standard clinical trial
 study <- quick_longitudinal_study("Oncology Phase III", study_type = "standard")
 
-# Comprehensive endpoints study  
+# Comprehensive endpoints study
 study <- quick_longitudinal_study("Cardio Endpoints", study_type = "endpoints")
 
 # Custom domains (overrides study_type)
-study <- quick_longitudinal_study("Custom Trial", 
+study <- quick_longitudinal_study("Custom Trial",
                                  domains = c("AE", "LB"))
 } # }
 ```
