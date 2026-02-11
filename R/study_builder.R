@@ -440,43 +440,7 @@ create_study <- function(study_id = "STUDY001") {
 #' }
 NULL
 
-#' Generate study data using configuration object
-#'
-#' Internal function to generate study data based on StudyConfig settings
-#'
-#' @param config StudyConfig object containing all configuration
-#' @param workflow_path Path to workflow mappings
-#' @param mappings Mapping specifications to use
-#' @param package Package containing the workflows
-#' @return List of generated study data
-#' @export
-generate_study_data_with_config <- function(config, workflow_path = "workflow/1_mappings",
-                                           mappings = NULL, package = "gsm.mapping") {
 
-  # Determine which mappings to use based on enabled datasets
-  if (is.null(mappings)) {
-    # Extract dataset types and convert to mapping names
-    enabled_datasets <- names(config$dataset_configs)[
-      sapply(config$dataset_configs, function(x) x$enabled)
-    ]
-    # Remove "Raw_" prefix for mapping names
-    mappings <- gsub("^Raw_", "", enabled_datasets)
-    # Remove duplicates and ensure core mappings are included
-    mappings <- unique(c("STUDY", "SITE", "SUBJ", "ENROLL", mappings))
-  }
-
-  # Generate the data using existing function
-  generate_rawdata_for_single_study(
-    SnapshotCount = config$temporal_config$snapshot_count,
-    SnapshotWidth = config$temporal_config$snapshot_width,
-    ParticipantCount = config$study_params$participant_count,
-    SiteCount = config$study_params$site_count,
-    StudyID = config$study_params$study_id,
-    workflow_path = workflow_path,
-    mappings = mappings,
-    package = package
-  )
-}
 
 #' Generate Longitudinal Clinical Trial Data with Integrated Workflow
 #'
@@ -523,60 +487,7 @@ generate_study_data_with_config <- function(config, workflow_path = "workflow/1_
 #' site_analytics <- study_with_analytics$analytics$by_site
 #' country_analytics <- study_with_analytics$analytics$by_country
 #' }
-create_longitudinal_study <- function(study_id = "STUDY-001",
-                                     participants = 100,
-                                     sites = 10,
-                                     timepoints = 5,
-                                     interval = "1 month",
-                                     start_date = Sys.Date() - 365,
-                                     domains = c("AE", "LB", "VISIT"),
-                                     include_pipeline = FALSE,
-                                     study_type = "standard") {
 
-  # Validate inputs
-  validate_study_inputs(participants, sites, timepoints, domains)
-
-  # Ensure core mappings are included
-  core_mappings <- c("STUDY", "SITE", "SUBJ", "ENROLL")
-  mappings <- unique(c(core_mappings, domains))
-
-  # Generate core study structure
-  message(sprintf("Creating longitudinal study '%s' with %d participants across %d sites over %d timepoints",
-                 study_id, participants, sites, timepoints))
-
-  raw_data <- generate_study_snapshots(
-    study_id = study_id,
-    participants = participants,
-    sites = sites,
-    timepoints = timepoints,
-    interval = interval,
-    mappings = mappings
-  )
-
-  # Create study object
-  study <- LongitudinalStudy$new(
-    study_id = study_id,
-    raw_data = raw_data,
-    config = list(
-      participants = participants,
-      sites = sites,
-      timepoints = timepoints,
-      interval = interval,
-      domains = domains,
-      start_date = start_date,
-      study_type = study_type
-    )
-  )
-
-  # Run analytics pipeline if requested
-  if (include_pipeline) {
-    message("Running integrated analytics pipeline...")
-    study$run_analytics_pipeline()
-  }
-
-  message("Study generation complete!")
-  return(study)
-}
 
 #' Longitudinal Study Data Container
 #'
@@ -666,305 +577,101 @@ LongitudinalStudy <- R6::R6Class("LongitudinalStudy",
   )
 )
 
-#' Validate study input parameters
-#' @param participants Number of participants
-#' @param sites Number of sites
-#' @param timepoints Number of timepoints
-#' @param domains Domain specifications
+
+#' Longitudinal Study Data Container
+#'
+#' R6 class that encapsulates longitudinal study data and provides intuitive
+#' access methods for different analysis perspectives.
+#'
 #' @export
-validate_study_inputs <- function(participants, sites, timepoints, domains) {
-  if (participants < 1) stop("participants must be at least 1")
-  if (sites < 1) stop("sites must be at least 1")
-  if (timepoints < 1) stop("timepoints must be at least 1")
-}
+LongitudinalStudy <- R6::R6Class("LongitudinalStudy",
+  public = list(
+    #' @field study_id Study identifier
+    study_id = NULL,
+    #' @field raw_data List of raw data for each timepoint
+    raw_data = NULL,
+    #' @field config Study configuration
+    config = NULL,
+    #' @field analytics Organized analytics results
+    analytics = NULL,
 
-#' Ensure core mappings are included with domains
-#' @param domains Vector of domain mapping names
-#' @return Vector of mapping names including required core mappings
-#' @export
-ensure_core_mappings <- function(domains) {
-  # Always include core mappings
-  core_mappings <- c("STUDY", "SITE", "SUBJ", "ENROLL")
-  unique(c(core_mappings, domains))
-}
+    #' Initialize longitudinal study
+    #' @param study_id Study identifier
+    #' @param raw_data Raw study data across timepoints
+    #' @param config Study configuration parameters
+    initialize = function(study_id, raw_data, config = list()) {
+      self$study_id <- study_id
+      self$raw_data <- raw_data
+      self$config <- config
+    },
 
-#' Generate study data snapshots
-#' @param study_id Study identifier
-#' @param participants Number of participants
-#' @param sites Number of sites
-#' @param timepoints Number of timepoints
-#' @param interval Time interval
-#' @param mappings Technical mapping names
-#' @return List of raw data snapshots
-#' @export
-generate_study_snapshots <- function(study_id, participants, sites, timepoints, interval, mappings) {
-  # Convert interval to snapshot width format expected by existing function
-  snapshot_width <- parse_interval_to_snapshot_width(interval)
+    #' Get summary of the study
+    summary = function() {
+      cat("Longitudinal Study:", self$study_id, "\n")
+      cat("Timepoints:", length(self$raw_data), "\n")
+      cat("Participants:", self$config$participants %||% "Unknown", "\n")
+      cat("Sites:", self$config$sites %||% "Unknown", "\n")
 
-  generate_rawdata_for_single_study(
-    SnapshotCount = timepoints,
-    SnapshotWidth = snapshot_width,
-    ParticipantCount = participants,
-    SiteCount = sites,
-    StudyID = study_id,
-    workflow_path = "workflow/1_mappings",
-    mappings = mappings,
-    package = "gsm.mapping"
-  )
-}
+      if (length(self$raw_data) > 0) {
+        domains <- unique(unlist(lapply(self$raw_data, names)))
+        cat("Domains:", paste(domains, collapse = ", "), "\n")
+      }
 
-#' Parse user-friendly interval to snapshot width format
-#' @param interval User-friendly interval (e.g., "1 month", "2 weeks")
-#' @return Snapshot width format for existing function
-#' @export
-parse_interval_to_snapshot_width <- function(interval) {
-  # Simple parsing - can be enhanced later
-  if (grepl("month", interval, ignore.case = TRUE)) {
-    return("months")
-  } else if (grepl("week", interval, ignore.case = TRUE)) {
-    return("weeks")
-  } else if (grepl("day", interval, ignore.case = TRUE)) {
-    return("days")
-  } else {
-    return("months")  # default
-  }
-}
+      if (!is.null(self$analytics)) {
+        cat("Analytics: Available\n")
+        cat("- Site-level results:", nrow(self$analytics$by_site$results), "rows\n")
+        cat("- Country-level results:", nrow(self$analytics$by_country$results), "rows\n")
+        cat("- Study-level results:", nrow(self$analytics$by_study$results), "rows\n")
+      }
+    },
 
-#' Execute the analytics pipeline
-#' @param raw_data List of raw data snapshots
-#' @param config Study configuration
-#' @return Pipeline results
-#' @export
-execute_analytics_pipeline <- function(raw_data, config) {
-  # Get all unique mappings from the raw data
-  all_mappings <- unique(unlist(lapply(raw_data, function(snapshot) {
-    gsub("^Raw_", "", names(snapshot))
-  })))
+    #' Get domain timeline across all timepoints
+    #' @param domain_name Name of the domain (e.g., "Raw_AE")
+    get_domain_timeline = function(domain_name) {
+      if (!startsWith(domain_name, "Raw_")) {
+        domain_name <- paste0("Raw_", domain_name)
+      }
 
-  # Setup workflow specifications
-  mappings_wf <- gsm.core::MakeWorkflowList(
-    strNames = all_mappings,
-    strPath = "workflow/1_mappings",
-    strPackage = "gsm.mapping"
-  )
-  mappings_spec <- gsm.mapping::CombineSpecs(mappings_wf)
+      timeline <- list()
+      for (i in seq_along(self$raw_data)) {
+        if (domain_name %in% names(self$raw_data[[i]])) {
+          timeline[[i]] <- self$raw_data[[i]][[domain_name]]
+        }
+      }
+      return(timeline)
+    },
 
-  # Setup workflow specifications based on study type
-  metrics_wf <- if (config$study_type == "standard") {
-    gsm.core::MakeWorkflowList(strPath = "workflow/2_metrics", strPackage = "gsm.kri")
-  } else if (config$study_type == "endpoints") {
-    gsm.core::MakeWorkflowList(strPath = "workflow/2_metrics", strPackage = "gsm.endpoints")
-  } else {
-    # Default to gsm.kri for unrecognized study types
-    gsm.core::MakeWorkflowList(strPath = "workflow/2_metrics", strPackage = "gsm.kri")
-  }
+    #' Get data for a specific timepoint
+    #' @param timepoint Timepoint number
+    get_timepoint = function(timepoint) {
+      if (timepoint > length(self$raw_data)) {
+        stop("Timepoint ", timepoint, " not available. Only ", length(self$raw_data), " timepoints exist.")
+      }
+      return(self$raw_data[[timepoint]])
+    },
 
-  reporting_wf <- gsm.core::MakeWorkflowList(strPath = "workflow/3_reporting", strPackage = "gsm.reporting")
+    #' Get available domain names
+    get_domain_names = function() {
+      if (length(self$raw_data) > 0) {
+        return(unique(unlist(lapply(self$raw_data, names))))
+      }
+      return(character(0))
+    },
 
-  # Process each timepoint through the pipeline
-  timepoint_results <- list()
+    #' Run analytics pipeline on the study data
+    run_analytics_pipeline = function() {
+      if (length(self$raw_data) == 0) {
+        warning("No raw data available for analytics pipeline")
+        return(invisible(self))
+      }
 
-  for (i in seq_along(raw_data)) {
-    # Ensure site status is set
-    if ("Raw_SITE" %in% names(raw_data[[i]]) && !"site_status" %in% names(raw_data[[i]]$Raw_SITE)) {
-      raw_data[[i]]$Raw_SITE$site_status <- "Active"
+      # Execute pipeline on all timepoints
+      pipeline_results <- execute_analytics_pipeline(self$raw_data, self$config)
+      
+      # Organize results for easy access
+      self$analytics <- organize_analytics_results(pipeline_results)
+      
+      invisible(self)
     }
-
-    # Pipeline: raw -> mapped -> metrics -> reporting
-    lRaw <- gsm.mapping::Ingest(raw_data[[i]], mappings_spec)
-    mapped <- gsm.core::RunWorkflows(mappings_wf, lRaw)
-    analyzed <- gsm.core::RunWorkflows(metrics_wf, c(mapped, list(lWorkflows = metrics_wf)))
-    reporting <- gsm.core::RunWorkflows(reporting_wf, c(mapped, list(lAnalyzed = analyzed, lWorkflows = metrics_wf)))
-
-    # Add timepoint information
-    snapshot_date <- seq(as.Date("2025-02-01"), length.out = length(raw_data), by = "month")[i]
-    reporting$Reporting_Results$SnapshotDate <- snapshot_date
-    reporting$Reporting_Bounds$SnapshotDate <- snapshot_date
-
-    timepoint_results[[i]] <- list(
-      raw = raw_data[[i]],
-      mapped = mapped,
-      analyzed = analyzed,
-      reporting = reporting
-    )
-  }
-
-  return(timepoint_results)
-}
-
-#' Organize analytics results into intuitive structure
-#' @param pipeline_results Results from pipeline execution
-#' @return Organized analytics results
-#' @export
-organize_analytics_results <- function(pipeline_results) {
-  # Combine results across timepoints
-  all_results <- do.call(dplyr::bind_rows, lapply(pipeline_results, function(x) x$reporting$Reporting_Results))
-  all_bounds <- do.call(dplyr::bind_rows, lapply(pipeline_results, function(x) x$reporting$Reporting_Bounds))
-
-  # Use last timepoint for groups and metrics (they don't change across time)
-  last_timepoint <- pipeline_results[[length(pipeline_results)]]
-  all_groups <- last_timepoint$reporting$Reporting_Groups
-  all_metrics <- last_timepoint$reporting$Reporting_Metrics
-
-  # Organize by analysis level for intuitive access
-  list(
-    by_site = list(
-      results = all_results %>% dplyr::filter(GroupLevel == "Site"),
-      groups = all_groups %>% dplyr::filter(GroupLevel %in% c("Study", "Site")),
-      bounds = all_bounds %>% dplyr::filter(stringr::str_detect(MetricID, "Analysis_kri")),
-      metrics = all_metrics %>% dplyr::filter(GroupLevel == "Site")
-    ),
-    by_country = list(
-      results = all_results %>% dplyr::filter(GroupLevel == "Country"),
-      groups = all_groups %>% dplyr::filter(GroupLevel %in% c("Study", "Country")),
-      bounds = all_bounds %>% dplyr::filter(stringr::str_detect(MetricID, "Analysis_cou")),
-      metrics = all_metrics %>% dplyr::filter(GroupLevel == "Country")
-    ),
-    by_study = list(
-      results = all_results %>% dplyr::filter(GroupLevel == "Study"),
-      groups = all_groups %>% dplyr::filter(GroupLevel == "Study"),
-      bounds = all_bounds %>% dplyr::filter(stringr::str_detect(MetricID, "Analysis_qtl")),
-      metrics = all_metrics %>% dplyr::filter(GroupLevel == "Study")
-    ),
-    combined = list(
-      all_results = all_results,
-      all_groups = all_groups,
-      all_bounds = all_bounds,
-      all_metrics = all_metrics
-    )
   )
-}
-
-#' Generate Complete Longitudinal Study with Full Pipeline Processing
-#'
-#' This function directly addresses the workflow shown in issue #95 by providing
-#' a single function call to replace the complex manual orchestration of multiple
-#' packages and workflow steps.
-#'
-#' @param participant_count Number of study participants (default: 1000)
-#' @param site_count Number of study sites (default: 150)
-#' @param study_id Study identifier (default: "AA-AA-000-0000")
-#' @param snapshot_count Number of time points (default: 3)
-#' @param snapshot_width Time between snapshots (default: "months")
-#' @param core_mappings Vector of core mapping types to include
-#' @param start_date Study start date
-#' @return List containing all pipeline results equivalent to manual workflow
-#' @export
-#' @examples
-#' \dontrun{
-#' # Direct replacement for the manual workflow in issue #95
-#' results <- generate_complete_longitudinal_study(
-#'   participant_count = 1000,
-#'   site_count = 150,
-#'   study_id = "AA-AA-000-0000",
-#'   snapshot_count = 3,
-#'   snapshot_width = "months"
-#' )
-#'
-#' # Access results similar to manual workflow
-#' site_results <- results$reporting_site
-#' country_results <- results$reporting_country
-#' study_results <- results$reporting_study
-#' }
-generate_complete_longitudinal_study <- function(participant_count = 1000,
-                                                site_count = 150,
-                                                study_id = "AA-AA-000-0000",
-                                                snapshot_count = 3,
-                                                snapshot_width = "months",
-                                                start_date = as.Date("2025-02-01"),
-                                                core_mappings = c("AE", "COUNTRY", "DATACHG", "DATAENT",
-                                                                "ENROLL", "LB", "VISIT", "PD", "PK", "QUERY",
-                                                                "STUDY", "STUDCOMP", "SDRGCOMP", "SITE", "SUBJ",
-                                                                "IE", "EXCLUSION")) {
-
-  message("Generating longitudinal study data with integrated pipeline...")
-  message(sprintf("Study: %s, Participants: %d, Sites: %d, Snapshots: %d",
-                 study_id, participant_count, site_count, snapshot_count))
-
-  # Generate the complete longitudinal study with full pipeline
-  results <- generate_longitudinal_study(
-    study_id = study_id,
-    participant_count = participant_count,
-    site_count = site_count,
-    snapshot_count = snapshot_count,
-    snapshot_width = snapshot_width,
-    start_date = start_date,
-    datasets = core_mappings,
-    run_full_pipeline = TRUE
-  )
-
-  message("Pipeline complete. Results available for site, country, and study levels.")
-
-  return(results)
-}
-
-#' Quick Start: Generate Complete Study with Full Analytics
-#'
-#' One-liner function to generate a complete longitudinal study with full analytics
-#' pipeline. This directly replaces the complex manual workflow from issue #95.
-#'
-#' @param study_name Human-readable study name (automatically formats study ID)
-#' @param participants Number of participants (default: 1000)
-#' @param sites Number of sites (default: 150)
-#' @param months_duration Study duration in months (default: 3)
-#' @param study_type Type of study - "standard" for basic clinical domains or "endpoints" for comprehensive endpoint analysis
-#' @param domains Clinical domains to include (overrides study_type if specified)
-#' @return LongitudinalStudy object with complete analytics
-#' @export
-#' @examples
-#' \dontrun{
-#' # Standard clinical trial
-#' study <- quick_longitudinal_study("Oncology Phase III", study_type = "standard")
-#'
-#' # Comprehensive endpoints study
-#' study <- quick_longitudinal_study("Cardio Endpoints", study_type = "endpoints")
-#'
-#' # Custom domains (overrides study_type)
-#' study <- quick_longitudinal_study("Custom Trial",
-#'                                  domains = c("AE", "LB"))
-#' }
-quick_longitudinal_study <- function(study_name = "Clinical Trial",
-                                    participants = 1000,
-                                    sites = 150,
-                                    months_duration = 3,
-                                    study_type = "standard",
-                                    domains = NULL) {
-
-  # Define domain sets based on study type
-  if (is.null(domains)) {
-    domains <- switch(study_type,
-      "standard" = c(
-        "AE", "COUNTRY", "DATACHG", "DATAENT", "ENROLL", "LB",
-        "VISIT", "PD", "PK", "QUERY", "STUDCOMP", "SDRGCOMP", "IE", "EXCLUSION"
-      ),
-      "endpoints" = c(
-        "AntiCancer", "Baseline", "Death", "OverallResponse", "Randomization",
-        "STUDCOMP", "VISIT", "Consents", "STUDY", "SUBJ", "AE", "PD", "LB"
-      ),
-      # Default to standard if unrecognized type
-      c("AE", "COUNTRY", "DATACHG", "DATAENT", "ENROLL", "LB",
-        "VISIT", "PD", "PK", "QUERY", "STUDCOMP", "SDRGCOMP", "IE", "EXCLUSION")
-    )
-  }
-
-  # Auto-generate study ID from name
-  study_id <- gsub("[^A-Za-z0-9]", "-", study_name)
-  study_id <- gsub("-+", "-", study_id)
-  study_id <- gsub("^-|-$", "", study_id)
-  study_id <- toupper(paste0(study_id, "-", sprintf("%03d", sample(100:999, 1))))
-
-  message(sprintf("Quick start: Generating '%s' [%s] (%s study)",
-                 study_name, study_id, study_type))
-  message(sprintf("Domains: %s", paste(domains, collapse = ", ")))
-
-  create_longitudinal_study(
-    study_id = study_id,
-    participants = participants,
-    sites = sites,
-    timepoints = months_duration,
-    interval = "1 month",
-    domains = domains,
-    include_pipeline = TRUE,
-    study_type = study_type
-  )
-}
+)
