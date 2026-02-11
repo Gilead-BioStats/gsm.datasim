@@ -1,19 +1,13 @@
-# Generate Longitudinal Clinical Trial Data with Integrated Workflow
+# Longitudinal Study Data Container
 
-Generate Longitudinal Clinical Trial Data with Integrated Workflow
+Longitudinal Study Data Container
 
-Generate Longitudinal Clinical Trial Data with Integrated Workflow
-
-## Value
-
-LongitudinalStudy object containing all generated data and results
+Longitudinal Study Data Container
 
 ## Details
 
-Creates a longitudinal study with multiple time points and optional
-integrated pipeline processing. This function provides a clean,
-intuitive interface for generating realistic clinical trial data over
-time.
+R6 class that encapsulates longitudinal study data and provides
+intuitive access methods for different analysis perspectives.
 
 ## Public fields
 
@@ -148,5 +142,3 @@ The objects of this class are cloneable with this method.
 - `deep`:
 
   Whether to make a deep clone.
-
-## Examples

@@ -3,7 +3,7 @@
 ## All functions
 
 - [`LongitudinalStudy`](https://gilead-biostats.github.io/gsm.datasim/reference/LongitudinalStudy.md)
-  : Generate Longitudinal Clinical Trial Data with Integrated Workflow
+  : Longitudinal Study Data Container
 - [`StudyBuilder`](https://gilead-biostats.github.io/gsm.datasim/reference/StudyBuilder.md)
   : Fluent Builder Interface for Clinical Study Data Generation
 - [`StudyConfig`](https://gilead-biostats.github.io/gsm.datasim/reference/StudyConfig.md)
