@@ -2,53 +2,15 @@
 % Please edit documentation in R/study_builder.R
 \name{LongitudinalStudy}
 \alias{LongitudinalStudy}
-\title{Generate Longitudinal Clinical Trial Data with Integrated Workflow}
-\value{
-LongitudinalStudy object containing all generated data and results
-}
+\title{Longitudinal Study Data Container}
 \description{
-Generate Longitudinal Clinical Trial Data with Integrated Workflow
-
-Generate Longitudinal Clinical Trial Data with Integrated Workflow
-}
-\details{
-Creates a longitudinal study with multiple time points and optional integrated
-pipeline processing. This function provides a clean, intuitive interface for
-generating realistic clinical trial data over time.
-}
-\examples{
-\dontrun{
-# Simple longitudinal study
-study <- create_longitudinal_study(
-  study_id = "ONCOLOGY-001",
-  participants = 200,
-  sites = 15,
-  timepoints = 6,
-  interval = "2 months",
-  domains = c("AE", "LB", "VISIT")
-)
-
-# With full analytics pipeline
-study_with_analytics <- create_longitudinal_study(
-  study_id = "CARDIO-002",
-  participants = 500,
-  sites = 25,
-  timepoints = 12,
-  interval = "1 month",
-  domains = c("AE", "LB", "VISIT", "QUERY"),
-  include_pipeline = TRUE
-)
-
-# Access results intuitively
-raw_data <- study_with_analytics$raw_data
-site_analytics <- study_with_analytics$analytics$by_site
-country_analytics <- study_with_analytics$analytics$by_country
-}
 Longitudinal Study Data Container
 
+Longitudinal Study Data Container
+}
+\details{
 R6 class that encapsulates longitudinal study data and provides intuitive
 access methods for different analysis perspectives.
-
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
