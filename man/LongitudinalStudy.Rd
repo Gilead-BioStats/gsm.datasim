@@ -2,15 +2,53 @@
 % Please edit documentation in R/study_builder.R
 \name{LongitudinalStudy}
 \alias{LongitudinalStudy}
-\title{Longitudinal Study Data Container}
+\title{Generate Longitudinal Clinical Trial Data with Integrated Workflow}
+\value{
+LongitudinalStudy object containing all generated data and results
+}
 \description{
-Longitudinal Study Data Container
+Generate Longitudinal Clinical Trial Data with Integrated Workflow
 
-Longitudinal Study Data Container
+Generate Longitudinal Clinical Trial Data with Integrated Workflow
 }
 \details{
+Creates a longitudinal study with multiple time points and optional integrated
+pipeline processing. This function provides a clean, intuitive interface for
+generating realistic clinical trial data over time.
+}
+\examples{
+\dontrun{
+# Simple longitudinal study
+study <- create_longitudinal_study(
+  study_id = "ONCOLOGY-001",
+  participants = 200,
+  sites = 15,
+  timepoints = 6,
+  interval = "2 months",
+  domains = c("AE", "LB", "VISIT")
+)
+
+# With full analytics pipeline
+study_with_analytics <- create_longitudinal_study(
+  study_id = "CARDIO-002",
+  participants = 500,
+  sites = 25,
+  timepoints = 12,
+  interval = "1 month",
+  domains = c("AE", "LB", "VISIT", "QUERY"),
+  include_pipeline = TRUE
+)
+
+# Access results intuitively
+raw_data <- study_with_analytics$raw_data
+site_analytics <- study_with_analytics$analytics$by_site
+country_analytics <- study_with_analytics$analytics$by_country
+}
+Longitudinal Study Data Container
+
 R6 class that encapsulates longitudinal study data and provides intuitive
 access methods for different analysis perspectives.
+
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -34,6 +72,7 @@ Initialize new LongitudinalStudy}
 \item \href{#method-LongitudinalStudy-run_analytics_pipeline}{\code{LongitudinalStudy$run_analytics_pipeline()}}
 \item \href{#method-LongitudinalStudy-get_timepoint}{\code{LongitudinalStudy$get_timepoint()}}
 \item \href{#method-LongitudinalStudy-get_domain_timeline}{\code{LongitudinalStudy$get_domain_timeline()}}
+\item \href{#method-LongitudinalStudy-get_domain_names}{\code{LongitudinalStudy$get_domain_names()}}
 \item \href{#method-LongitudinalStudy-clone}{\code{LongitudinalStudy$clone()}}
 }
 }
@@ -102,16 +141,27 @@ Get specific domain data across all timepoints}
 \if{latex}{\out{\hypertarget{method-LongitudinalStudy-get_domain_timeline}{}}}
 \subsection{Method \code{get_domain_timeline()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LongitudinalStudy$get_domain_timeline(domain)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LongitudinalStudy$get_domain_timeline(domain_name)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{domain}}{Domain mapping name (e.g., "AE", "LB")}
+\item{\code{domain_name}}{Domain mapping name (e.g., "AE", "LB")
+Get available domain names}
 }
 \if{html}{\out{</div>}}
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LongitudinalStudy-get_domain_names"></a>}}
+\if{latex}{\out{\hypertarget{method-LongitudinalStudy-get_domain_names}{}}}
+\subsection{Method \code{get_domain_names()}}{
+Return list of available domain names across all timepoints
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LongitudinalStudy$get_domain_names()}\if{html}{\out{</div>}}
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-LongitudinalStudy-clone"></a>}}

@@ -114,9 +114,14 @@ Include standard clinical datasets with default configurations}
 \if{html}{\out{<div class="r">}}\preformatted{StudyBuilder$with_standard_datasets(
   adverse_events = TRUE,
   protocol_deviations = TRUE,
-  lab_data = FALSE,
+  lab_data = TRUE,
   visits = TRUE,
-  enrollment = TRUE
+  enrollment = TRUE,
+  data_quality = TRUE,
+  pharmacokinetics = TRUE,
+  study_completion = TRUE,
+  inclusion_exclusion = TRUE,
+  country = TRUE
 )}\if{html}{\out{</div>}}
 }
 
@@ -131,7 +136,17 @@ Include standard clinical datasets with default configurations}
 
 \item{\code{visits}}{Include visit data}
 
-\item{\code{enrollment}}{Include enrollment data
+\item{\code{enrollment}}{Include enrollment data}
+
+\item{\code{data_quality}}{Include data quality domains (DATACHG, DATAENT, QUERY)}
+
+\item{\code{pharmacokinetics}}{Include pharmacokinetics data}
+
+\item{\code{study_completion}}{Include study completion data}
+
+\item{\code{inclusion_exclusion}}{Include inclusion/exclusion criteria}
+
+\item{\code{country}}{Include country mapping
 Add custom dataset with flexible configuration}
 }
 \if{html}{\out{</div>}}

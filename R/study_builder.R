@@ -561,9 +561,9 @@ LongitudinalStudy <- R6::R6Class("LongitudinalStudy",
     },
 
     #' Get specific domain data across all timepoints
-    #' @param domain Domain mapping name (e.g., "AE", "LB")
-    get_domain_timeline = function(domain) {
-      raw_name <- paste0("Raw_", domain)
+    #' @param domain_name Domain mapping name (e.g., "AE", "LB")
+    get_domain_timeline = function(domain_name) {
+      raw_name <- paste0("Raw_", domain_name)
 
       timeline_data <- list()
       for (i in seq_along(self$raw_data)) {
@@ -573,105 +573,15 @@ LongitudinalStudy <- R6::R6Class("LongitudinalStudy",
       }
 
       return(timeline_data)
-    }
-  )
-)
-
-
-#' Longitudinal Study Data Container
-#'
-#' R6 class that encapsulates longitudinal study data and provides intuitive
-#' access methods for different analysis perspectives.
-#'
-#' @export
-LongitudinalStudy <- R6::R6Class("LongitudinalStudy",
-  public = list(
-    #' @field study_id Study identifier
-    study_id = NULL,
-    #' @field raw_data List of raw data for each timepoint
-    raw_data = NULL,
-    #' @field config Study configuration
-    config = NULL,
-    #' @field analytics Organized analytics results
-    analytics = NULL,
-
-    #' Initialize longitudinal study
-    #' @param study_id Study identifier
-    #' @param raw_data Raw study data across timepoints
-    #' @param config Study configuration parameters
-    initialize = function(study_id, raw_data, config = list()) {
-      self$study_id <- study_id
-      self$raw_data <- raw_data
-      self$config <- config
-    },
-
-    #' Get summary of the study
-    summary = function() {
-      cat("Longitudinal Study:", self$study_id, "\n")
-      cat("Timepoints:", length(self$raw_data), "\n")
-      cat("Participants:", self$config$participants %||% "Unknown", "\n")
-      cat("Sites:", self$config$sites %||% "Unknown", "\n")
-
-      if (length(self$raw_data) > 0) {
-        domains <- unique(unlist(lapply(self$raw_data, names)))
-        cat("Domains:", paste(domains, collapse = ", "), "\n")
-      }
-
-      if (!is.null(self$analytics)) {
-        cat("Analytics: Available\n")
-        cat("- Site-level results:", nrow(self$analytics$by_site$results), "rows\n")
-        cat("- Country-level results:", nrow(self$analytics$by_country$results), "rows\n")
-        cat("- Study-level results:", nrow(self$analytics$by_study$results), "rows\n")
-      }
-    },
-
-    #' Get domain timeline across all timepoints
-    #' @param domain_name Name of the domain (e.g., "Raw_AE")
-    get_domain_timeline = function(domain_name) {
-      if (!startsWith(domain_name, "Raw_")) {
-        domain_name <- paste0("Raw_", domain_name)
-      }
-
-      timeline <- list()
-      for (i in seq_along(self$raw_data)) {
-        if (domain_name %in% names(self$raw_data[[i]])) {
-          timeline[[i]] <- self$raw_data[[i]][[domain_name]]
-        }
-      }
-      return(timeline)
-    },
-
-    #' Get data for a specific timepoint
-    #' @param timepoint Timepoint number
-    get_timepoint = function(timepoint) {
-      if (timepoint > length(self$raw_data)) {
-        stop("Timepoint ", timepoint, " not available. Only ", length(self$raw_data), " timepoints exist.")
-      }
-      return(self$raw_data[[timepoint]])
     },
 
     #' Get available domain names
+    #' @description Return list of available domain names across all timepoints
     get_domain_names = function() {
       if (length(self$raw_data) > 0) {
         return(unique(unlist(lapply(self$raw_data, names))))
       }
       return(character(0))
-    },
-
-    #' Run analytics pipeline on the study data
-    run_analytics_pipeline = function() {
-      if (length(self$raw_data) == 0) {
-        warning("No raw data available for analytics pipeline")
-        return(invisible(self))
-      }
-
-      # Execute pipeline on all timepoints
-      pipeline_results <- execute_analytics_pipeline(self$raw_data, self$config)
-      
-      # Organize results for easy access
-      self$analytics <- organize_analytics_results(pipeline_results)
-      
-      invisible(self)
     }
   )
 )
