@@ -7,10 +7,25 @@
 <url><loc>https://gilead-biostats.github.io/gsm.datasim/authors.html</loc></url>
 <url><loc>https://gilead-biostats.github.io/gsm.datasim/index.html</loc></url>
 <url><loc>https://gilead-biostats.github.io/gsm.datasim/news/index.html</loc></url>
+<url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/LongitudinalStudy.html</loc></url>
+<url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/StudyBuilder.html</loc></url>
+<url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/StudyConfig.html</loc></url>
+<url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/create_longitudinal_study.html</loc></url>
+<url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/create_study.html</loc></url>
+<url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/ensure_core_mappings.html</loc></url>
+<url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/execute_analytics_pipeline.html</loc></url>
+<url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/generate_raw_data_from_config.html</loc></url>
 <url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/generate_rawdata_for_single_study.html</loc></url>
+<url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/generate_study_data_with_config.html</loc></url>
+<url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/generate_study_snapshots.html</loc></url>
 <url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/gsm.datasim-package.html</loc></url>
 <url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/index.html</loc></url>
+<url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/organize_analytics_results.html</loc></url>
+<url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/parse_interval_to_snapshot_width.html</loc></url>
 <url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/pipe.html</loc></url>
+<url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/quick_longitudinal_study.html</loc></url>
 <url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/raw_data_generator.html</loc></url>
+<url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/study_builder_examples.html</loc></url>
+<url><loc>https://gilead-biostats.github.io/gsm.datasim/reference/validate_study_inputs.html</loc></url>
 </urlset>
 
