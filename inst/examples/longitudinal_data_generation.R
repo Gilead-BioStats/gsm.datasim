@@ -61,9 +61,9 @@ cat("Datasets in timepoint 1:", paste(names(timepoint_1_data), collapse = ", "),
 complex_study <- create_study("COMPLEX-TRIAL-001")
 complex_study$with_study_design(participants = 300, sites = 20)
 complex_study$over_time(start_date = "2023-01-01", snapshots = 8, frequency = "6 weeks")
-complex_study$with_standard_datasets(adverse_events = TRUE, visits = TRUE, lab_data = TRUE)
+complex_study$with_standard_datasets(adverse_events = TRUE, subject_visits = TRUE, lab_data = TRUE, 
+                                     queries = TRUE, data_changes = TRUE, data_entry = FALSE)
 complex_study$with_adverse_events(rate_per_patient = 2.5, temporal_pattern = "increasing")
-complex_study$with_data_quality(queries = TRUE, data_changes = TRUE)
 complex_study$preview()  # Preview configuration before generation
 
 # Generate the data (commented out to avoid long execution)

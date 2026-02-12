@@ -43,7 +43,9 @@ Initialize a new StudyConfig}
 \if{html}{\out{<div class="r">}}\preformatted{StudyConfig$new(
   study_id = "STUDY001",
   participant_count = 100,
-  site_count = 10
+  site_count = 10,
+  analytics_package = NULL,
+  analytics_workflows = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -54,7 +56,11 @@ Initialize a new StudyConfig}
 
 \item{\code{participant_count}}{Number of participants}
 
-\item{\code{site_count}}{Number of sites
+\item{\code{site_count}}{Number of sites}
+
+\item{\code{analytics_package}}{Analytics package to use}
+
+\item{\code{analytics_workflows}}{Specific workflows to run
 Set temporal configuration}
 }
 \if{html}{\out{</div>}}

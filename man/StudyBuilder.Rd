@@ -30,7 +30,6 @@ Initialize a new StudyBuilder}
 \item \href{#method-StudyBuilder-add_custom_dataset}{\code{StudyBuilder$add_custom_dataset()}}
 \item \href{#method-StudyBuilder-with_adverse_events}{\code{StudyBuilder$with_adverse_events()}}
 \item \href{#method-StudyBuilder-with_study_completion}{\code{StudyBuilder$with_study_completion()}}
-\item \href{#method-StudyBuilder-with_data_quality}{\code{StudyBuilder$with_data_quality()}}
 \item \href{#method-StudyBuilder-preview}{\code{StudyBuilder$preview()}}
 \item \href{#method-StudyBuilder-generate}{\code{StudyBuilder$generate()}}
 \item \href{#method-StudyBuilder-clone}{\code{StudyBuilder$clone()}}
@@ -101,7 +100,7 @@ Configure temporal aspects of the study}
 \item{\code{frequency}}{Time between snapshots (e.g., "months", "2 weeks")}
 
 \item{\code{end_date}}{Optional explicit end date
-Include standard clinical datasets with default configurations}
+Include standard clinical datasets with granular control}
 }
 \if{html}{\out{</div>}}
 }
@@ -112,15 +111,23 @@ Include standard clinical datasets with default configurations}
 \subsection{Method \code{with_standard_datasets()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{StudyBuilder$with_standard_datasets(
+  study = TRUE,
+  subjects = TRUE,
+  sites = TRUE,
   adverse_events = TRUE,
   protocol_deviations = TRUE,
   lab_data = TRUE,
-  visits = TRUE,
+  subject_visits = TRUE,
+  visit_schedule = TRUE,
   enrollment = TRUE,
-  data_quality = TRUE,
+  data_changes = TRUE,
+  data_entry = TRUE,
+  queries = TRUE,
   pharmacokinetics = TRUE,
+  study_drug_completion = TRUE,
   study_completion = TRUE,
   inclusion_exclusion = TRUE,
+  exclusions = TRUE,
   country = TRUE
 )}\if{html}{\out{</div>}}
 }
@@ -128,23 +135,39 @@ Include standard clinical datasets with default configurations}
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
+\item{\code{study}}{Include study metadata (Raw_STUDY)}
+
+\item{\code{subjects}}{Include subject demographics (Raw_SUBJ)}
+
+\item{\code{sites}}{Include site information (Raw_SITE)}
+
 \item{\code{adverse_events}}{Include adverse event data}
 
 \item{\code{protocol_deviations}}{Include protocol deviation data}
 
 \item{\code{lab_data}}{Include laboratory data}
 
-\item{\code{visits}}{Include visit data}
+\item{\code{subject_visits}}{Include subject visit data (Raw_SV)}
+
+\item{\code{visit_schedule}}{Include visit schedule data (Raw_VISIT)}
 
 \item{\code{enrollment}}{Include enrollment data}
 
-\item{\code{data_quality}}{Include data quality domains (DATACHG, DATAENT, QUERY)}
+\item{\code{data_changes}}{Include data change tracking (Raw_DATACHG)}
+
+\item{\code{data_entry}}{Include data entry tracking (Raw_DATAENT)}
+
+\item{\code{queries}}{Include query data (Raw_QUERY)}
 
 \item{\code{pharmacokinetics}}{Include pharmacokinetics data}
 
-\item{\code{study_completion}}{Include study completion data}
+\item{\code{study_drug_completion}}{Include study drug completion (Raw_SDRGCOMP)}
 
-\item{\code{inclusion_exclusion}}{Include inclusion/exclusion criteria}
+\item{\code{study_completion}}{Include overall study completion (Raw_STUDCOMP)}
+
+\item{\code{inclusion_exclusion}}{Include inclusion/exclusion criteria (Raw_IE)}
+
+\item{\code{exclusions}}{Include exclusion tracking (Raw_EXCLUSION)}
 
 \item{\code{country}}{Include country mapping
 Add custom dataset with flexible configuration}
@@ -225,31 +248,6 @@ Configure study completion patterns}
 \item{\code{completion_rate}}{Overall study completion rate (0-1)}
 
 \item{\code{dropout_pattern}}{Pattern of dropouts ("early", "late", "uniform")
-Include data quality datasets}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-StudyBuilder-with_data_quality"></a>}}
-\if{latex}{\out{\hypertarget{method-StudyBuilder-with_data_quality}{}}}
-\subsection{Method \code{with_data_quality()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{StudyBuilder$with_data_quality(
-  queries = TRUE,
-  data_changes = TRUE,
-  data_entry = TRUE
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{queries}}{Include query data}
-
-\item{\code{data_changes}}{Include data change tracking}
-
-\item{\code{data_entry}}{Include data entry tracking
 Preview the configuration without generating data}
 }
 \if{html}{\out{</div>}}

@@ -12,7 +12,7 @@ Example of fluent interface usage
 study_data <- create_study("ONCOLOGY001") \%>\%
   with_study_design(participants = 200, sites = 15) \%>\%
   over_time(start_date = "2023-01-01", snapshots = 12, frequency = "months") \%>\%
-  with_standard_datasets(adverse_events = TRUE, visits = TRUE) \%>\%
+  with_standard_datasets(adverse_events = TRUE, subject_visits = TRUE, visit_schedule = TRUE) \%>\%
   with_adverse_events(rate_per_patient = 2.5, temporal_pattern = "increasing") \%>\%
   generate()
 

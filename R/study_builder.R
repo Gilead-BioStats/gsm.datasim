@@ -18,11 +18,16 @@ StudyConfig <- R6::R6Class("StudyConfig",
     #' @param study_id Study identifier
     #' @param participant_count Number of participants
     #' @param site_count Number of sites
-    initialize = function(study_id = "STUDY001", participant_count = 100, site_count = 10) {
+    #' @param analytics_package Analytics package to use
+    #' @param analytics_workflows Specific workflows to run
+    initialize = function(study_id = "STUDY001", participant_count = 100, site_count = 10, 
+                         analytics_package = NULL, analytics_workflows = NULL) {
       self$study_params <- list(
         study_id = study_id,
         participant_count = participant_count,
-        site_count = site_count
+        site_count = site_count,
+        analytics_package = analytics_package,
+        analytics_workflows = analytics_workflows
       )
 
       self$temporal_config <- list(
@@ -156,41 +161,82 @@ StudyBuilder <- R6::R6Class("StudyBuilder",
       invisible(self)
     },
 
-    #' Include standard clinical datasets with default configurations
+    #' Include standard clinical datasets with granular control
+    #' @param study Include study metadata (Raw_STUDY)
+    #' @param subjects Include subject demographics (Raw_SUBJ)
+    #' @param sites Include site information (Raw_SITE)
     #' @param adverse_events Include adverse event data
     #' @param protocol_deviations Include protocol deviation data
     #' @param lab_data Include laboratory data
-    #' @param visits Include visit data
+    #' @param subject_visits Include subject visit data (Raw_SV)
+    #' @param visit_schedule Include visit schedule data (Raw_VISIT)
     #' @param enrollment Include enrollment data
-    #' @param data_quality Include data quality domains (DATACHG, DATAENT, QUERY)
+    #' @param data_changes Include data change tracking (Raw_DATACHG)
+    #' @param data_entry Include data entry tracking (Raw_DATAENT)
+    #' @param queries Include query data (Raw_QUERY)
     #' @param pharmacokinetics Include pharmacokinetics data
-    #' @param study_completion Include study completion data
-    #' @param inclusion_exclusion Include inclusion/exclusion criteria
+    #' @param study_drug_completion Include study drug completion (Raw_SDRGCOMP)
+    #' @param study_completion Include overall study completion (Raw_STUDCOMP)
+    #' @param inclusion_exclusion Include inclusion/exclusion criteria (Raw_IE)
+    #' @param exclusions Include exclusion tracking (Raw_EXCLUSION)
     #' @param country Include country mapping
-    with_standard_datasets = function(adverse_events = TRUE,
+    with_standard_datasets = function(study = TRUE,
+                                    subjects = TRUE,
+                                    sites = TRUE,
+                                    adverse_events = TRUE,
                                     protocol_deviations = TRUE,
                                     lab_data = TRUE,
-                                    visits = TRUE,
+                                    subject_visits = TRUE,
+                                    visit_schedule = TRUE,
                                     enrollment = TRUE,
-                                    data_quality = TRUE,
+                                    data_changes = TRUE,
+                                    data_entry = TRUE,
+                                    queries = TRUE,
                                     pharmacokinetics = TRUE,
+                                    study_drug_completion = TRUE,
                                     study_completion = TRUE,
                                     inclusion_exclusion = TRUE,
+                                    exclusions = TRUE,
                                     country = TRUE) {
 
       # Safely evaluate logical parameters
+      study <- tryCatch(isTRUE(study), error = function(e) TRUE)
+      subjects <- tryCatch(isTRUE(subjects), error = function(e) TRUE)
+      sites <- tryCatch(isTRUE(sites), error = function(e) TRUE)
       adverse_events <- tryCatch(isTRUE(adverse_events), error = function(e) TRUE)
       protocol_deviations <- tryCatch(isTRUE(protocol_deviations), error = function(e) TRUE)
       lab_data <- tryCatch(isTRUE(lab_data), error = function(e) TRUE)
-      visits <- tryCatch(isTRUE(visits), error = function(e) TRUE)
+      subject_visits <- tryCatch(isTRUE(subject_visits), error = function(e) TRUE)
+      visit_schedule <- tryCatch(isTRUE(visit_schedule), error = function(e) TRUE)
       enrollment <- tryCatch(isTRUE(enrollment), error = function(e) TRUE)
-      data_quality <- tryCatch(isTRUE(data_quality), error = function(e) TRUE)
+      data_changes <- tryCatch(isTRUE(data_changes), error = function(e) TRUE)
+      data_entry <- tryCatch(isTRUE(data_entry), error = function(e) TRUE)
+      queries <- tryCatch(isTRUE(queries), error = function(e) TRUE)
       pharmacokinetics <- tryCatch(isTRUE(pharmacokinetics), error = function(e) TRUE)
+      study_drug_completion <- tryCatch(isTRUE(study_drug_completion), error = function(e) TRUE)
       study_completion <- tryCatch(isTRUE(study_completion), error = function(e) TRUE)
       inclusion_exclusion <- tryCatch(isTRUE(inclusion_exclusion), error = function(e) TRUE)
+      exclusions <- tryCatch(isTRUE(exclusions), error = function(e) TRUE)
       country <- tryCatch(isTRUE(country), error = function(e) TRUE)
 
-      # Core datasets are always included automatically in StudyConfig
+      # Core datasets (override automatic inclusion if user wants to disable)
+      if (study) {
+        self$config$add_dataset("Raw_STUDY", enabled = TRUE, count_formula = 1)
+      } else {
+        self$config$remove_dataset("Raw_STUDY")
+      }
+
+      if (subjects) {
+        self$config$add_dataset("Raw_SUBJ", enabled = TRUE, count_formula = function(config) config$study_params$participant_count)
+      } else {
+        self$config$remove_dataset("Raw_SUBJ")
+      }
+
+      if (sites) {
+        self$config$add_dataset("Raw_SITE", enabled = TRUE, count_formula = function(config) config$study_params$site_count)
+      } else {
+        self$config$remove_dataset("Raw_SITE")
+      }
 
       if (adverse_events) {
         self$config$add_dataset("Raw_AE", enabled = TRUE)
@@ -204,8 +250,11 @@ StudyBuilder <- R6::R6Class("StudyBuilder",
         self$config$add_dataset("Raw_LB", enabled = TRUE)
       }
 
-      if (visits) {
+      if (subject_visits) {
         self$config$add_dataset("Raw_SV", enabled = TRUE)
+      }
+
+      if (visit_schedule) {
         self$config$add_dataset("Raw_VISIT", enabled = TRUE)
       }
 
@@ -213,9 +262,15 @@ StudyBuilder <- R6::R6Class("StudyBuilder",
         self$config$add_dataset("Raw_ENROLL", enabled = TRUE)
       }
 
-      if (data_quality) {
+      if (data_changes) {
         self$config$add_dataset("Raw_DATACHG", enabled = TRUE)
+      }
+
+      if (data_entry) {
         self$config$add_dataset("Raw_DATAENT", enabled = TRUE)
+      }
+
+      if (queries) {
         self$config$add_dataset("Raw_QUERY", enabled = TRUE)
       }
 
@@ -223,13 +278,19 @@ StudyBuilder <- R6::R6Class("StudyBuilder",
         self$config$add_dataset("Raw_PK", enabled = TRUE)
       }
 
+      if (study_drug_completion) {
+        self$config$add_dataset("Raw_SDRGCOMP", enabled = TRUE)
+      }
+
       if (study_completion) {
         self$config$add_dataset("Raw_STUDCOMP", enabled = TRUE)
-        self$config$add_dataset("Raw_SDRGCOMP", enabled = TRUE)
       }
 
       if (inclusion_exclusion) {
         self$config$add_dataset("Raw_IE", enabled = TRUE)
+      }
+
+      if (exclusions) {
         self$config$add_dataset("Raw_EXCLUSION", enabled = TRUE)
       }
 
@@ -318,27 +379,6 @@ StudyBuilder <- R6::R6Class("StudyBuilder",
       invisible(self)
     },
 
-    #' Include data quality datasets
-    #' @param queries Include query data
-    #' @param data_changes Include data change tracking
-    #' @param data_entry Include data entry tracking
-    with_data_quality = function(queries = TRUE, data_changes = TRUE, data_entry = TRUE) {
-
-      if (queries) {
-        self$config$add_dataset("Raw_QUERY", enabled = TRUE)
-      }
-
-      if (data_changes) {
-        self$config$add_dataset("Raw_DATACHG", enabled = TRUE)
-      }
-
-      if (data_entry) {
-        self$config$add_dataset("Raw_DATAENT", enabled = TRUE)
-      }
-
-      invisible(self)
-    },
-
     #' Preview the configuration without generating data
     #' @description Display study configuration summary
     preview = function() {
@@ -420,7 +460,7 @@ create_study <- function(study_id = "STUDY001") {
 #' study_data <- create_study("ONCOLOGY001") %>%
 #'   with_study_design(participants = 200, sites = 15) %>%
 #'   over_time(start_date = "2023-01-01", snapshots = 12, frequency = "months") %>%
-#'   with_standard_datasets(adverse_events = TRUE, visits = TRUE) %>%
+#'   with_standard_datasets(adverse_events = TRUE, subject_visits = TRUE, visit_schedule = TRUE) %>%
 #'   with_adverse_events(rate_per_patient = 2.5, temporal_pattern = "increasing") %>%
 #'   generate()
 #'
@@ -486,7 +526,12 @@ LongitudinalStudy <- R6::R6Class("LongitudinalStudy",
         cat(sprintf("\nData Snapshots: %d\n", length(self$raw_data)))
         cat("Available datasets per snapshot:\n")
         for (i in seq_along(self$raw_data)[1:min(3, length(self$raw_data))]) {
-          cat(sprintf("  Timepoint %d: %s\n", i, paste(names(self$raw_data[[i]]), collapse = ", ")))
+          # Extract date from the names of the raw_data list
+          snapshot_date <- names(self$raw_data)[i]
+          if (is.null(snapshot_date) || snapshot_date == "") {
+            snapshot_date <- "Unknown"
+          }
+          cat(sprintf("  Timepoint %d: %s\n", i, snapshot_date))
         }
         if (length(self$raw_data) > 3) {
           cat("  ...\n")

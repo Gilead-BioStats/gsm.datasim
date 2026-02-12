@@ -9,7 +9,8 @@ quick_longitudinal_study(
   participants = 1000,
   sites = 150,
   months_duration = 24,
-  study_type = "standard"
+  study_type = "standard",
+  run_analytics = TRUE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ quick_longitudinal_study(
 \item{months_duration}{Duration in months (default 24)}
 
 \item{study_type}{Type of study - "standard" or "endpoints"}
+
+\item{run_analytics}{Whether to run the analytics pipeline (default TRUE)}
 }
 \value{
 LongitudinalStudy object with complete data and analytics

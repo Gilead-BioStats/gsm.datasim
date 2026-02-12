@@ -10,6 +10,12 @@ execute_analytics_pipeline(raw_data, config)
 \item{raw_data}{Raw study data}
 
 \item{config}{StudyConfig object}
+
+\item{study_type}{Study type ("standard", "endpoints", or custom)}
+
+\item{analytics_package}{Package containing workflows (optional)}
+
+\item{analytics_workflows}{Specific workflows to run (optional)}
 }
 \value{
 Analytics pipeline results

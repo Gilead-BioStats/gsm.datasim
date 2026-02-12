@@ -14,11 +14,11 @@ generate_study_data_with_config(
 \arguments{
 \item{config}{StudyConfig object}
 
-\item{workflow_path}{Path to workflow mappings}
+\item{workflow_path}{Path to workflow mappings (not used in new approach)}
 
-\item{mappings}{Optional mappings list to use}
+\item{mappings}{Optional mappings list (not used in new approach)}
 
-\item{package}{Package containing the workflows}
+\item{package}{Package containing workflows (not used in new approach)}
 }
 \value{
 List of generated study data

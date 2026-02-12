@@ -11,7 +11,9 @@ create_longitudinal_study(
   timepoints = 5,
   interval = "1 month",
   domains = c("AE", "LB", "VISIT"),
-  include_pipeline = TRUE
+  include_pipeline = TRUE,
+  analytics_package = NULL,
+  analytics_workflows = NULL
 )
 }
 \arguments{
@@ -28,6 +30,10 @@ create_longitudinal_study(
 \item{domains}{Clinical domains to include}
 
 \item{include_pipeline}{Whether to run analytics pipeline}
+
+\item{analytics_package}{Package containing workflows (optional)}
+
+\item{analytics_workflows}{Specific workflows to run (optional)}
 }
 \value{
 LongitudinalStudy object with generated data
