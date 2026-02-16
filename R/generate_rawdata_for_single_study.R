@@ -175,6 +175,31 @@ generate_snapshots_from_combined_specs <- function(SnapshotCount,
         data_type == "Raw_IE" ~ unlist(enrollment_count[snapshot_idx]),
         TRUE ~ subject_count[snapshot_idx]
       )
+
+      registry_context <- list(
+        data = data,
+        previous_data = previous_data,
+        combined_specs = combined_specs,
+        n = n,
+        start_date = start_dates[snapshot_idx],
+        end_date = end_dates[snapshot_idx],
+        snapshot_idx = snapshot_idx,
+        snapshot_count = SnapshotCount,
+        snapshot_width = SnapshotWidth,
+        study_id = StudyID
+      )
+
+      migrated_data <- generate_domain_from_registry(
+        data_type = data_type,
+        context = registry_context
+      )
+
+      if (!is.null(migrated_data)) {
+        data[[data_type]] <- migrated_data
+        logger::log_info(glue::glue(" ---- Dataset {data_type} added successfully"))
+        next
+      }
+
       generator_func <- data_type
       # Determine arguments based on variable name
       args <- switch(data_type,
