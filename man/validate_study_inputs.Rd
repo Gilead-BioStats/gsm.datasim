@@ -4,14 +4,14 @@
 \alias{validate_study_inputs}
 \title{Study Utility Functions}
 \usage{
-validate_study_inputs(participants, sites, timepoints, domains)
+validate_study_inputs(participants, sites, snapshots, domains)
 }
 \arguments{
 \item{participants}{Number of participants}
 
 \item{sites}{Number of sites}
 
-\item{timepoints}{Number of timepoints}
+\item{snapshots}{Number of snapshots}
 
 \item{domains}{Domains to include}
 }

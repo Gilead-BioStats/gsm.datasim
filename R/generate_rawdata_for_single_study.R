@@ -44,22 +44,7 @@
 #'   desired_specs = NULL
 #' )
 #'
-generate_rawdata_for_single_study <- function(SnapshotCount,
-  SnapshotWidth,
-  ParticipantCount,
-  SiteCount,
-  StudyID,
-  workflow_path,
-  mappings,
-  package,
-  strStartDate = "2012-01-01",
-  desired_specs = NULL) {
-  # Generate start and end dates for snapshots
-  start_dates <- seq(as.Date(strStartDate), length.out = SnapshotCount, by = SnapshotWidth)
-  end_dates <- start_dates + 28
-
-  # Load workflow mappings and combine specifications
-  combined_specs <- load_specs(workflow_path, mappings, package)
+prepare_combined_specs_for_generation <- function(combined_specs, desired_specs = NULL) {
   combined_specs <- purrr::list_modify(
     combined_specs,
     !!!rlang::set_names(
@@ -102,6 +87,21 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
     combined_specs <- combined_specs[desired_specs]
   }
 
+  combined_specs
+}
+
+generate_snapshots_from_combined_specs <- function(SnapshotCount,
+                                                   SnapshotWidth,
+                                                   ParticipantCount,
+                                                   SiteCount,
+                                                   StudyID,
+                                                   combined_specs,
+                                                   mappings,
+                                                   strStartDate = "2012-01-01") {
+  # Generate start and end dates for snapshots
+  start_dates <- seq(as.Date(strStartDate), length.out = SnapshotCount, by = SnapshotWidth)
+  end_dates <- start_dates + 28
+
   subject_count <- count_gen(ParticipantCount, SnapshotCount)
   site_count <- count_gen(SiteCount, SnapshotCount)
   if (SnapshotCount > 1) {
@@ -116,12 +116,6 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
   consents_count <- ceiling(subject_count / 75)
   death_count <- ceiling(subject_count / 85)
   anticancer_count <- ceiling(subject_count / 10)
-
-
-  # print(subject_count)
-  # print(site_count)
-  # print(enrollment_count)
-  # print("--------------")
 
   snapshots <- list()
 
@@ -251,7 +245,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
           timeonstudy = dplyr::if_else(enrollyn == "N", NA, timeonstudy)
         )
     }
-    if (!"gilda_STUDY" %in% mappings) {
+    if (!("gilda_STUDY" %in% mappings)) {
       data$raw_gilda_study_data <- NULL
     }
     if ("Raw_IE" %in% names(data)) {
@@ -274,5 +268,33 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
 
   # Assign snapshot end dates as names
   names(snapshots) <- as.character(end_dates)
-  return(snapshots)
+  snapshots
+}
+
+generate_rawdata_for_single_study <- function(SnapshotCount,
+  SnapshotWidth,
+  ParticipantCount,
+  SiteCount,
+  StudyID,
+  workflow_path,
+  mappings,
+  package,
+  strStartDate = "2012-01-01",
+  desired_specs = NULL) {
+  combined_specs <- load_specs(workflow_path, mappings, package)
+  prepared_specs <- prepare_combined_specs_for_generation(
+    combined_specs = combined_specs,
+    desired_specs = desired_specs
+  )
+
+  generate_snapshots_from_combined_specs(
+    SnapshotCount = SnapshotCount,
+    SnapshotWidth = SnapshotWidth,
+    ParticipantCount = ParticipantCount,
+    SiteCount = SiteCount,
+    StudyID = StudyID,
+    combined_specs = prepared_specs,
+    mappings = mappings,
+    strStartDate = strStartDate
+  )
 }

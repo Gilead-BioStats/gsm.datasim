@@ -82,7 +82,20 @@ count_gen <- function(max_n, SnapshotCount) {
   return(counts)
 }
 
-load_specs <- function(workflow_path, mappings, package) {
+.gsm_datasim_spec_cache <- new.env(parent = emptyenv())
+
+load_specs <- function(workflow_path, mappings, package, use_cache = TRUE) {
+  cache_key <- paste(
+    package,
+    workflow_path,
+    paste(mappings, collapse = "|"),
+    sep = "::"
+  )
+
+  if (isTRUE(use_cache) && exists(cache_key, envir = .gsm_datasim_spec_cache, inherits = FALSE)) {
+    return(get(cache_key, envir = .gsm_datasim_spec_cache, inherits = FALSE))
+  }
+
   wf_mapping <- gsm.core::MakeWorkflowList(strPath = workflow_path, strNames = mappings, strPackage = package)
   wf_req <- gsm.core::MakeWorkflowList(strPath = "workflow/1_mappings", strNames = c("SUBJ", "STUDY", "SITE", "ENROLL"), strPackage = "gsm.mapping")
   wf_all <- modifyList(wf_mapping, wf_req)
@@ -95,6 +108,10 @@ load_specs <- function(workflow_path, mappings, package) {
     wf_all <- modifyList(wf_all, wf_studcomp)
   }
   combined_specs <- CombineSpecs(wf_all)
+
+  if (isTRUE(use_cache)) {
+    assign(cache_key, combined_specs, envir = .gsm_datasim_spec_cache)
+  }
 
   return(combined_specs)
 }

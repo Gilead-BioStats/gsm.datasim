@@ -8,12 +8,13 @@ create_longitudinal_study(
   study_id = "STUDY-001",
   participants = 100,
   sites = 10,
-  timepoints = 5,
+  snapshots = 5,
   interval = "1 month",
   domains = c("AE", "LB", "VISIT"),
   include_pipeline = TRUE,
   analytics_package = NULL,
-  analytics_workflows = NULL
+  analytics_workflows = NULL,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -23,7 +24,7 @@ create_longitudinal_study(
 
 \item{sites}{Number of sites}
 
-\item{timepoints}{Number of timepoints}
+\item{snapshots}{Number of snapshots}
 
 \item{interval}{Time between snapshots (e.g., "1 month", "2 weeks")}
 
@@ -34,6 +35,8 @@ create_longitudinal_study(
 \item{analytics_package}{Package containing workflows (optional)}
 
 \item{analytics_workflows}{Specific workflows to run (optional)}
+
+\item{verbose}{Whether to print progress/output messages}
 }
 \value{
 LongitudinalStudy object with generated data
@@ -44,5 +47,5 @@ These functions provide simplified interfaces for common study types.
 Create longitudinal study data
 }
 \details{
-Creates a complete longitudinal study with multiple timepoints
+Creates a complete longitudinal study with multiple snapshots
 }

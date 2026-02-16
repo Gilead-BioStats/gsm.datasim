@@ -16,7 +16,8 @@ raw_data_generator(
   mappings = NULL,
   package = "gsm.mapping",
   strStartDate = "2012-01-01",
-  save = FALSE
+  save = FALSE,
+  generation_mode = c("core", "legacy")
 )
 }
 \arguments{
@@ -50,6 +51,8 @@ Accepts "days", "weeks", "months" and "years". User can also place a number and 
 \item{strStartDate}{A string to denote when the first snapshot of simulated data occurs}
 
 \item{save}{A boolean, specifying whether or not this should be saved out as an RDS}
+
+\item{generation_mode}{Generation backend to use: "core" (default) or "legacy".}
 }
 \value{
 A list of raw data generated for each study snapshot, saved as an RDS file in \code{"data-raw/raw_data.RDS"}.
@@ -68,6 +71,9 @@ the \code{template.csv} file to get the necessary parameters for multiple studie
 \item It generates raw data for study snapshots based on either provided parameters or the template file.
 \item The generated data is saved as an RDS file and returned as a list.
 }
+
+When \code{generation_mode = "legacy"}, a lightweight warning is emitted once per session
+to encourage migration to the refactored \code{"core"} path.
 }
 \examples{
 \dontrun{

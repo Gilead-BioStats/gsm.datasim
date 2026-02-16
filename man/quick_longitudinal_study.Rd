@@ -5,12 +5,13 @@
 \title{Quick longitudinal study creation}
 \usage{
 quick_longitudinal_study(
-  study_name = "Clinical Trial",
+  study_name = "GS-US-000-0001",
   participants = 1000,
   sites = 150,
   months_duration = 24,
   study_type = "standard",
-  run_analytics = TRUE
+  run_analytics = TRUE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ quick_longitudinal_study(
 \item{study_type}{Type of study - "standard" or "endpoints"}
 
 \item{run_analytics}{Whether to run the analytics pipeline (default TRUE)}
+
+\item{verbose}{Whether to print progress/output messages}
 }
 \value{
 LongitudinalStudy object with complete data and analytics

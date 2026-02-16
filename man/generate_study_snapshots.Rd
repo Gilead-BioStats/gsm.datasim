@@ -2,15 +2,16 @@
 % Please edit documentation in R/study_utils.R
 \name{generate_study_snapshots}
 \alias{generate_study_snapshots}
-\title{Generate study data across multiple timepoints}
+	itle{Generate study data across multiple snapshots}
 \usage{
 generate_study_snapshots(
   study_id,
   participants,
   sites,
-  timepoints,
+  snapshots,
   interval,
-  mappings
+  mappings,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -20,15 +21,17 @@ generate_study_snapshots(
 
 \item{sites}{Number of sites}
 
-\item{timepoints}{Number of timepoints}
+\item{snapshots}{Number of snapshots}
 
 \item{interval}{Time interval between snapshots}
 
 \item{mappings}{Vector of mapping names to use}
+
+\item{verbose}{Whether to print progress/output messages}
 }
 \value{
-List of raw data for each timepoint
+List of raw data for each snapshot
 }
 \description{
-Generate study data across multiple timepoints
+Generate study data across multiple snapshots
 }

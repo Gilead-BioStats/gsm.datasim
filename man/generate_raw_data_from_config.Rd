@@ -4,10 +4,12 @@
 \alias{generate_raw_data_from_config}
 \title{Generate raw data for study configuration}
 \usage{
-generate_raw_data_from_config(config)
+generate_raw_data_from_config(config, verbose = FALSE)
 }
 \arguments{
-\item{config}{StudyConfig object with enabled datasets}
+\item{config}{Study configuration object with enabled datasets}
+
+\item{verbose}{Whether to print progress/output messages}
 }
 \value{
 List of raw data for enabled datasets

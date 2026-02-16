@@ -4,10 +4,12 @@
 \alias{organize_analytics_results}
 \title{Organize analytics pipeline results}
 \usage{
-organize_analytics_results(pipeline_results)
+organize_analytics_results(pipeline_results, verbose = FALSE)
 }
 \arguments{
 \item{pipeline_results}{Raw pipeline results from gsm.core}
+
+\item{verbose}{Whether to print progress/output messages}
 }
 \value{
 Organized analytics results

@@ -22,13 +22,16 @@ study <- quick_longitudinal_study(
 # )
 
 # Explore the generated study
-study$summary()
+summarize_longitudinal_study(study)
 
 # Access analytics results intuitively (if pipeline was successful)
 if (!is.null(study$analytics)) {
-  cat("Site-level analytics available:", nrow(study$analytics$by_site$results), "records\n")
-  cat("Country-level analytics available:", nrow(study$analytics$by_country$results), "records\n")
-  cat("Study-level analytics available:", nrow(study$analytics$by_study$results), "records\n")
+  latest_snapshot <- tail(names(study$analytics), 1)
+  latest_analytics <- study$analytics[[latest_snapshot]]
+  cat("Latest analytics snapshot:", latest_snapshot, "\n")
+  cat("Site-level analytics available:", nrow(latest_analytics$by_site$results), "records\n")
+  cat("Country-level analytics available:", nrow(latest_analytics$by_country$results), "records\n")
+  cat("Study-level analytics available:", nrow(latest_analytics$by_study$results), "records\n")
 }
 
 
@@ -38,47 +41,57 @@ cardio_study <- create_longitudinal_study(
   study_id = "CARDIO-001",
   participants = 500,
   sites = 25,
-  timepoints = 6,
+  snapshots = 6,
   interval = "2 months",
   domains = c("AE", "LB", "VISIT", "QUERY"),
   include_pipeline = FALSE  # Just raw data for this example
 )
 
-cardio_study$summary()
+summarize_longitudinal_study(cardio_study)
 
-# Access specific domain data across timepoints
-ae_timeline <- cardio_study$get_domain_timeline("AE")
-cat("Adverse events generated across", length(ae_timeline), "timepoints\n")
+# Access specific domain data across snapshots
+ae_timeline <- get_domain_timeline(cardio_study, "AE")
+cat("Adverse events generated across", length(ae_timeline), "snapshots\n")
 
-# Access specific timepoint data
-timepoint_1_data <- cardio_study$get_timepoint(1)
-cat("Datasets in timepoint 1:", paste(names(timepoint_1_data), collapse = ", "), "\n")
+# Access specific snapshot data
+snapshot_1_data <- get_snapshot_data(cardio_study, 1)
+cat("Datasets in snapshot 1:", paste(names(snapshot_1_data), collapse = ", "), "\n")
 
 
-# Chain methods for readable, discoverable configuration
+# Direct configuration approach with pipes
 
-# Note: The following complex study configuration demonstrates R6 method chaining
-complex_study <- create_study("COMPLEX-TRIAL-001")
-complex_study$with_study_design(participants = 300, sites = 20)
-complex_study$over_time(start_date = "2023-01-01", snapshots = 8, frequency = "6 weeks")
-complex_study$with_standard_datasets(adverse_events = TRUE, subject_visits = TRUE, lab_data = TRUE, 
-                                     queries = TRUE, data_changes = TRUE, data_entry = FALSE)
-complex_study$with_adverse_events(rate_per_patient = 2.5, temporal_pattern = "increasing")
-complex_study$preview()  # Preview configuration before generation
+# Note: The following complex study configuration demonstrates the config approach
+complex_study <- create_study_config("COMPLEX-TRIAL-001", participant_count = 300, site_count = 20) %>%
+  set_temporal_config(start_date = "2023-01-01", snapshot_count = 8, snapshot_width = "6 weeks") %>%
+  add_dataset_config("Raw_AE", enabled = TRUE, 
+                    count_formula = function(config, snapshot_idx = 1) {
+                      base_count <- config$study_params$participant_count * 2.5
+                      factor <- snapshot_idx / config$temporal_config$snapshot_count
+                      round(base_count * factor)
+                    }) %>%
+  add_dataset_config("Raw_SV", enabled = TRUE) %>%
+  add_dataset_config("Raw_LB", enabled = TRUE) %>%
+  add_dataset_config("Raw_QUERY", enabled = TRUE) %>%
+  add_dataset_config("Raw_DATACHG", enabled = TRUE)
+
+# Preview configuration before generation
+cat("Study Configuration:", complex_study$study_params$study_id, "\n")
+cat("Participants:", complex_study$study_params$participant_count, "Sites:", complex_study$study_params$site_count, "\n")
+cat("Enabled datasets:", paste(names(complex_study$dataset_configs), collapse = ", "), "\n")
 
 # Generate the data (commented out to avoid long execution)
-# complex_results <- complex_study$generate()
+# complex_results <- generate_study_data(complex_study)
 
 
 # For users who need full control over the configuration
 
-config <- StudyConfig$new(study_id = "ADVANCED-001", participant_count = 200, site_count = 15)
-config$set_temporal(start_date = "2024-01-01", snapshot_count = 10, snapshot_width = "months")
-config$add_dataset("Raw_AE", enabled = TRUE)
-config$add_dataset("Raw_LB", enabled = TRUE)
+config <- create_study_config(study_id = "ADVANCED-001", participant_count = 200, site_count = 15) %>%
+  set_temporal_config(start_date = "2024-01-01", snapshot_count = 10, snapshot_width = "months") %>%
+  add_dataset_config("Raw_AE", enabled = TRUE) %>%
+  add_dataset_config("Raw_LB", enabled = TRUE)
 
 # Validate configuration
-config$validate()
+validate_study_config(config)
 cat("Advanced configuration created and validated successfully\n")
 
 # The key improvement: Clean abstraction that hides complexity while providing flexibility
