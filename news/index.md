@@ -25,15 +25,12 @@ the RBQM of Clinical Trials based on several parameters.
 
 ### Notable Changes:
 
-**User-facing functions** -
-[`generate_rawdata_for_single_study()`](https://gilead-biostats.github.io/gsm.datasim/reference/generate_rawdata_for_single_study.md)
-can create snapshot(s) for a single study when provided with the proper
+**User-facing functions** - `generate_rawdata_for_single_study()` can
+create snapshot(s) for a single study when provided with the proper
 parameters and appropriate mapping specifications. -
-[`raw_data_generator()`](https://gilead-biostats.github.io/gsm.datasim/reference/raw_data_generator.md)
-is a wrapper to run
-[`generate_rawdata_for_single_study()`](https://gilead-biostats.github.io/gsm.datasim/reference/generate_rawdata_for_single_study.md)
-to create multiple studies if providing a template/dataset containing a
-variety of these parameters.
+`raw_data_generator()` is a wrapper to run
+`generate_rawdata_for_single_study()` to create multiple studies if
+providing a template/dataset containing a variety of these parameters.
 
 **New Mapping Workflows Support:** - All workflows that exist in
 `gsm.mapping`’s `inst/workflow/1_mappings` are now supported, with

@@ -16,19 +16,7 @@ execute_analytics_pipeline(raw_data, config)
 
 - config:
 
-  StudyConfig object
-
-- study_type:
-
-  Study type ("standard", "endpoints", or custom)
-
-- analytics_package:
-
-  Package containing workflows (optional)
-
-- analytics_workflows:
-
-  Specific workflows to run (optional)
+  Study configuration object
 
 ## Value
 

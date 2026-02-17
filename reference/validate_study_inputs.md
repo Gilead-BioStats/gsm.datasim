@@ -7,7 +7,7 @@ parameters
 ## Usage
 
 ``` r
-validate_study_inputs(participants, sites, timepoints, domains)
+validate_study_inputs(participants, sites, snapshots, domains)
 ```
 
 ## Arguments
@@ -20,9 +20,9 @@ validate_study_inputs(participants, sites, timepoints, domains)
 
   Number of sites
 
-- timepoints:
+- snapshots:
 
-  Number of timepoints
+  Number of snapshots
 
 - domains:
 

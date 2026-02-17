@@ -7,12 +7,13 @@ analytics
 
 ``` r
 quick_longitudinal_study(
-  study_name = "Clinical Trial",
+  study_name = "GS-US-000-0001",
   participants = 1000,
   sites = 150,
   months_duration = 24,
   study_type = "standard",
-  run_analytics = TRUE
+  run_analytics = TRUE,
+  verbose = FALSE
 )
 ```
 
@@ -41,6 +42,10 @@ quick_longitudinal_study(
 - run_analytics:
 
   Whether to run the analytics pipeline (default TRUE)
+
+- verbose:
+
+  Whether to print progress/output messages
 
 ## Value
 

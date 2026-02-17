@@ -5,11 +5,12 @@ Generate study data with configuration
 ## Usage
 
 ``` r
-generate_study_data_with_config(
+generate_study_data(
   config,
   workflow_path = "workflow/1_mappings",
   mappings = NULL,
-  package = "gsm.mapping"
+  package = "gsm.mapping",
+  verbose = FALSE
 )
 ```
 
@@ -17,7 +18,7 @@ generate_study_data_with_config(
 
 - config:
 
-  StudyConfig object
+  Study configuration object
 
 - workflow_path:
 
@@ -30,6 +31,10 @@ generate_study_data_with_config(
 - package:
 
   Package containing workflows (not used in new approach)
+
+- verbose:
+
+  Whether to print progress/output messages
 
 ## Value
 

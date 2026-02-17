@@ -22,6 +22,8 @@ Validate study input parameters"></head><body>
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/addnewdomain.html">addnewdomain</a></li>
+    <li><a class="dropdown-item" href="../articles/domain-registry.html">Understanding the Domain Registry</a></li>
+    <li><a class="dropdown-item" href="../articles/study-setup.html">Setting up Clinical Studies with gsm.datasim</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -37,7 +39,7 @@ Validate study input parameters"></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Study Utility Functions</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Gilead-BioStats/gsm.datasim/blob/fix-95/R/study_utils.R" class="external-link"><code>R/study_utils.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Gilead-BioStats/gsm.datasim/blob/fix-95-alt/R/study_utils.R" class="external-link"><code>R/study_utils.R</code></a></small>
       <div class="d-none name"><code>validate_study_inputs.Rd</code></div>
     </div>
 
@@ -49,7 +51,7 @@ Validate study input parameters</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">validate_study_inputs</span><span class="op">(</span><span class="va">participants</span>, <span class="va">sites</span>, <span class="va">timepoints</span>, <span class="va">domains</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">validate_study_inputs</span><span class="op">(</span><span class="va">participants</span>, <span class="va">sites</span>, <span class="va">snapshots</span>, <span class="va">domains</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -64,8 +66,8 @@ Validate study input parameters</p>
 <dd><p>Number of sites</p></dd>
 
 
-<dt id="arg-timepoints">timepoints<a class="anchor" aria-label="anchor" href="#arg-timepoints"></a></dt>
-<dd><p>Number of timepoints</p></dd>
+<dt id="arg-snapshots">snapshots<a class="anchor" aria-label="anchor" href="#arg-snapshots"></a></dt>
+<dd><p>Number of snapshots</p></dd>
 
 
 <dt id="arg-domains">domains<a class="anchor" aria-label="anchor" href="#arg-domains"></a></dt>

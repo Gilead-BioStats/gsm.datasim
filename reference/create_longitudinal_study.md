@@ -11,12 +11,13 @@ create_longitudinal_study(
   study_id = "STUDY-001",
   participants = 100,
   sites = 10,
-  timepoints = 5,
+  snapshots = 5,
   interval = "1 month",
   domains = c("AE", "LB", "VISIT"),
   include_pipeline = TRUE,
   analytics_package = NULL,
-  analytics_workflows = NULL
+  analytics_workflows = NULL,
+  verbose = FALSE
 )
 ```
 
@@ -34,9 +35,9 @@ create_longitudinal_study(
 
   Number of sites
 
-- timepoints:
+- snapshots:
 
-  Number of timepoints
+  Number of snapshots
 
 - interval:
 
@@ -58,10 +59,14 @@ create_longitudinal_study(
 
   Specific workflows to run (optional)
 
+- verbose:
+
+  Whether to print progress/output messages
+
 ## Value
 
 LongitudinalStudy object with generated data
 
 ## Details
 
-Creates a complete longitudinal study with multiple timepoints
+Creates a complete longitudinal study with multiple snapshots

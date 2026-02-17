@@ -5,7 +5,7 @@ Organize analytics pipeline results
 ## Usage
 
 ``` r
-organize_analytics_results(pipeline_results)
+organize_analytics_results(pipeline_results, verbose = FALSE)
 ```
 
 ## Arguments
@@ -13,6 +13,10 @@ organize_analytics_results(pipeline_results)
 - pipeline_results:
 
   Raw pipeline results from gsm.core
+
+- verbose:
+
+  Whether to print progress/output messages
 
 ## Value
 

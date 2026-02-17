@@ -1,6 +1,6 @@
-# Generate study data across multiple timepoints
+# Generate study data across multiple snapshots
 
-Generate study data across multiple timepoints
+Generate study data across multiple snapshots
 
 ## Usage
 
@@ -9,9 +9,11 @@ generate_study_snapshots(
   study_id,
   participants,
   sites,
-  timepoints,
+  snapshots,
   interval,
-  mappings
+  mappings,
+  base_date = NULL,
+  verbose = FALSE
 )
 ```
 
@@ -29,9 +31,9 @@ generate_study_snapshots(
 
   Number of sites
 
-- timepoints:
+- snapshots:
 
-  Number of timepoints
+  Number of snapshots
 
 - interval:
 
@@ -41,6 +43,14 @@ generate_study_snapshots(
 
   Vector of mapping names to use
 
+- base_date:
+
+  Base date for snapshot generation (defaults to "2012-01-31" if NULL)
+
+- verbose:
+
+  Whether to print progress/output messages
+
 ## Value
 
-List of raw data for each timepoint
+List of raw data for each snapshot

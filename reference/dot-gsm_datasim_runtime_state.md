@@ -9,21 +9,12 @@ an RDS file.
 ## Usage
 
 ``` r
-raw_data_generator(
-  ParticipantCount = NULL,
-  SiteCount = NULL,
-  StudyID = NULL,
-  SnapshotCount = NULL,
-  SnapshotWidth = NULL,
-  template_path = system.file("template.csv", package = "gsm.datasim"),
-  workflow_path = "workflow/1_mappings",
-  generate_reports = FALSE,
-  mappings = NULL,
-  package = "gsm.mapping",
-  strStartDate = "2012-01-01",
-  save = FALSE
-)
+.gsm_datasim_runtime_state
 ```
+
+## Format
+
+An object of class `environment` of length 1.
 
 ## Arguments
 
@@ -85,6 +76,10 @@ raw_data_generator(
 
   A boolean, specifying whether or not this should be saved out as an
   RDS
+
+- generation_mode:
+
+  Generation backend to use: "core" (default) or "legacy".
 
 ## Value
 
