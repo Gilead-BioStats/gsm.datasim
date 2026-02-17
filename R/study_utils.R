@@ -159,18 +159,23 @@ ensure_core_mappings <- function(domains) {
 #' @param snapshots Number of snapshots
 #' @param interval Time interval between snapshots
 #' @param mappings Vector of mapping names to use
+#' @param base_date Base date for snapshot generation (defaults to "2012-01-31" if NULL)
 #' @param verbose Whether to print progress/output messages
 #' @return List of raw data for each snapshot
 #' @export
-generate_study_snapshots <- function(study_id, participants, sites, snapshots, interval, mappings, verbose = FALSE) {
+generate_study_snapshots <- function(study_id, participants, sites, snapshots, interval, mappings, base_date = NULL, verbose = FALSE) {
   snapshot_width <- parse_interval_to_snapshot_width(interval)
 
   # Calculate start dates for each snapshot
-  base_date <- as.Date("2012-01-31")
+  if (is.null(base_date)) {
+    base_date <- as.Date("2012-01-31")
+  } else {
+    base_date <- as.Date(base_date)
+  }
   if (snapshot_width == "months") {
     base_month_start <- as.Date(format(base_date, "%Y-%m-01"))
     month_starts <- seq(base_month_start, length.out = snapshots, by = "month")
-    start_dates <- as.Date(format(month_starts + 31, "%Y-%m-01")) - 1
+    start_dates <- lubridate::ceiling_date(month_starts, "month") - 1
   } else {
     start_dates <- seq(base_date, length.out = snapshots, by = snapshot_width)
   }
@@ -238,7 +243,7 @@ parse_interval_to_snapshot_width <- function(interval) {
 #' @return Analytics pipeline results
 #' @export
 execute_analytics_pipeline <- function(raw_data, config) {
-  verbose <- if (!is.null(config$verbose)) isTRUE(config$verbose) else TRUE
+  verbose <- if (!is.null(config$verbose)) isTRUE(config$verbose) else FALSE
   vcat <- function(...) {
     if (isTRUE(verbose)) cat(...)
   }
@@ -300,7 +305,6 @@ execute_analytics_pipeline <- function(raw_data, config) {
       required_domains_norm <- trimws(tolower(c("SUBJ", "SITE", "STUDY", "ENROLL")))
       domains_to_map <- intersect(unique(c(config_domains_norm, required_domains_norm)), available_domains_norm)
       domains_to_map <- available_domains_stripped[match(domains_to_map, available_domains_norm)]
-      domains_to_map <- domains_to_map[domains_to_map != "AntiCancer"]
 
       if (length(domains_to_map) == 0) {
         vcat("No domains available for mapping in snapshot ", snapshot_name, ". Skipping.\n", sep = "")

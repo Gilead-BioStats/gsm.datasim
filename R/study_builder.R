@@ -264,22 +264,25 @@ create_longitudinal_study_data <- function(study_id, raw_data, config) {
 #' Display comprehensive study summary.
 #'
 #' @param study Longitudinal study data structure
+#' @param verbose Whether to print summary output
 #'
 #' @return Invisibly returns the study structure
-#' @export 
-summarize_longitudinal_study <- function(study) {
-  cat("Longitudinal Study Summary\n")
-  cat("=========================\n")
-  cat(sprintf("Study ID: %s\n", study$study_id))
-  cat(sprintf("Participants: %d\n", study$config$participants))
-  cat(sprintf("Sites: %d\n", study$config$sites))
-  snapshot_count <- if (!is.null(study$config$snapshots)) study$config$snapshots else length(study$raw_data)
-  cat(sprintf("Snapshots: %d\n", snapshot_count))
-  cat(sprintf("Interval: %s\n", study$config$interval))
-  cat(sprintf("Domains: %s\n", paste(study$config$domains, collapse = ", ")))
-  cat(sprintf("Analytics Available: %s\n", !is.null(study$analytics)))
+#' @export
+summarize_longitudinal_study <- function(study, verbose = TRUE) {
+  if (isTRUE(verbose)) {
+    cat("Longitudinal Study Summary\n")
+    cat("=========================\n")
+    cat(sprintf("Study ID: %s\n", study$study_id))
+    cat(sprintf("Participants: %d\n", study$config$participants))
+    cat(sprintf("Sites: %d\n", study$config$sites))
+    snapshot_count <- if (!is.null(study$config$snapshots)) study$config$snapshots else length(study$raw_data)
+    cat(sprintf("Snapshots: %d\n", snapshot_count))
+    cat(sprintf("Interval: %s\n", study$config$interval))
+    cat(sprintf("Domains: %s\n", paste(study$config$domains, collapse = ", ")))
+    cat(sprintf("Analytics Available: %s\n", !is.null(study$analytics)))
+  }
 
-  if (length(study$raw_data) > 0) {
+  if (isTRUE(verbose) && length(study$raw_data) > 0) {
     cat(sprintf("\nData Snapshots: %d\n", length(study$raw_data)))
     cat("Available datasets per snapshot:\n")
     for (i in seq_along(study$raw_data)[1:min(3, length(study$raw_data))]) {
@@ -305,9 +308,10 @@ summarize_longitudinal_study <- function(study) {
 #' @param study Longitudinal study data structure
 #'
 #' @return Updated study structure with analytics results
+#' @param verbose Whether to print progress output
 #' @export
-run_longitudinal_analytics <- function(study) {
-  verbose <- if (!is.null(study$config$verbose)) isTRUE(study$config$verbose) else TRUE
+run_longitudinal_analytics <- function(study, verbose = FALSE) {
+  verbose <- if (!is.null(study$config$verbose)) isTRUE(study$config$verbose) else verbose
   study$analytics <- generate_analytics_layers(
     raw_data = study$raw_data,
     config = study$config,

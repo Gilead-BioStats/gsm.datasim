@@ -4,10 +4,12 @@
 \alias{run_longitudinal_analytics}
 \title{Run Analytics Pipeline on Longitudinal Study}
 \usage{
-run_longitudinal_analytics(study)
+run_longitudinal_analytics(study, verbose = FALSE)
 }
 \arguments{
 \item{study}{Longitudinal study data structure}
+
+\item{verbose}{Whether to print progress output}
 }
 \value{
 Updated study structure with analytics results

@@ -183,7 +183,7 @@ quick_longitudinal_study <- function(study_name = "GS-US-000-0001",
 
   if (isTRUE(verbose)) {
     cat("Study creation completed successfully!\n")
-    cat("Generated", length(study$raw_data), "snapshots with", length(get_available_domains(study)), "domains\n")
+    cat("Generated", length(study$raw_data), "snapshots with", length(study$config$domains), "domains\n")
   }
 
   if (isTRUE(verbose) && !is.null(study$analytics)) {

@@ -2,7 +2,7 @@
 % Please edit documentation in R/study_utils.R
 \name{generate_study_snapshots}
 \alias{generate_study_snapshots}
-	itle{Generate study data across multiple snapshots}
+\title{Generate study data across multiple snapshots}
 \usage{
 generate_study_snapshots(
   study_id,
@@ -11,6 +11,7 @@ generate_study_snapshots(
   snapshots,
   interval,
   mappings,
+  base_date = NULL,
   verbose = FALSE
 )
 }
@@ -26,6 +27,8 @@ generate_study_snapshots(
 \item{interval}{Time interval between snapshots}
 
 \item{mappings}{Vector of mapping names to use}
+
+\item{base_date}{Base date for snapshot generation (defaults to "2012-01-31" if NULL)}
 
 \item{verbose}{Whether to print progress/output messages}
 }

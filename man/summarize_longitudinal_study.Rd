@@ -4,10 +4,12 @@
 \alias{summarize_longitudinal_study}
 \title{Get Summary of Longitudinal Study}
 \usage{
-summarize_longitudinal_study(study)
+summarize_longitudinal_study(study, verbose = TRUE)
 }
 \arguments{
 \item{study}{Longitudinal study data structure}
+
+\item{verbose}{Whether to print summary output}
 }
 \value{
 Invisibly returns the study structure
