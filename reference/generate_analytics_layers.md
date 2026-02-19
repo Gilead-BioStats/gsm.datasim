@@ -1,6 +1,6 @@
 # Generate analytics layers from raw data
 
-Convenience wrapper that executes the analytics pipeline and organizes
+Convenience wrapper that executes the analytics pipeline and returns
 outputs into site/country/study layers (per snapshot when applicable).
 
 ## Usage
@@ -25,4 +25,4 @@ generate_analytics_layers(raw_data, config, verbose = FALSE)
 
 ## Value
 
-Organized analytics results
+Raw analytics pipeline results

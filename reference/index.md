@@ -36,8 +36,6 @@
   : Get Domain Timeline Data
 - [`get_snapshot_data()`](https://gilead-biostats.github.io/gsm.datasim/reference/get_snapshot_data.md)
   : Get Data for Specific Snapshot
-- [`organize_analytics_results()`](https://gilead-biostats.github.io/gsm.datasim/reference/organize_analytics_results.md)
-  : Organize analytics pipeline results
 - [`parse_interval_to_snapshot_width()`](https://gilead-biostats.github.io/gsm.datasim/reference/parse_interval_to_snapshot_width.md)
   : Parse interval string to snapshot width
 - [`prepare_combined_specs_for_generation()`](https://gilead-biostats.github.io/gsm.datasim/reference/prepare_combined_specs_for_generation.md)
