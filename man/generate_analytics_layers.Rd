@@ -14,9 +14,9 @@ generate_analytics_layers(raw_data, config, verbose = FALSE)
 \item{verbose}{Whether to print progress/output messages}
 }
 \value{
-Organized analytics results
+Raw analytics pipeline results
 }
 \description{
-Convenience wrapper that executes the analytics pipeline and organizes
+Convenience wrapper that executes the analytics pipeline and returns
 outputs into site/country/study layers (per snapshot when applicable).
 }

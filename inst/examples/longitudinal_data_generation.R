@@ -29,9 +29,24 @@ if (!is.null(study$analytics)) {
   latest_snapshot <- tail(names(study$analytics), 1)
   latest_analytics <- study$analytics[[latest_snapshot]]
   cat("Latest analytics snapshot:", latest_snapshot, "\n")
-  cat("Site-level analytics available:", nrow(latest_analytics$by_site$results), "records\n")
-  cat("Country-level analytics available:", nrow(latest_analytics$by_country$results), "records\n")
-  cat("Study-level analytics available:", nrow(latest_analytics$by_study$results), "records\n")
+  
+  # Count metrics from raw analytics results
+  if (!is.null(latest_analytics) && "results" %in% names(latest_analytics)) {
+    results <- latest_analytics$results
+    analysis_results <- results[grep("^Analysis_", names(results), ignore.case = TRUE)]
+    legacy_results <- results[grep("^(site|country|study)", names(results), ignore.case = TRUE)]
+    total_metrics <- length(analysis_results) + length(legacy_results)
+    cat("Total metrics available:", total_metrics, "metrics\n")
+    
+    if (length(analysis_results) > 0) {
+      cat("Analysis results:", length(analysis_results), "metrics\n")
+    }
+    if (length(legacy_results) > 0) {
+      cat("Legacy results:", length(legacy_results), "metrics\n")
+    }
+  } else {
+    cat("No analytics results available\n")
+  }
 }
 
 

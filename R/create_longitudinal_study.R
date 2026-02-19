@@ -189,18 +189,26 @@ quick_longitudinal_study <- function(study_name = "GS-US-000-0001",
   if (isTRUE(verbose) && !is.null(study$analytics)) {
     total_metrics <- 0
     analytics_snapshots <- study$analytics
-    if (is.list(analytics_snapshots) && length(analytics_snapshots) > 0 && "by_study" %in% names(analytics_snapshots)) {
-      analytics_snapshots <- list(analytics_snapshots)
-    }
-    for (snapshot_analytics in analytics_snapshots) {
-      if (is.null(snapshot_analytics)) next
-      total_metrics <- total_metrics +
-        nrow(snapshot_analytics$by_study$results) +
-        nrow(snapshot_analytics$by_site$results) +
-        nrow(snapshot_analytics$by_country$results)
+    if (is.list(analytics_snapshots) && length(analytics_snapshots) > 0) {
+      # Count metrics directly from raw analytics results
+      if ("results" %in% names(analytics_snapshots)) {
+        # Single snapshot
+        results <- analytics_snapshots$results
+        total_metrics <- length(results[grep("^(Analysis_|site|country|study)", names(results), ignore.case = TRUE)])
+      } else {
+        # Multiple snapshots
+        for (snapshot_name in names(analytics_snapshots)) {
+          snapshot_analytics <- analytics_snapshots[[snapshot_name]]
+          if (!is.null(snapshot_analytics) && "results" %in% names(snapshot_analytics)) {
+            results <- snapshot_analytics$results
+            snapshot_metrics <- length(results[grep("^(Analysis_|site|country|study)", names(results), ignore.case = TRUE)])
+            total_metrics <- total_metrics + snapshot_metrics
+          }
+        }
+      }
     }
     cat("Analytics pipeline completed with results for",
-        total_metrics, "organized metric rows\n")
+        total_metrics, "metrics\n")
   }
 
   return(study)

@@ -376,167 +376,19 @@ execute_analytics_pipeline <- function(raw_data, config) {
   })
 }
 
-#' Organize analytics pipeline results
-#'
-#' @param pipeline_results Raw pipeline results from gsm.core
-#' @param verbose Whether to print progress/output messages
-#' @return Organized analytics results
-#' @export
-organize_analytics_results <- function(pipeline_results, verbose = FALSE) {
-  if (is.null(pipeline_results)) {
-    if (isTRUE(verbose)) cat("Analytics pipeline completed with results for 0 study-level metrics\n")
-    return(NULL)
-  }
-
-  # If analytics are returned per snapshot, organize each snapshot and preserve date names
-  is_per_snapshot <- is.list(pipeline_results) &&
-    length(pipeline_results) > 0 &&
-    !"results" %in% names(pipeline_results)
-
-  if (isTRUE(is_per_snapshot)) {
-    organized_by_snapshot <- lapply(pipeline_results, function(snapshot_result) {
-      organize_analytics_results(snapshot_result, verbose = FALSE)
-    })
-    if (!is.null(names(pipeline_results))) {
-      names(organized_by_snapshot) <- names(pipeline_results)
-    }
-    if (isTRUE(verbose)) {
-      cat("Analytics organized for", length(organized_by_snapshot), "snapshots\n")
-    }
-    return(organized_by_snapshot)
-  }
-
-  # Initialize organized results structure
-  organized_results <- list(
-    by_site = list(results = data.frame(), metadata = list()),
-    by_country = list(results = data.frame(), metadata = list()),
-    by_study = list(results = data.frame(), metadata = list())
-  )
-
-  # Count total metrics
-  total_metrics <- 0
-
-  # If we have GSM workflow results
-  if ("results" %in% names(pipeline_results) && !is.null(pipeline_results$results)) {
-    results <- pipeline_results$results
-
-    # Process Analysis_* results (new pattern)
-    analysis_results <- results[grep("^Analysis_", names(results), ignore.case = TRUE)]
-    if (length(analysis_results) > 0) {
-      # Try to classify by group level if possible
-      for (name in names(analysis_results)) {
-        res <- analysis_results[[name]]
-        metric_id <- if (!is.null(res$ID)) {
-          as.character(res$ID)
-        } else {
-          stringr::str_replace(as.character(name), "^Analysis_", "")
-        }
-        result_df <- NULL
-        if (!is.null(res$Analysis_Summary) && is.data.frame(res$Analysis_Summary)) {
-          result_df <- res$Analysis_Summary
-        } else if (!is.null(res$Analysis_Flagged) && is.data.frame(res$Analysis_Flagged)) {
-          result_df <- res$Analysis_Flagged
-        } else if (!is.null(res$Analysis_Analyzed) && is.data.frame(res$Analysis_Analyzed)) {
-          result_df <- res$Analysis_Analyzed
-        } else {
-          next
-        }
-        if (!"Metric_ID" %in% names(result_df)) {
-          result_df$Metric_ID <- metric_id
-        }
-
-        # Try to detect group level from Analysis_Summary or Analysis_Analyzed
-        group_level <- NA
-        if (!is.null(res$Analysis_Summary) && "GroupLevel" %in% names(res$Analysis_Summary)) {
-          group_level <- unique(res$Analysis_Summary$GroupLevel)
-        } else if (!is.null(res$Analysis_Analyzed) && "GroupLevel" %in% names(res$Analysis_Analyzed)) {
-          group_level <- unique(res$Analysis_Analyzed$GroupLevel)
-        }
-        # Assign to by_site, by_country, or by_study based on group level
-        if (any(grepl("site", tolower(group_level)))) {
-          organized_results$by_site$results <- rbind(organized_results$by_site$results, result_df)
-          organized_results$by_site$metadata <- c(organized_results$by_site$metadata, list(res))
-        } else if (any(grepl("country", tolower(group_level)))) {
-          organized_results$by_country$results <- rbind(organized_results$by_country$results, result_df)
-          organized_results$by_country$metadata <- c(organized_results$by_country$metadata, list(res))
-        } else if (any(grepl("study", tolower(group_level)))) {
-          organized_results$by_study$results <- rbind(organized_results$by_study$results, result_df)
-          organized_results$by_study$metadata <- c(organized_results$by_study$metadata, list(res))
-        } else {
-          # If group level is not clear, put in by_study as fallback
-          organized_results$by_study$results <- rbind(organized_results$by_study$results, result_df)
-          organized_results$by_study$metadata <- c(organized_results$by_study$metadata, list(res))
-        }
-        total_metrics <- total_metrics + 1
-      }
-    }
-
-    # Also support legacy patterns for site/country/study
-    site_results <- results[grep("^site", names(results), ignore.case = TRUE)]
-    if (length(site_results) > 0) {
-      site_df <- do.call(rbind, lapply(names(site_results), function(result_name) {
-        result <- site_results[[result_name]]$lResults
-        if (!"Metric_ID" %in% names(result)) {
-          result$Metric_ID <- as.character(result_name)
-        }
-        result
-      }))
-      organized_results$by_site$results <- rbind(organized_results$by_site$results, site_df)
-      organized_results$by_site$metadata <- c(organized_results$by_site$metadata, lapply(site_results, function(x) x$lData))
-      total_metrics <- total_metrics + length(site_results)
-    }
-    country_results <- results[grep("^country", names(results), ignore.case = TRUE)]
-    if (length(country_results) > 0) {
-      country_df <- do.call(rbind, lapply(names(country_results), function(result_name) {
-        result <- country_results[[result_name]]$lResults
-        if (!"Metric_ID" %in% names(result)) {
-          result$Metric_ID <- as.character(result_name)
-        }
-        result
-      }))
-      organized_results$by_country$results <- rbind(organized_results$by_country$results, country_df)
-      organized_results$by_country$metadata <- c(organized_results$by_country$metadata, lapply(country_results, function(x) x$lData))
-      total_metrics <- total_metrics + length(country_results)
-    }
-    study_results <- results[grep("^study", names(results), ignore.case = TRUE)]
-    if (length(study_results) > 0) {
-      study_df <- do.call(rbind, lapply(names(study_results), function(result_name) {
-        result <- study_results[[result_name]]$lResults
-        if (!"Metric_ID" %in% names(result)) {
-          result$Metric_ID <- as.character(result_name)
-        }
-        result
-      }))
-      organized_results$by_study$results <- rbind(organized_results$by_study$results, study_df)
-      organized_results$by_study$metadata <- c(organized_results$by_study$metadata, lapply(study_results, function(x) x$lData))
-      total_metrics <- total_metrics + length(study_results)
-    }
-  }
-
-  # Report the total count
-  if (total_metrics > 0) {
-    if (isTRUE(verbose)) cat("Analytics pipeline completed with results for", total_metrics, "study-level metrics\n")
-  } else {
-    if (isTRUE(verbose)) cat("Analytics pipeline completed with results for 0 study-level metrics\n")
-  }
-
-  return(organized_results)
-}
-
 #' Generate analytics layers from raw data
 #'
-#' Convenience wrapper that executes the analytics pipeline and organizes
-#' outputs into site/country/study layers (per snapshot when applicable).
+#' Convenience wrapper that executes the analytics pipeline and returns
+#' the raw analytics results.
 #'
 #' @param raw_data Raw study data (single or multi-snapshot list)
 #' @param config Study configuration object
 #' @param verbose Whether to print progress/output messages
-#' @return Organized analytics results
+#' @return Raw analytics pipeline results
 #' @export
 generate_analytics_layers <- function(raw_data, config, verbose = FALSE) {
   config$verbose <- verbose
-  pipeline_results <- execute_analytics_pipeline(raw_data, config)
-  organize_analytics_results(pipeline_results, verbose = verbose)
+  execute_analytics_pipeline(raw_data, config)
 }
 
 #' Generate raw data for study configuration
