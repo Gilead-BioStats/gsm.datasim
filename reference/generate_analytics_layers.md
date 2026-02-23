@@ -1,7 +1,7 @@
 # Generate analytics layers from raw data
 
-Convenience wrapper that executes the analytics pipeline and returns
-outputs into site/country/study layers (per snapshot when applicable).
+Convenience wrapper that executes the analytics pipeline and returns the
+raw analytics results.
 
 ## Usage
 

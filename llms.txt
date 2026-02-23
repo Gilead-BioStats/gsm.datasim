@@ -73,12 +73,14 @@ all analysis and reporting data along with html report outputs.
   : Ensure core mappings are included
 - [`execute_analytics_pipeline()`](https://gilead-biostats.github.io/gsm.datasim/reference/execute_analytics_pipeline.md)
   : Execute analytics pipeline
+- [`execute_reporting_pipeline()`](https://gilead-biostats.github.io/gsm.datasim/reference/execute_reporting_pipeline.md)
+  : Execute the reporting pipeline using gsm.reporting workflows
 - [`generate_analytics_layers()`](https://gilead-biostats.github.io/gsm.datasim/reference/generate_analytics_layers.md)
   : Generate analytics layers from raw data
 - [`generate_raw_data_for_endpoints()`](https://gilead-biostats.github.io/gsm.datasim/reference/generate_raw_data_for_endpoints.md)
   : Generate raw data for endpoints study (multi-package)
-- [`generate_raw_data_from_config()`](https://gilead-biostats.github.io/gsm.datasim/reference/generate_raw_data_from_config.md)
-  : Generate raw data for study configuration
+- [`generate_reporting_layers()`](https://gilead-biostats.github.io/gsm.datasim/reference/generate_reporting_layers.md)
+  : Generate reporting layers from analytics results
 - [`generate_study_data()`](https://gilead-biostats.github.io/gsm.datasim/reference/generate_study_data.md)
   : Generate study data with configuration
 - [`generate_study_snapshots()`](https://gilead-biostats.github.io/gsm.datasim/reference/generate_study_snapshots.md)
@@ -101,6 +103,8 @@ all analysis and reporting data along with html report outputs.
   : Remove Dataset Configuration
 - [`run_longitudinal_analytics()`](https://gilead-biostats.github.io/gsm.datasim/reference/run_longitudinal_analytics.md)
   : Run Analytics Pipeline on Longitudinal Study
+- [`run_longitudinal_reporting()`](https://gilead-biostats.github.io/gsm.datasim/reference/run_longitudinal_reporting.md)
+  : Run Reporting Pipeline on Longitudinal Study
 - [`set_temporal_config()`](https://gilead-biostats.github.io/gsm.datasim/reference/set_temporal_config.md)
   : Set Temporal Configuration
 - [`study_config_examples`](https://gilead-biostats.github.io/gsm.datasim/reference/study_config_examples.md)

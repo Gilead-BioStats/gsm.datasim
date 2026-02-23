@@ -12,7 +12,7 @@ quick_longitudinal_study(
   sites = 150,
   months_duration = 24,
   study_type = "standard",
-  run_analytics = TRUE,
+  include_pipeline = TRUE,
   verbose = FALSE
 )
 ```
@@ -39,9 +39,10 @@ quick_longitudinal_study(
 
   Type of study - "standard" or "endpoints"
 
-- run_analytics:
+- include_pipeline:
 
-  Whether to run the analytics pipeline (default TRUE)
+  Whether to run both the analytics and reporting pipelines (default
+  TRUE)
 
 - verbose:
 

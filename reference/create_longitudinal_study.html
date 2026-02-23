@@ -58,9 +58,10 @@ Create longitudinal study data</p>
 <span>  snapshots <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  interval <span class="op">=</span> <span class="st">"1 month"</span>,</span>
 <span>  domains <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AE"</span>, <span class="st">"LB"</span>, <span class="st">"VISIT"</span><span class="op">)</span>,</span>
-<span>  include_pipeline <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  run_analytics <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  analytics_package <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  analytics_workflows <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  run_reporting <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -93,8 +94,8 @@ Create longitudinal study data</p>
 <dd><p>Clinical domains to include</p></dd>
 
 
-<dt id="arg-include-pipeline">include_pipeline<a class="anchor" aria-label="anchor" href="#arg-include-pipeline"></a></dt>
-<dd><p>Whether to run analytics pipeline</p></dd>
+<dt id="arg-run-analytics">run_analytics<a class="anchor" aria-label="anchor" href="#arg-run-analytics"></a></dt>
+<dd><p>Whether to run the analytics pipeline (default TRUE)</p></dd>
 
 
 <dt id="arg-analytics-package">analytics_package<a class="anchor" aria-label="anchor" href="#arg-analytics-package"></a></dt>
@@ -103,6 +104,10 @@ Create longitudinal study data</p>
 
 <dt id="arg-analytics-workflows">analytics_workflows<a class="anchor" aria-label="anchor" href="#arg-analytics-workflows"></a></dt>
 <dd><p>Specific workflows to run (optional)</p></dd>
+
+
+<dt id="arg-run-reporting">run_reporting<a class="anchor" aria-label="anchor" href="#arg-run-reporting"></a></dt>
+<dd><p>Whether to run the reporting pipeline after analytics (default FALSE)</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
