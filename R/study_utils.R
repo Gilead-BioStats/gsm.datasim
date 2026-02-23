@@ -180,15 +180,22 @@ generate_study_snapshots <- function(study_id, participants, sites, snapshots, i
     start_dates <- seq(base_date, length.out = snapshots, by = snapshot_width)
   }
 
+  # Ramp up participants and sites gradually across snapshots, mimicking real
+  # enrollment patterns (the same approach used in generate_rawdata_for_single_study).
+  subject_counts <- count_gen(participants, snapshots)
+  site_counts    <- count_gen(sites, snapshots)
+
   raw_data_list <- list()
 
   for (i in 1:snapshots) {
-    if (isTRUE(verbose)) cat("Generating snapshot", i, "of", snapshots, "\n")
+    if (isTRUE(verbose)) cat("Generating snapshot", i, "of", snapshots,
+                              "(", subject_counts[i], "participants,",
+                              site_counts[i], "sites)\n")
 
     config <- create_study_config(
       study_id = study_id,
-      participant_count = participants,
-      site_count = sites
+      participant_count = subject_counts[i],
+      site_count        = site_counts[i]
     )
 
     # Set temporal configuration with the specific start date for this snapshot
