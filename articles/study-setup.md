@@ -449,6 +449,101 @@ validation <- validate_study_data(study)
 str(validation)
 ```
 
+## Exporting Study Data
+
+Once you have a complete study object — with raw data, analytics, and
+(optionally) reporting — you can write everything to disk with
+[`export_study_data()`](https://gilead-biostats.github.io/gsm.datasim/reference/export_study_data.md).
+The function creates a structured folder hierarchy under a root
+directory:
+
+    <output_dir>/<study_id>/
+      <snapshot_date>/
+        raw/          # Raw_*.csv
+        mapped/       # Mapped_*.csv  (present when analytics ran)
+        analytics/    # <metric>_<table>.csv  (present when analytics ran)
+        reporting/    # Reporting_*.csv  (present when reporting ran)
+
+Folders are only created when the corresponding data exists for a
+snapshot.
+
+### Basic Export
+
+``` r
+# Generate a small study to export
+study <- create_longitudinal_study(
+  study_id     = "EXPORT-001",
+  participants = 100,
+  sites        = 5,
+  snapshots    = 3,
+  interval     = "1 month",
+  domains      = c("AE", "LB"),
+  run_analytics = TRUE,
+  run_reporting = TRUE,
+  verbose       = FALSE
+)
+
+# Export to a temporary directory — returns the path to the study folder invisibly
+study_path <- export_study_data(
+  study      = study,
+  output_dir = tempdir(),
+  verbose    = TRUE       # prints per-snapshot progress
+)
+
+# Confirm the folder structure
+list.dirs(study_path, full.names = FALSE, recursive = TRUE)
+```
+
+### Controlling the Output Location
+
+``` r
+# Write to a specific project folder
+study_path <- export_study_data(
+  study        = study,
+  output_dir   = "~/my_studies",    # root folder
+  study_folder = "EXPORT-001-v2",   # override the auto-generated folder name
+  overwrite    = TRUE               # allow writing into an existing folder
+)
+```
+
+### Preserving Non-CSV Objects
+
+The analytics pipeline stores workflow lists, summaries, and other
+objects that cannot be flattened to CSV. Set `save_rds = TRUE` to write
+a companion `analytics_full.rds` file per snapshot:
+
+``` r
+study_path <- export_study_data(
+  study      = study,
+  output_dir = tempdir(),
+  overwrite  = TRUE,
+  save_rds   = TRUE   # also writes analytics_full.rds per snapshot
+)
+
+# Reload the full analytics object for a specific snapshot
+analytics_snap <- readRDS(file.path(study_path, names(study$raw_data)[1],
+                                    "analytics_full.rds"))
+names(analytics_snap)  # $results, $mapped, $lWorkflow, $summary
+```
+
+### Inspecting the Exported Files
+
+``` r
+# List all CSV files written across all snapshots
+all_csvs <- list.files(study_path, pattern = "\\.csv$", recursive = TRUE)
+cat(length(all_csvs), "CSV files written\n")
+
+# Raw data lives in <snapshot>/raw/
+raw_csvs <- all_csvs[grepl("/raw/", all_csvs)]
+cat("Raw CSVs:", paste(basename(raw_csvs), collapse = ", "), "\n")
+
+# Read a specific snapshot's adverse event data back in
+snap_date <- names(study$raw_data)[1]
+ae_path   <- file.path(study_path, snap_date, "raw", "Raw_AE.csv")
+ae_df     <- read.csv(ae_path)
+nrow(ae_df)
+```
+
 ## Conclusion
 
 The `gsm.datasim` package provides flexible tools for creating both
@@ -461,12 +556,15 @@ single snapshot and longitudinal clinical studies. Key takeaways:
   for single snapshots
 - Use
   [`create_longitudinal_study()`](https://gilead-biostats.github.io/gsm.datasim/reference/create_longitudinal_study.md)
-  for multi-snapshot studies  
+  for multi-snapshot studies
 - Configure domains based on your study type and monitoring needs
 - Leverage the analytics pipeline for automated quality monitoring
 - Use
   [`quick_longitudinal_study()`](https://gilead-biostats.github.io/gsm.datasim/reference/quick_longitudinal_study.md)
   for rapid prototyping
+- Use
+  [`export_study_data()`](https://gilead-biostats.github.io/gsm.datasim/reference/export_study_data.md)
+  to write completed studies to a structured folder hierarchy
 
 The modular design allows you to start simple and add complexity as
 needed, making it suitable for both exploratory work and production data

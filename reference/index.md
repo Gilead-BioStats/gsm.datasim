@@ -20,6 +20,8 @@
   : Execute analytics pipeline
 - [`execute_reporting_pipeline()`](https://gilead-biostats.github.io/gsm.datasim/reference/execute_reporting_pipeline.md)
   : Execute the reporting pipeline using gsm.reporting workflows
+- [`export_study_data()`](https://gilead-biostats.github.io/gsm.datasim/reference/export_study_data.md)
+  : Export Complete Study Data to Disk
 - [`generate_analytics_layers()`](https://gilead-biostats.github.io/gsm.datasim/reference/generate_analytics_layers.md)
   : Generate analytics layers from raw data
 - [`generate_raw_data_for_endpoints()`](https://gilead-biostats.github.io/gsm.datasim/reference/generate_raw_data_for_endpoints.md)
