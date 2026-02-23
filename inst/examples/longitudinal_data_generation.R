@@ -59,7 +59,7 @@ cardio_study <- create_longitudinal_study(
   snapshots = 6,
   interval = "2 months",
   domains = c("AE", "LB", "VISIT", "QUERY"),
-  include_pipeline = FALSE  # Just raw data for this example
+  run_analytics = FALSE  # Just raw data for this example
 )
 
 summarize_longitudinal_study(cardio_study)

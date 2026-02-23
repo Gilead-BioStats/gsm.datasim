@@ -89,7 +89,7 @@ raw_data <- generate_study_data(config, verbose = TRUE)
 
 ## Adding Analytics Pipeline
 
-You can run analytics on your single snapshot study:
+You can run analytics on your single snapshot study. Results are returned as-is from the gsm.core pipeline — a named list where each snapshot contains `$results` (named by workflow, e.g. `Analysis_kri0001`), `$mapped`, `$lWorkflow`, and `$summary`:
 
 ```{r single-analytics}
 # Create study with analytics
@@ -97,7 +97,7 @@ config <- create_study_config(
   study_id = "STUDY003",
   participant_count = 150,
   site_count = 8,
-  analytics_package = "gsm.mapping"  # or other analytics package
+  analytics_package = "gsm.kri"
 )
 
 # Add clinical domains
@@ -107,11 +107,31 @@ config <- add_dataset_config(config, "Raw_LB", enabled = TRUE)
 # Generate data
 raw_data <- generate_study_data(config, verbose = TRUE)
 
-# Run analytics pipeline
+# Run analytics pipeline — returns raw gsm.core results per snapshot
 analytics_results <- generate_analytics_layers(raw_data, config, verbose = TRUE)
 
-# Examine analytics results
-str(analytics_results, max.level = 2)
+# Each snapshot contains $results, $mapped, $lWorkflow, $summary
+names(analytics_results[[1]])
+
+# Access a specific metric result across all its data frames
+kri_result <- analytics_results[[1]]$results$Analysis_kri0001
+names(kri_result)  # e.g. Analysis_Summary, Analysis_Flagged, Analysis_Analyzed
+```
+
+## Adding the Reporting Pipeline
+
+The reporting pipeline runs gsm.reporting workflows on top of the analytics results. Pass the analytics output directly to `generate_reporting_layers()`:
+
+```{r single-reporting}
+# Run reporting pipeline on analytics results
+reporting_results <- generate_reporting_layers(
+  analytics_results = analytics_results,
+  config = config,
+  verbose = TRUE
+)
+
+# Results are keyed by snapshot name, matching analytics_results
+names(reporting_results)
 ```
 
 # Longitudinal Studies  
@@ -120,7 +140,7 @@ Longitudinal studies simulate data evolution over time, which is essential for u
 
 ## Basic Longitudinal Study
 
-The `create_longitudinal_study()` function provides the easiest way to set up a longitudinal study:
+The `create_longitudinal_study()` function provides the easiest way to set up a longitudinal study. By default it runs the analytics pipeline; set `run_reporting = TRUE` to also run the reporting pipeline:
 
 ```{r longitudinal-basic}
 # Create a longitudinal study with default settings
@@ -131,19 +151,25 @@ study <- create_longitudinal_study(
   snapshots = 6,                    # 6 time points
   interval = "1 month",             # Monthly snapshots
   domains = c("AE", "LB", "VISIT"), # Clinical domains to include
-  include_pipeline = TRUE,          # Run analytics
+  run_analytics = TRUE,             # Run analytics pipeline
+  run_reporting = TRUE,             # Also run reporting pipeline
   verbose = TRUE
 )
 
 # Examine the study structure
-names(study)
+names(study)  # includes $raw_data, $analytics, $reporting
 
 # View snapshot dates
 names(study$raw_data)
 
-# Check analytics results (if pipeline was run)
+# Analytics results: raw gsm.core output per snapshot
 if (!is.null(study$analytics)) {
-  names(study$analytics)
+  names(study$analytics[[1]]$results)  # e.g. "Analysis_kri0001", ...
+}
+
+# Reporting results per snapshot
+if (!is.null(study$reporting)) {
+  names(study$reporting)
 }
 ```
 
@@ -160,7 +186,7 @@ study <- create_longitudinal_study(
   snapshots = 12,                               # 1 year of monthly data
   interval = "1 month",
   domains = c("AE", "LB", "VISIT", "PD", "PK"), # Multiple domains
-  include_pipeline = TRUE,
+  run_analytics = TRUE,
   analytics_package = "gsm.kri",           # Specify analytics package
   verbose = TRUE
 )
@@ -235,22 +261,22 @@ quarterly_study <- create_longitudinal_study(
 
 ## Quick Study Creation
 
-For rapid prototyping, use the `quick_longitudinal_study()` function:
+For rapid prototyping, use the `quick_longitudinal_study()` function. Both analytics and reporting run by default when `include_pipeline = TRUE`:
 
 ```{r quick-study}
-# Create a study with sensible defaults
+# Create a study with sensible defaults — analytics and reporting both run by default
 quick_study <- quick_longitudinal_study(
   study_name = "QUICK-PROTO-001",
   participants = 200,
-  sites = 10, 
+  sites = 10,
   months_duration = 18,             # 18-month study
   study_type = "standard",
-  run_analytics = TRUE,
+  include_pipeline = TRUE,          # default: runs analytics + reporting
   verbose = TRUE
 )
 
-# The function automatically determines appropriate snapshots and intervals
-str(quick_study$config)
+# Analytics and reporting results are available on the study object
+names(quick_study)  # includes $analytics and $reporting
 ```
 
 # Study Configuration Best Practices
@@ -283,9 +309,9 @@ onc_study <- create_longitudinal_study(
 )
 ```
 
-## Analytics Configuration
+## Analytics and Reporting Configuration
 
-Configure analytics based on your monitoring needs:
+Configure the analytics package and specific workflows, and optionally customise the reporting package. The analytics pipeline returns raw gsm.core results per snapshot; pass them directly to the reporting pipeline.
 
 ```{r analytics-config}
 # Create study with specific analytics workflows
@@ -296,20 +322,53 @@ study <- create_longitudinal_study(
   snapshots = 12,
   interval = "1 month",
   domains = c("AE", "LB", "VISIT", "QUERY"),
-  include_pipeline = TRUE,
+  run_analytics = TRUE,
   analytics_package = "gsm.kri",
   analytics_workflows = c("kri0001", "kri0002"), # Specific workflows
+  run_reporting = TRUE,
   verbose = TRUE
 )
 
-# Examine specific analytics results
+# Access analytics: $results keyed by workflow name
 if (!is.null(study$analytics)) {
-  # Site-level results
-  site_results <- study$analytics$by_site$results
-  
-  # Study-level results  
-  study_results <- study$analytics$by_study$results
+  first_snap <- study$analytics[[1]]
+
+  # All metric results for the first snapshot
+  metric_names <- names(first_snap$results)
+
+  # Access a specific metric and its data frames
+  kri <- first_snap$results[[metric_names[1]]]
+  kri$Analysis_Summary   # summary-level data frame
+  kri$Analysis_Flagged   # flagged entities
+  kri$Analysis_Analyzed  # full analyzed data
 }
+
+# Access reporting: keyed by snapshot date
+if (!is.null(study$reporting)) {
+  names(study$reporting)        # snapshot dates
+  study$reporting[[1]]          # reporting output for first snapshot
+}
+```
+
+You can also run the pipelines separately on an existing study object:
+
+```{r pipeline-stepwise}
+# Build raw data only
+study <- create_longitudinal_study(
+  study_id = "STEPWISE-001",
+  participants = 200,
+  sites = 10,
+  snapshots = 6,
+  interval = "1 month",
+  domains = c("AE", "LB"),
+  run_analytics = FALSE   # skip pipelines for now
+)
+
+# Run analytics when ready
+study <- run_longitudinal_analytics(study, verbose = TRUE)
+
+# Run reporting on top of analytics
+study <- run_longitudinal_reporting(study, verbose = TRUE)
 ```
 
 # Data Examination and Validation
@@ -326,7 +385,7 @@ study <- create_longitudinal_study(
   interval = "1 month",
   domains = c("AE", "LB"),
   verbose = TRUE,
-  include_pipeline = FALSE
+  run_analytics = FALSE
 )
 
 # Check data for each snapshot

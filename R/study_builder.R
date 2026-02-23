@@ -8,18 +8,23 @@
 #' @param site_count Number of sites
 #' @param analytics_package Analytics package to use
 #' @param analytics_workflows Specific workflows to run
+#' @param reporting_package Reporting package to use (default: \code{"gsm.reporting"})
+#' @param reporting_workflows Specific reporting workflows to run (default: all)
 #'
 #' @return A list containing study configuration
 #' @export
-create_study_config <- function(study_id = "STUDY001", participant_count = 100, site_count = 10, 
-                               analytics_package = NULL, analytics_workflows = NULL) {
+create_study_config <- function(study_id = "STUDY001", participant_count = 100, site_count = 10,
+                               analytics_package = NULL, analytics_workflows = NULL,
+                               reporting_package = NULL, reporting_workflows = NULL) {
   config <- list(
     study_params = list(
       study_id = study_id,
       participant_count = participant_count,
       site_count = site_count,
       analytics_package = analytics_package,
-      analytics_workflows = analytics_workflows
+      analytics_workflows = analytics_workflows,
+      reporting_package = reporting_package,
+      reporting_workflows = reporting_workflows
     ),
     temporal_config = list(
       start_date = as.Date("2023-01-01"),
@@ -318,6 +323,33 @@ run_longitudinal_analytics <- function(study, verbose = FALSE) {
     verbose = verbose
   )
   
+  return(study)
+}
+
+#' Run Reporting Pipeline on Longitudinal Study
+#'
+#' Execute the gsm.reporting pipeline on study analytics results, producing a
+#' \code{reporting} list of data frames on the study object (one entry per snapshot).
+#' The study must already have analytics results (run \code{run_longitudinal_analytics}
+#' first, or call \code{create_longitudinal_study} with \code{run_analytics = TRUE}).
+#'
+#' @param study Longitudinal study data structure
+#' @param verbose Whether to print progress output
+#' @return Updated study structure with \code{study$reporting} populated
+#' @export
+run_longitudinal_reporting <- function(study, verbose = FALSE) {
+  verbose <- if (!is.null(study$config$verbose)) isTRUE(study$config$verbose) else verbose
+
+  if (is.null(study$analytics)) {
+    stop("No analytics results found on study object. Run run_longitudinal_analytics() first.")
+  }
+
+  study$reporting <- generate_reporting_layers(
+    analytics_results = study$analytics,
+    config = study$config,
+    verbose = verbose
+  )
+
   return(study)
 }
 

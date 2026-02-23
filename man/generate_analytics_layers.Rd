@@ -18,5 +18,5 @@ Raw analytics pipeline results
 }
 \description{
 Convenience wrapper that executes the analytics pipeline and returns
-outputs into site/country/study layers (per snapshot when applicable).
+the raw analytics results.
 }

@@ -294,36 +294,43 @@ execute_analytics_pipeline <- function(raw_data, config) {
         next
       }
 
-      # Only use domains present in this snapshot for mapping workflows
-      available_domains <- names(snapshot_data)
-      available_domains_stripped <- stringr::str_replace(available_domains, "Raw_", "")
-      config_domains_norm <- trimws(tolower(config$domains))
-      available_domains_norm <- trimws(tolower(available_domains_stripped))
-      if (length(config_domains_norm) == 0 || all(is.na(config_domains_norm)) || all(config_domains_norm == "")) {
-        config_domains_norm <- available_domains_norm
-      }
-      required_domains_norm <- trimws(tolower(c("SUBJ", "SITE", "STUDY", "ENROLL")))
-      domains_to_map <- intersect(unique(c(config_domains_norm, required_domains_norm)), available_domains_norm)
-      domains_to_map <- available_domains_stripped[match(domains_to_map, available_domains_norm)]
+      # Load all mapping workflows from gsm.mapping (no strNames filter, matching the
+      # run_gsm_workflows.R pattern). Run each individually so that a workflow whose
+      # source data is absent fails silently rather than blocking the rest.
 
-      if (length(domains_to_map) == 0) {
-        vcat("No domains available for mapping in snapshot ", snapshot_name, ". Skipping.\n", sep = "")
-        snapshot_results[[snapshot_name]] <- NULL
-        next
-      }
+      # Workflows backed by a Raw_* dataset in this snapshot
+      available_raw_names <- stringr::str_replace(names(snapshot_data), "^Raw_", "")
 
-      mappings_wf <- gsm.core::MakeWorkflowList(
-        strNames = domains_to_map,
-        strPath = "workflow/1_mappings",
+      # Derived mappings that have no Raw_* source but depend on prior mapped outputs
+      derived_mapping_names <- c("COUNTRY")
+
+      workflows_to_run <- unique(c(available_raw_names, derived_mapping_names))
+
+      all_mappings_wf <- gsm.core::MakeWorkflowList(
+        strNames   = workflows_to_run,
+        strPath    = "workflow/1_mappings",
         strPackage = "gsm.mapping"
       )
 
-      mappings_spec <- CombineSpecs(mappings_wf)
-      lRaw <- Ingest(snapshot_data, mappings_spec)
-      mapped_data <- gsm.core::RunWorkflows(
-        lWorkflow = mappings_wf,
-        lData = lRaw
-      )
+      # Ingest only from raw-data-backed workflows (derived ones have no Raw_* spec)
+      raw_backed_names <- intersect(names(all_mappings_wf), available_raw_names)
+      raw_mappings_wf  <- all_mappings_wf[raw_backed_names]
+      mappings_spec    <- CombineSpecs(raw_mappings_wf)
+      lRaw             <- Ingest(snapshot_data, mappings_spec)
+
+      # Run each workflow in order, accumulating results so derived mappings
+      # (e.g. COUNTRY) can see the output of earlier ones (e.g. Mapped_SITE)
+      mapped_data <- list()
+      for (mwf_name in names(all_mappings_wf)) {
+        single_mwf <- all_mappings_wf[mwf_name]
+        result <- tryCatch(
+          gsm.core::RunWorkflows(lWorkflow = single_mwf, lData = c(lRaw, mapped_data)),
+          error = function(e) NULL
+        )
+        if (!is.null(result)) {
+          mapped_data <- c(mapped_data, result)
+        }
+      }
 
       lResults <- list()
       for (wf_name in names(lWorkflow)) {
@@ -356,6 +363,8 @@ execute_analytics_pipeline <- function(raw_data, config) {
       snapshot_results[[snapshot_name]] <- list(
         summary = analytics_summary,
         results = lResults,
+        mapped = mapped_data,
+        lWorkflow = lWorkflow,
         data = snapshot_data
       )
     }
@@ -391,7 +400,117 @@ generate_analytics_layers <- function(raw_data, config, verbose = FALSE) {
   execute_analytics_pipeline(raw_data, config)
 }
 
-#' Generate raw data for study configuration
+#' Execute the reporting pipeline using gsm.reporting workflows
+#'
+#' Runs the gsm.reporting workflow layer (workflow/3_reporting) for each snapshot
+#' using the mapped data, analytics results, and workflow list from the analytics
+#' pipeline output. Returns a named list of reporting results per snapshot.
+#'
+#' @param analytics_results Output from \code{execute_analytics_pipeline}
+#' @param config Study configuration object
+#' @return Named list of reporting results per snapshot
+#' @export
+execute_reporting_pipeline <- function(analytics_results, config) {
+  verbose <- if (!is.null(config$verbose)) isTRUE(config$verbose) else FALSE
+  vcat <- function(...) if (isTRUE(verbose)) cat(...)
+
+  tryCatch({
+    if (!requireNamespace("gsm.reporting", quietly = TRUE)) {
+      if (isTRUE(verbose)) message("gsm.reporting package not available. Skipping reporting pipeline.")
+      return(NULL)
+    }
+    if (!requireNamespace("gsm.core", quietly = TRUE)) {
+      if (isTRUE(verbose)) message("gsm.core package not available. Skipping reporting pipeline.")
+      return(NULL)
+    }
+    if (is.null(analytics_results)) {
+      if (isTRUE(verbose)) message("No analytics results provided. Skipping reporting pipeline.")
+      return(NULL)
+    }
+
+    reporting_package  <- config$study_params$reporting_package  %||% "gsm.reporting"
+    reporting_workflows <- config$study_params$reporting_workflows
+
+    if (!is.null(reporting_workflows)) {
+      reporting_wf <- gsm.core::MakeWorkflowList(
+        strPackage = reporting_package,
+        strNames   = reporting_workflows,
+        strPath    = "workflow/3_reporting"
+      )
+    } else {
+      reporting_wf <- gsm.core::MakeWorkflowList(
+        strPackage = reporting_package,
+        strPath    = "workflow/3_reporting"
+      )
+    }
+
+    snapshot_names   <- names(analytics_results)
+    snapshot_results <- setNames(vector("list", length(analytics_results)), snapshot_names)
+
+    for (snapshot_name in snapshot_names) {
+      snap <- analytics_results[[snapshot_name]]
+      if (is.null(snap)) {
+        snapshot_results[[snapshot_name]] <- NULL
+        next
+      }
+
+      mapped     <- snap$mapped
+      lAnalyzed  <- snap$results
+      lWorkflow  <- snap$lWorkflow
+
+      if (is.null(mapped) || is.null(lAnalyzed) || is.null(lWorkflow)) {
+        warning("Skipping reporting for snapshot ", snapshot_name,
+                ": analytics pipeline output is missing mapped data, results, or workflow list.")
+        snapshot_results[[snapshot_name]] <- NULL
+        next
+      }
+
+      vcat("Running reporting pipeline for snapshot: ", snapshot_name, "\n", sep = "")
+
+      lReporting <- tryCatch(
+        gsm.core::RunWorkflows(
+          lWorkflow = reporting_wf,
+          lData     = c(mapped, list(lAnalyzed = lAnalyzed, lWorkflows = lWorkflow))
+        ),
+        error = function(e) {
+          warning("Reporting pipeline failed for snapshot ", snapshot_name, ": ", e$message)
+          NULL
+        }
+      )
+
+      snapshot_results[[snapshot_name]] <- lReporting
+    }
+
+    processed_count <- sum(!vapply(snapshot_results, is.null, logical(1)))
+    vcat("Reporting pipeline completed for ", processed_count, " of ",
+         length(snapshot_results), " snapshots.\n", sep = "")
+
+    if (processed_count == 0) return(NULL)
+    return(snapshot_results)
+
+  }, error = function(e) {
+    warning("GSM reporting pipeline failed: ", e$message)
+    return(NULL)
+  })
+}
+
+#' Generate reporting layers from analytics results
+#'
+#' Convenience wrapper that runs the gsm.reporting pipeline and returns
+#' the raw reporting results per snapshot.
+#'
+#' @param analytics_results Output from \code{execute_analytics_pipeline} or
+#'   \code{generate_analytics_layers}
+#' @param config Study configuration object
+#' @param verbose Whether to print progress/output messages
+#' @return Named list of reporting results per snapshot
+#' @export
+generate_reporting_layers <- function(analytics_results, config, verbose = FALSE) {
+  config$verbose <- verbose
+  execute_reporting_pipeline(analytics_results, config)
+}
+
+
 #'
 #' @param config Study configuration object with enabled datasets
 #' @param verbose Whether to print progress/output messages

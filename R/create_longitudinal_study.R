@@ -12,9 +12,10 @@
 #' @param snapshots Number of snapshots
 #' @param interval Time between snapshots (e.g., "1 month", "2 weeks")
 #' @param domains Clinical domains to include
-#' @param include_pipeline Whether to run analytics pipeline
+#' @param run_analytics Whether to run the analytics pipeline (default TRUE)
 #' @param analytics_package Package containing workflows (optional)
 #' @param analytics_workflows Specific workflows to run (optional)
+#' @param run_reporting Whether to run the reporting pipeline after analytics (default FALSE)
 #' @param verbose Whether to print progress/output messages
 #' @return LongitudinalStudy object with generated data
 #' @export
@@ -24,9 +25,10 @@ create_longitudinal_study <- function(study_id = "STUDY-001",
                                      snapshots = 5,
                                      interval = "1 month",
                                      domains = c("AE", "LB", "VISIT"),
-                                     include_pipeline = TRUE,
+                                     run_analytics = TRUE,
                                      analytics_package = NULL,
                                      analytics_workflows = NULL,
+                                     run_reporting = FALSE,
                                      verbose = FALSE) {
 
   # Validate inputs
@@ -58,7 +60,7 @@ create_longitudinal_study <- function(study_id = "STUDY-001",
   )
 
   # Run analytics pipeline if requested
-  if (include_pipeline) {
+  if (run_analytics) {
     if (isTRUE(verbose)) cat("Running analytics pipeline...\n")
 
     # Create configuration for analytics
@@ -77,6 +79,15 @@ create_longitudinal_study <- function(study_id = "STUDY-001",
       config = analytics_config,
       verbose = verbose
     )
+
+    if (isTRUE(run_reporting)) {
+      if (isTRUE(verbose)) cat("Running reporting pipeline...\n")
+      study$reporting <- generate_reporting_layers(
+        analytics_results = study$analytics,
+        config = analytics_config,
+        verbose = verbose
+      )
+    }
   }
 
   return(study)
@@ -90,7 +101,7 @@ create_longitudinal_study <- function(study_id = "STUDY-001",
 #' @param sites Number of sites (default 150)
 #' @param months_duration Duration in months (default 24)
 #' @param study_type Type of study - "standard" or "endpoints"
-#' @param run_analytics Whether to run the analytics pipeline (default TRUE)
+#' @param include_pipeline Whether to run both the analytics and reporting pipelines (default TRUE)
 #' @param verbose Whether to print progress/output messages
 #' @return LongitudinalStudy object with complete data and analytics
 #' @export
@@ -99,7 +110,7 @@ quick_longitudinal_study <- function(study_name = "GS-US-000-0001",
                                     sites = 150,
                                     months_duration = 24,
                                     study_type = "standard",
-                                    run_analytics = TRUE,
+                                    include_pipeline = TRUE,
                                     verbose = FALSE) {
 
   if (isTRUE(verbose)) {
@@ -123,8 +134,9 @@ quick_longitudinal_study <- function(study_name = "GS-US-000-0001",
     snapshots = months_duration,
       interval = "1 month",
       domains = domains,
-      include_pipeline = run_analytics,
+      run_analytics = include_pipeline,
       analytics_package = pkg,
+      run_reporting = include_pipeline,
       verbose = verbose
     )
   } else if (study_type == "endpoints") {
@@ -160,8 +172,8 @@ quick_longitudinal_study <- function(study_name = "GS-US-000-0001",
         verbose = verbose
       )
     )
-    # Run analytics if requested
-    if (run_analytics) {
+    # Run analytics and reporting if requested
+    if (include_pipeline) {
       if (isTRUE(verbose)) cat("Running analytics pipeline...\n")
       analytics_config <- create_study_config(
         study_id = study_id,
@@ -173,6 +185,12 @@ quick_longitudinal_study <- function(study_name = "GS-US-000-0001",
       analytics_config$verbose <- verbose
       study$analytics <- generate_analytics_layers(
         raw_data = raw_data,
+        config = analytics_config,
+        verbose = verbose
+      )
+      if (isTRUE(verbose)) cat("Running reporting pipeline...\n")
+      study$reporting <- generate_reporting_layers(
+        analytics_results = study$analytics,
         config = analytics_config,
         verbose = verbose
       )
@@ -209,6 +227,11 @@ quick_longitudinal_study <- function(study_name = "GS-US-000-0001",
     }
     cat("Analytics pipeline completed with results for",
         total_metrics, "metrics\n")
+  }
+
+  if (isTRUE(verbose) && !is.null(study$reporting)) {
+    reporting_count <- sum(!vapply(study$reporting, is.null, logical(1)))
+    cat("Reporting pipeline completed for", reporting_count, "of", length(study$reporting), "snapshots\n")
   }
 
   return(study)

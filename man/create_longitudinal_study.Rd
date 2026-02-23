@@ -11,9 +11,10 @@ create_longitudinal_study(
   snapshots = 5,
   interval = "1 month",
   domains = c("AE", "LB", "VISIT"),
-  include_pipeline = TRUE,
+  run_analytics = TRUE,
   analytics_package = NULL,
   analytics_workflows = NULL,
+  run_reporting = FALSE,
   verbose = FALSE
 )
 }
@@ -30,11 +31,13 @@ create_longitudinal_study(
 
 \item{domains}{Clinical domains to include}
 
-\item{include_pipeline}{Whether to run analytics pipeline}
+\item{run_analytics}{Whether to run the analytics pipeline (default TRUE)}
 
 \item{analytics_package}{Package containing workflows (optional)}
 
 \item{analytics_workflows}{Specific workflows to run (optional)}
+
+\item{run_reporting}{Whether to run the reporting pipeline after analytics (default FALSE)}
 
 \item{verbose}{Whether to print progress/output messages}
 }

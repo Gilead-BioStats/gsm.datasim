@@ -10,7 +10,7 @@ quick_longitudinal_study(
   sites = 150,
   months_duration = 24,
   study_type = "standard",
-  run_analytics = TRUE,
+  include_pipeline = TRUE,
   verbose = FALSE
 )
 }
@@ -25,7 +25,7 @@ quick_longitudinal_study(
 
 \item{study_type}{Type of study - "standard" or "endpoints"}
 
-\item{run_analytics}{Whether to run the analytics pipeline (default TRUE)}
+\item{include_pipeline}{Whether to run both the analytics and reporting pipelines (default TRUE)}
 
 \item{verbose}{Whether to print progress/output messages}
 }

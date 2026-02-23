@@ -9,7 +9,9 @@ create_study_config(
   participant_count = 100,
   site_count = 10,
   analytics_package = NULL,
-  analytics_workflows = NULL
+  analytics_workflows = NULL,
+  reporting_package = NULL,
+  reporting_workflows = NULL
 )
 }
 \arguments{
@@ -22,6 +24,10 @@ create_study_config(
 \item{analytics_package}{Analytics package to use}
 
 \item{analytics_workflows}{Specific workflows to run}
+
+\item{reporting_package}{Reporting package to use (default: \code{"gsm.reporting"})}
+
+\item{reporting_workflows}{Specific reporting workflows to run (default: all)}
 }
 \value{
 A list containing study configuration
