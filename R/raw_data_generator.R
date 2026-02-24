@@ -1,3 +1,6 @@
+.gsm_datasim_runtime_state <- new.env(parent = emptyenv())
+.gsm_datasim_runtime_state$legacy_mode_warned <- FALSE
+
 #' Generate Raw Data for Study Snapshots
 #'
 #' This function generates raw data for study snapshots based on provided participant count,
@@ -41,22 +44,18 @@
 #' \dontrun{
 #' # Generate raw data using specified parameters
 #' data <- raw_data_generator(
-#'   ParticipantCount = 100, 
-#'   SiteCount = 10, 
-#'   StudyID = "Study01", 
-#'   SnapshotCount = 5, 
+#'   ParticipantCount = 100,
+#'   SiteCount = 10,
+#'   StudyID = "Study01",
+#'   SnapshotCount = 5,
 #'   SnapshotWidth = "months"
 #' )
-#'
 #'
 #' # Generate raw data using a template file
 #' data <- raw_data_generator()
 #' }
 #'
 #' @export
-.gsm_datasim_runtime_state <- new.env(parent = emptyenv())
-.gsm_datasim_runtime_state$legacy_mode_warned <- FALSE
-
 raw_data_generator <- function(
   ParticipantCount = NULL,
   SiteCount = NULL,

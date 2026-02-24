@@ -124,8 +124,10 @@ rename_raw_data_vars_per_spec <- function(variable_data, spec) {
     if ("source_col" %in% names(variabale)) {
       # Retrieve the new name from "source_col"
       new_name <- variabale[["source_col"]]
-      # Rename the variable in the appropriate dataset in the snapshot
-      variable_data <- variable_data %>% dplyr::rename(!!rlang::sym(new_name) := all_of(var_name))
+      # Rename only when the source column is present
+      if (var_name %in% names(variable_data)) {
+        names(variable_data)[names(variable_data) == var_name] <- new_name
+      }
     }
   }
   return(variable_data)
@@ -160,7 +162,7 @@ generate_unique_combinations_code <- function(data, vars, run_code = FALSE) {
   code <- paste0(code, ")")
 
   if (run_code) {
-    result <- eval(parse(text = code_to_run))
+    result <- eval(parse(text = code))
   } else {
     result <- code
   }

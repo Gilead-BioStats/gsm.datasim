@@ -284,7 +284,7 @@ execute_analytics_pipeline <- function(raw_data, config) {
     if (is.null(snapshot_names) || any(snapshot_names == "")) {
       snapshot_names <- paste0("snapshot_", seq_along(raw_data))
     }
-    snapshot_results <- setNames(vector("list", length(raw_data)), snapshot_names)
+    snapshot_results <- stats::setNames(vector("list", length(raw_data)), snapshot_names)
 
     for (i in seq_along(raw_data)) {
       snapshot_name <- snapshot_names[[i]]
@@ -392,6 +392,69 @@ execute_analytics_pipeline <- function(raw_data, config) {
   })
 }
 
+organize_analytics_results <- function(pipeline_results, verbose = FALSE) {
+  vcat <- function(...) if (isTRUE(verbose)) cat(...)
+
+  organize_metric <- function(metric_name, metric_payload) {
+    metric_id <- sub("^Analysis_", "", metric_name)
+
+    data_frames <- lapply(metric_payload, function(tbl) {
+      if (!is.data.frame(tbl)) return(tbl)
+      if (!("Metric_ID" %in% names(tbl))) {
+        tbl$Metric_ID <- metric_id
+      }
+      tbl
+    })
+
+    list(
+      metric_id = metric_id,
+      data_frames = data_frames
+    )
+  }
+
+  organize_snapshot <- function(snapshot_results) {
+    if (is.null(snapshot_results$results) || !is.list(snapshot_results$results)) {
+      return(list())
+    }
+
+    metric_names <- names(snapshot_results$results)
+    analysis_metric_names <- metric_names[startsWith(metric_names, "Analysis_")]
+
+    out <- list()
+    for (metric_name in analysis_metric_names) {
+      metric_payload <- snapshot_results$results[[metric_name]]
+      if (!is.list(metric_payload)) next
+      metric_id <- sub("^Analysis_", "", metric_name)
+      out[[metric_id]] <- organize_metric(metric_name, metric_payload)
+    }
+
+    out
+  }
+
+  if (is.null(pipeline_results) || !is.list(pipeline_results)) {
+    return(list())
+  }
+
+  if ("results" %in% names(pipeline_results)) {
+    vcat("Organizing analytics for single snapshot...\n")
+    return(organize_snapshot(pipeline_results))
+  }
+
+  snapshot_names <- names(pipeline_results)
+  if (is.null(snapshot_names) || any(snapshot_names == "")) {
+    snapshot_names <- as.character(seq_along(pipeline_results))
+  }
+
+  vcat("Organizing analytics for ", length(snapshot_names), " snapshots...\n", sep = "")
+
+  stats::setNames(
+    lapply(snapshot_names, function(snapshot_name) {
+      organize_snapshot(pipeline_results[[snapshot_name]])
+    }),
+    snapshot_names
+  )
+}
+
 #' Generate analytics layers from raw data
 #'
 #' Convenience wrapper that executes the analytics pipeline and returns
@@ -452,7 +515,7 @@ execute_reporting_pipeline <- function(analytics_results, config) {
     }
 
     snapshot_names   <- names(analytics_results)
-    snapshot_results <- setNames(vector("list", length(analytics_results)), snapshot_names)
+    snapshot_results <- stats::setNames(vector("list", length(analytics_results)), snapshot_names)
 
     for (snapshot_name in snapshot_names) {
       snap <- analytics_results[[snapshot_name]]
@@ -517,11 +580,14 @@ generate_reporting_layers <- function(analytics_results, config, verbose = FALSE
   execute_reporting_pipeline(analytics_results, config)
 }
 
-
+#' Generate raw data from a study config
 #'
-#' @param config Study configuration object with enabled datasets
-#' @param verbose Whether to print progress/output messages
-#' @return List of raw data for enabled datasets
+#' Convenience wrapper for generating snapshot raw data directly from a
+#' configured study object.
+#'
+#' @param config Study configuration object with enabled datasets.
+#' @param verbose Whether to print progress/output messages.
+#' @return List of raw data for enabled datasets.
 #' @export
 generate_raw_data_from_config <- function(config, verbose = FALSE) {
   generate_snapshots_from_config(
