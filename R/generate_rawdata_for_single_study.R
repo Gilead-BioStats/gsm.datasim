@@ -1,65 +1,25 @@
-#' Generate Snapshots for Single Study Data
+#' Prepare combined specs for generation
 #'
-#' This function generates a list of study data snapshots based on the provided specifications,
-#' including participant count, site count, study ID, and the number of snapshots to be generated.
-#' The data is simulated over a series of months, with key variables such as subject enrollment,
-#' adverse events, and time on study being populated according to the study's specifications.
+#' Removes mapped outputs from `combined_specs`, ensures required core raw
+#' datasets are ordered first, and optionally filters to `desired_specs`.
 #'
-#' @param SnapshotCount An integer specifying the number of snapshots to generate.
-#' @param SnapshotWidth A character specifying the frequency of snapshots, defaults to "months".
-#' Accepts "days", "weeks", "months" and "years". User can also place a number and unit such as "3 months".
-#' @param ParticipantCount An integer specifying the number of participants in the study.
-#' @param SiteCount An integer specifying the number of sites for the study.
-#' @param StudyID A string specifying the study identifier.
-#' @param workflow_path A string specifying the path to the workflow mappings.
-#' @param mappings A string specifying the names of the workflows to run.
-#' @param package A string specifying the package in which the workflows used in `MakeWorkflowList()` are located.
-#' @param strStartDate A string to denote when the first snapshot of simulated data occurs
-#' @param desired_specs A list of specifications of the data types that should be included.
+#' @param combined_specs A named list of dataset specifications.
+#' @param desired_specs Optional character vector of dataset names to keep.
 #'
-#' @return A list of data snapshots, where each element contains simulated data for a particular snapshot
-#' period (typically a month), with variables populated according to the provided specifications.
-#'
+#' @return A reordered (and optionally filtered) named list of dataset specs.
 #' @export
-#' @details
-#' The function generates snapshots over a sequence of months, starting from `"2012-01-01"`. For each snapshot:
-#' \enumerate{
-#'   \item The number of adverse events (`ae_num`) is simulated.
-#'   \item The number of participants screened is determined.
-#'   \item Key variables (such as subject ID, enrollment date, time on study, etc.) are populated for each data type
-#'   specified in `combined_specs`.
-#' }
 #'
 #' @examples
-#' snapshots <- generate_rawdata_for_single_study(
-#'   SnapshotCount = 3,
-#'   SnapshotWidth = "months",
-#'   ParticipantCount = 50,
-#'   SiteCount = 5,
-#'   StudyID = "ABC",
-#'   workflow_path = "workflow/1_mappings",
-#'   mappings = "AE",
-#'   package = "gsm.mapping",
-#'   strStartDate = "2012-01-01",
-#'   desired_specs = NULL
+#' specs <- list(
+#'   Raw_AE = list(aest_dt = list(required = TRUE)),
+#'   Mapped_AE = list(),
+#'   Raw_SUBJ = list(subjid = list(required = TRUE))
 #' )
 #'
-generate_rawdata_for_single_study <- function(SnapshotCount,
-  SnapshotWidth,
-  ParticipantCount,
-  SiteCount,
-  StudyID,
-  workflow_path,
-  mappings,
-  package,
-  strStartDate = "2012-01-01",
-  desired_specs = NULL) {
-  # Generate start and end dates for snapshots
-  start_dates <- seq(as.Date(strStartDate), length.out = SnapshotCount, by = SnapshotWidth)
-  end_dates <- start_dates + 28
-
-  # Load workflow mappings and combine specifications
-  combined_specs <- load_specs(workflow_path, mappings, package)
+#' prepared <- prepare_combined_specs_for_generation(specs)
+#' names(prepared)
+#'
+prepare_combined_specs_for_generation <- function(combined_specs, desired_specs = NULL) {
   combined_specs <- purrr::list_modify(
     combined_specs,
     !!!rlang::set_names(
@@ -102,6 +62,21 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
     combined_specs <- combined_specs[desired_specs]
   }
 
+  combined_specs
+}
+
+generate_snapshots_from_combined_specs <- function(SnapshotCount,
+                                                   SnapshotWidth,
+                                                   ParticipantCount,
+                                                   SiteCount,
+                                                   StudyID,
+                                                   combined_specs,
+                                                   mappings,
+                                                   strStartDate = "2012-01-01") {
+  # Generate start and end dates for snapshots
+  start_dates <- seq(as.Date(strStartDate), length.out = SnapshotCount, by = SnapshotWidth)
+  end_dates <- start_dates + 28
+
   subject_count <- count_gen(ParticipantCount, SnapshotCount)
   site_count <- count_gen(SiteCount, SnapshotCount)
   if (SnapshotCount > 1) {
@@ -116,12 +91,6 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
   consents_count <- ceiling(subject_count / 75)
   death_count <- ceiling(subject_count / 85)
   anticancer_count <- ceiling(subject_count / 10)
-
-
-  # print(subject_count)
-  # print(site_count)
-  # print(enrollment_count)
-  # print("--------------")
 
   snapshots <- list()
 
@@ -181,6 +150,31 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
         data_type == "Raw_IE" ~ unlist(enrollment_count[snapshot_idx]),
         TRUE ~ subject_count[snapshot_idx]
       )
+
+      registry_context <- list(
+        data = data,
+        previous_data = previous_data,
+        combined_specs = combined_specs,
+        n = n,
+        start_date = start_dates[snapshot_idx],
+        end_date = end_dates[snapshot_idx],
+        snapshot_idx = snapshot_idx,
+        snapshot_count = SnapshotCount,
+        snapshot_width = SnapshotWidth,
+        study_id = StudyID
+      )
+
+      migrated_data <- generate_domain_from_registry(
+        data_type = data_type,
+        context = registry_context
+      )
+
+      if (!is.null(migrated_data)) {
+        data[[data_type]] <- migrated_data
+        logger::log_info(glue::glue(" ---- Dataset {data_type} added successfully"))
+        next
+      }
+
       generator_func <- data_type
       # Determine arguments based on variable name
       args <- switch(data_type,
@@ -251,7 +245,7 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
           timeonstudy = dplyr::if_else(enrollyn == "N", NA, timeonstudy)
         )
     }
-    if (!"gilda_STUDY" %in% mappings) {
+    if (!("gilda_STUDY" %in% mappings)) {
       data$raw_gilda_study_data <- NULL
     }
     if ("Raw_IE" %in% names(data)) {
@@ -274,5 +268,33 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
 
   # Assign snapshot end dates as names
   names(snapshots) <- as.character(end_dates)
-  return(snapshots)
+  snapshots
+}
+
+generate_rawdata_for_single_study <- function(SnapshotCount,
+  SnapshotWidth,
+  ParticipantCount,
+  SiteCount,
+  StudyID,
+  workflow_path,
+  mappings,
+  package,
+  strStartDate = "2012-01-01",
+  desired_specs = NULL) {
+  combined_specs <- load_specs(workflow_path, mappings, package)
+  prepared_specs <- prepare_combined_specs_for_generation(
+    combined_specs = combined_specs,
+    desired_specs = desired_specs
+  )
+
+  generate_snapshots_from_combined_specs(
+    SnapshotCount = SnapshotCount,
+    SnapshotWidth = SnapshotWidth,
+    ParticipantCount = ParticipantCount,
+    SiteCount = SiteCount,
+    StudyID = StudyID,
+    combined_specs = prepared_specs,
+    mappings = mappings,
+    strStartDate = strStartDate
+  )
 }

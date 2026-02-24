@@ -22,12 +22,16 @@ Imports:
     tictoc,
     utils
 Suggests:
+    gsm.kri,
+    gsm.reporting,
     knitr,
     rmarkdown,
     testthat
 Remotes:
     gsm.core=Gilead-BioStats/gsm.core@main,
-    gsm.mapping=Gilead-BioStats/gsm.mapping@main
+    gsm.kri=Gilead-BioStats/gsm.kri@main,
+    gsm.mapping=Gilead-BioStats/gsm.mapping@main,
+    gsm.reporting=Gilead-BioStats/gsm.reporting@main
 License: Apache License (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
