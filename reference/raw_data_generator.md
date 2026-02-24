@@ -9,12 +9,22 @@ an RDS file.
 ## Usage
 
 ``` r
-.gsm_datasim_runtime_state
+raw_data_generator(
+  ParticipantCount = NULL,
+  SiteCount = NULL,
+  StudyID = NULL,
+  SnapshotCount = NULL,
+  SnapshotWidth = NULL,
+  template_path = system.file("template.csv", package = "gsm.datasim"),
+  workflow_path = "workflow/1_mappings",
+  generate_reports = FALSE,
+  mappings = NULL,
+  package = "gsm.mapping",
+  strStartDate = "2012-01-01",
+  save = FALSE,
+  generation_mode = c("core", "legacy")
+)
 ```
-
-## Format
-
-An object of class `environment` of length 1.
 
 ## Arguments
 
@@ -105,13 +115,12 @@ The function performs the following steps:
 if (FALSE) { # \dontrun{
 # Generate raw data using specified parameters
 data <- raw_data_generator(
-  ParticipantCount = 100, 
-  SiteCount = 10, 
-  StudyID = "Study01", 
-  SnapshotCount = 5, 
+  ParticipantCount = 100,
+  SiteCount = 10,
+  StudyID = "Study01",
+  SnapshotCount = 5,
   SnapshotWidth = "months"
 )
-
 
 # Generate raw data using a template file
 data <- raw_data_generator()
