@@ -21,8 +21,7 @@ raw_data_generator(
   mappings = NULL,
   package = "gsm.mapping",
   strStartDate = "2012-01-01",
-  save = FALSE,
-  generation_mode = c("core", "legacy")
+  save = FALSE
 )
 ```
 
@@ -87,10 +86,6 @@ raw_data_generator(
   A boolean, specifying whether or not this should be saved out as an
   RDS
 
-- generation_mode:
-
-  Generation backend to use: "core" (default) or "legacy".
-
 ## Value
 
 A list of raw data generated for each study snapshot, saved as an RDS
@@ -114,13 +109,8 @@ The function performs the following steps:
 ``` r
 if (FALSE) { # \dontrun{
 # Generate raw data using specified parameters
-data <- raw_data_generator(
-  ParticipantCount = 100,
-  SiteCount = 10,
-  StudyID = "Study01",
-  SnapshotCount = 5,
-  SnapshotWidth = "months"
-)
+data <- raw_data_generator(ParticipantCount = 100, SiteCount = 10, StudyID = "Study01", SnapshotCount = 5, SnapshotWidth = "months")
+
 
 # Generate raw data using a template file
 data <- raw_data_generator()
