@@ -13,6 +13,7 @@ generate_rawdata_for_single_study(
   workflow_path,
   mappings,
   package,
+  strStartDate = "2012-01-01",
   desired_specs = NULL
 )
 }
@@ -34,6 +35,8 @@ Accepts "days", "weeks", "months" and "years". User can also place a number and 
 
 \item{package}{A string specifying the package in which the workflows used in \code{MakeWorkflowList()} are located.}
 
+\item{strStartDate}{A string to denote when the first snapshot of simulated data occurs}
+
 \item{desired_specs}{A list of specifications of the data types that should be included.}
 }
 \value{
@@ -47,7 +50,7 @@ The data is simulated over a series of months, with key variables such as subjec
 adverse events, and time on study being populated according to the study's specifications.
 }
 \details{
-The function generates snapshots over a sequence of months,starting from \code{"2012-01-01"}. For each snapshot:
+The function generates snapshots over a sequence of months, starting from \code{"2012-01-01"}. For each snapshot:
 \enumerate{
 \item The number of adverse events (\code{ae_num}) is simulated.
 \item The number of participants screened is determined.
@@ -65,6 +68,7 @@ snapshots <- generate_rawdata_for_single_study(
   workflow_path = "workflow/1_mappings",
   mappings = "AE",
   package = "gsm.mapping",
+  strStartDate = "2012-01-01",
   desired_specs = NULL
 )
 
