@@ -13,7 +13,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/Gilead-BioStats/gsm.datasim/blob/release-gsm.datasim_v1.1.3/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/Gilead-BioStats/gsm.datasim/blob/main/DESCRIPTION)
 
 Rogoza R, Maxwell L, Zhu Z (2026). *gsm.datasim: Synthetic Test Data
 Generator*. R package version 1.1.3,
