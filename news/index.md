@@ -2,7 +2,7 @@
 
 ## gsm.datasim v1.1.3
 
-This patch release makes the follwoing updates:
+This patch release makes the following updates:
 
 - Added `strStartDate` to
   [`generate_rawdata_for_single_study()`](https://gilead-biostats.github.io/gsm.datasim/reference/generate_rawdata_for_single_study.md)
