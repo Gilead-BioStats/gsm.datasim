@@ -1,5 +1,17 @@
 # Changelog
 
+## gsm.datasim v1.1.3
+
+This patch release makes the following updates:
+
+- Added `strStartDate` to
+  [`generate_rawdata_for_single_study()`](https://gilead-biostats.github.io/gsm.datasim/dev/reference/generate_rawdata_for_single_study.md)
+  and
+  [`raw_data_generator()`](https://gilead-biostats.github.io/gsm.datasim/dev/reference/raw_data_generator.md)
+  to allow arbitrary snapshot start dates.
+- Added `db_lock_dt` generation in `Raw_STUDY` based on the snapshot
+  global max date.
+
 ## gsm.datasim v1.1.2
 
 This release resolves a bug involving duplicate records in the
