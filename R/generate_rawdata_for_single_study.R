@@ -111,11 +111,11 @@ generate_rawdata_for_single_study <- function(SnapshotCount,
 
   ae_count <- subject_count * 3
   pd_count <- subject_count * 3
-  sdrgcomp_count <- ceiling(subject_count / 2)
+  sdrgcomp_count <- ceiling(subject_count / 10)
   studcomp_count <- ceiling(subject_count / 10)
   consents_count <- ceiling(subject_count / 75)
   death_count <- ceiling(subject_count / 85)
-  anticancer_count <- ceiling(subject_count / 10)
+  anticancer_count <- ceiling(subject_count / 75)
 
 
   # print(subject_count)
