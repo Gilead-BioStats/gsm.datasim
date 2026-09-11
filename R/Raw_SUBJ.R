@@ -174,7 +174,6 @@ race <- function(n, ...) {
 #' @param nWindowDays days separating the two potential statuses.
 #' @param nConfirmedShare share of never-dosed subjects that are Confirmed.
 #' @returns `df` with the six `drv_*` columns.
-#' @family internal
 #' @keywords internal
 #' @noRd
 apply_ipns_derivations <- function(
