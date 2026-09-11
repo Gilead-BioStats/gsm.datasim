@@ -148,9 +148,9 @@ test_that("Confirmed does not flip back on a later snapshot (#140)", {
 })
 
 test_that("the Confirmed draw honours nConfirmedShare (#140)", {
-  # Guards the hash rather than the status rules: a poorly distributed one
-  # makes the realised share a function of subjid length instead of the
-  # argument, and nothing else here would notice.
+  # Guards the subjid bucketing rather than the status rules: a skewed bucket
+  # makes the realised share drift from the argument, and nothing else here
+  # would notice.
   df <- data.frame(
     subjid = paste0("S", sprintf("%03d", seq_len(2000))),
     enrollyn = "Y",

@@ -204,16 +204,10 @@ apply_ipns_derivations <- function(
     NA_integer_
   )
 
-  # Hashing subjid keeps the choice stable per subject across snapshots. A
-  # digit sum will not serve here: subjids are "S" plus a zero-padded counter,
-  # so sums collide heavily and the realised share tracks subjid length rather
-  # than nConfirmedShare. unname() keeps the hash's names off the result.
-  bucket <- vapply(
-    as.character(df$subjid),
-    function(s) strtoi(substr(rlang::hash(s), 1, 6), 16L) %% 100L,
-    integer(1)
-  )
-  confirmed <- unname(undosed & bucket < round(nConfirmedShare * 100))
+  # subjid() draws each subject's number uniformly at random, so its last two
+  # digits bucket subjects faithfully and stay stable across snapshots.
+  bucket <- as.integer(sub("^S", "", df$subjid)) %% 100L
+  confirmed <- undosed & bucket < round(nConfirmedShare * 100)
 
   df$drv_ip_nonstarter_status <- dplyr::case_when(
     !enrolled ~ NA_character_,
